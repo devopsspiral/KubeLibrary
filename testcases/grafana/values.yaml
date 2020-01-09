@@ -1,0 +1,7 @@
+service:
+  type: LoadBalancer
+  port: 3000
+persistence:
+  enabled: true
+  type: pvc
+  size: 1Gi

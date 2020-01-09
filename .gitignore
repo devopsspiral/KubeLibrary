@@ -1,0 +1,8 @@
+.venv
+.vscode
+
+*.pyc
+*.pyo
+src/robotframework_kubelibrary.egg-info/
+dist/
+build/

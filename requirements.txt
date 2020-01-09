@@ -1,0 +1,4 @@
+kubernetes
+robotframework
+# for example testcases
+robotframework-requests
