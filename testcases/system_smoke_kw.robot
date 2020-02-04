@@ -2,6 +2,8 @@
 Library           Collections
 Library           RequestsLibrary
 Library           KubeLibrary
+#Library           KubeLibrary    None    True    False
+#Library           ../src/KubeLibrary/KubeLibrary.py
 
 *** Keywords ***
 kubernetes API responds
