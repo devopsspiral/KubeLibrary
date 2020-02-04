@@ -18,7 +18,7 @@ class KubeLibrary(object):
     can also be passed by setting KUBECONFIG environment variable or as Library argument.
 
     | ***** Settings *****
-    | Library           KubeLibrary          /path/to/kubeconfig    True    False
+    | Library           KubeLibrary          /path/to/kubeconfig
 
     = In cluster execution =
 
@@ -27,17 +27,17 @@ class KubeLibrary(object):
     even if provided.
 
     | ***** Settings *****
-    | Library           KubeLibrary          None    True    True
+    | Library           KubeLibrary          None    True
 
     """
-    def __init__(self, kube_config=None, cert_validation=True, incluster=False):
+    def __init__(self, kube_config=None, incluster=False, cert_validation=True):
         """KubeLibrary can be configured with several optional arguments.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
-        - ``cert_validation``:
-          Default True. Can be set to False for self-signed certificates.
         - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
+        - ``cert_validation``:
+          Default True. Can be set to False for self-signed certificates.
         """
         if incluster:
           try:
