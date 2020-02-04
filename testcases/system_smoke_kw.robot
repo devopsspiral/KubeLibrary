@@ -1,8 +1,8 @@
 *** Settings ***
 Library           Collections
 Library           RequestsLibrary
-Library           KubeLibrary
-#Library           KubeLibrary    None    True    False
+#Library           KubeLibrary
+Library           KubeLibrary    None    True    False
 #Library           ../src/KubeLibrary/KubeLibrary.py
 
 *** Keywords ***
