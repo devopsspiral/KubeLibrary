@@ -1,7 +1,9 @@
 *** Settings ***
 Library           Collections
 Library           RequestsLibrary
-Library           KubeLibrary
+#Library           KubeLibrary
+Library           KubeLibrary    None    False    True
+#Library           ../src/KubeLibrary/KubeLibrary.py    None    False    True
 
 *** Keywords ***
 kubernetes API responds

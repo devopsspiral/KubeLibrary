@@ -12,26 +12,44 @@ class KubeLibrary(object):
     The approach taken by this library is to provide easy to access kubernetes objects representation that can 
     be then accessed to define highlevel keywords for tests.
 
-    = Kubecofnigs =
+    = Kubeconfigs =
 
-    Currently KubeLibrary is using only kubeconfig files. By default ~/.kube/config is used. Kubeconfig location
+    By default ~/.kube/config is used. Kubeconfig location
     can also be passed by setting KUBECONFIG environment variable or as Library argument.
 
     | ***** Settings *****
-    | Library           KubeLibrary          True    /path/to/kubeconfig
+    | Library           KubeLibrary          /path/to/kubeconfig    True    False
+
+    = In cluster execution =
+
+    If tests are supposed to be executed from within cluster, KubeLibrary can be configured to use standard
+    token authentication. Just set incluster parameter to True. If True then kubeconfigs are not used, 
+    even if provided.
+
+    | ***** Settings *****
+    | Library           KubeLibrary          None    True    True
 
     """
-    def __init__(self, cert_validation=True, kube_config=None):
+    def __init__(self, kube_config=None, cert_validation=True, incluster=False):
         """KubeLibrary can be configured with several optional arguments.
-        - ``cert_validation``:
-          Default True. Can be set to False for self-signed certificates.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
+        - ``cert_validation``:
+          Default True. Can be set to False for self-signed certificates.
+        - ``incuster``:
+          Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         """
-        try:
-            config.load_kube_config(kube_config)
-        except TypeError:
-            logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
+        if incluster:
+          try:
+            config.load_incluster_config()
+          except config.config_exception.ConfigException as e:
+            logger.error('Are you sure tests are executed from within k8s cluster?')
+            raise e
+        else:
+          try:
+              config.load_kube_config(kube_config)
+          except TypeError:
+              logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self.v1 = client.CoreV1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
