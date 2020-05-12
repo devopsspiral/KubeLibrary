@@ -51,6 +51,8 @@ class KubeLibrary(object):
           except TypeError:
               logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self.v1 = client.CoreV1Api()
+        self.apiClient = client.api_client.ApiClient()
+        self.api = client.api.apps_v1_api.AppsV1Api(self.apiClient)
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
@@ -95,7 +97,7 @@ class KubeLibrary(object):
         - ``namespace``:
           Namespace to check
         """
-        ret = self.v1.list_namespaced_pod(namespace, watch=False)
+        ret = self.v1.list_namespaced_pod(namespace, watch=False)          
         return [item.metadata.name for item in ret.items]
 
     def get_pod_status_in_namespace(self, name, namespace):
@@ -202,3 +204,71 @@ class KubeLibrary(object):
         return [item.status.node_info.kubelet_version for item in ret.items]
 
 
+    def create_namespce_pod(self, body, namespace):
+        """Create Pods in a namespace
+        
+        body: json object pod. provide in json format
+        namespace: name of namespace"""
+
+        ret = self.v1.create_namespaced_pod(body=body, namespace=namespace)
+        return ret
+
+    def delete_namespaced_pod(self, name, namespace):
+        """Delete Pod from namespace
+        
+        name: name of the pod
+        namespace: name of namespace"""
+
+        ret = self.v1.delete_namespaced_pod(name=name, body={}, 
+                namespace=namespace)
+        return ret
+
+    def create_namespace(self, body):
+        """Create namespace
+        
+        body: json object namespace
+        """
+        
+        ret = self.v1.create_namespace(body=body)
+        return ret
+
+    def delete_namespace(self, name):
+        """Delete namespace
+        
+        namespace: name of namespace"""
+
+        ret = self.v1.delete_namespace(name)
+        return ret
+
+    def create_namespaced_service(self, body, namespace):
+        """Create service in a namespace
+        
+        body: json object service
+        namespace: name of namespace"""
+
+        ret = self.v1.create_namespaced_service(body=body, namespace=namespace)
+        return ret
+
+    def delete_namespaced_service(self, name, namespace):
+        """Delete service from namespace
+        
+        name: name of the service
+        namespace: name of namespace"""
+
+        ret = self.v1.delete_namespaced_service(name, namespace)
+        return ret
+    def get_namespaced_deployments(self, namespace):
+        """Get All Deployments in a  namespace
+
+        namespace: name of the namespace"""
+
+        ret = self.api.list_namespaced_deployment(namespace)
+        return [item.metadata.name for item in ret.items]
+
+    def get_namespaced_daemonsets(self, namespace):
+        """Get All Daemonsets in a namespace
+
+        namespace: name of the namespace"""
+
+        ret = self.api.list_namespaced_daemon_set(namespace)
+        return [item.metadata.name for item in ret.items]
