@@ -1,4 +1,5 @@
 *** Settings ***
+Library            JSONLibrary
 Resource          ./system_smoke_kw.robot
 
 *** Variables ***
@@ -70,3 +71,41 @@ Grafana is responding
     Given "grafana" service ip and port in "default" is known
     When session is created
     Then service is responding on path "/"
+Namespace Create
+   [Tags]  cluster
+   ${namespace_obj}=  Load JSON From File  ./namespace_test.json
+   ${response}  NAMESPACE CREATE  ${namespace_obj}
+   Sleep  5s
+Create Pod
+    [Tags]  cluster
+    ${pod_object}=  Load JSON From File  ./pod_test.json
+    CREATE POD IN NAMESPACE  ${pod_object}  robot-demo
+    Sleep  5s
+
+Create Service
+    [Tags]  cluster
+    ${service_object}=  Load JSON From File  ./service.json
+    CREATE SERVICE IN NAMESPACE  ${service_object}  robot-demo
+    Sleep  5s
+
+Delete Service
+    [Tags]  cluster
+    DELETE SERVICE IN NAMESPACE  robot-service  robot-demo
+
+Delete Pod
+    [Tags]  cluster
+    ${response}=  DELETE POD IN NAMESPACE  robot-test-validation  robot-demo
+
+Namespace Delete
+    [Tags]  cluster
+    ${Response}=  NAMESPACE DELETE  robot-demo
+
+Fetch Deployment in namespace
+    [Tags]  deployment
+    ${Response}=  GET DEPLOYMENTS IN NAMESPACE  test
+    Log to Console  ${Response}
+Fetch Daemonset in namespace
+    [Tags]  deployment
+    ${Response}=  GET DAEMONSETS IN NAMESPACE  test
+    Log to Console  ${Response}
+    
