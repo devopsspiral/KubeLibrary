@@ -107,3 +107,42 @@ session is created
 service is responding on path "${path}"
     ${resp}=    Get Request    service_session    ${path}
     Should Be Equal As Strings    ${resp.status_code}    200
+    
+CREATE POD IN NAMESPACE
+   [Arguments]  ${pod_body}  ${namespace}
+   ${return}=  create_namespce_pod  ${pod_body}  ${namespace}
+   [return]  ${return}
+DELETE POD IN NAMESPACE
+   [Arguments]  ${name}  ${namespace}
+   ${response}=  delete_namespaced_pod  ${name}  ${namespace}
+   [return]  ${response}
+
+NAMESPACE CREATE
+   [Arguments]  ${body}
+   ${response}  create_namespace  ${body}
+   [return]  ${response}
+
+NAMESPACE DELETE
+   [Arguments]  ${name}
+   ${response}=  delete_namespace  ${name}
+   [return]  ${response}
+
+CREATE SERVICE IN NAMESPACE
+   [Arguments]  ${service_body}  ${namespace}
+   ${response}=  create_namespaced_service  ${service_body}  ${namespace}
+   [return]  ${response}
+DELETE SERVICE IN NAMESPACE
+   [Arguments]  ${name}  ${namespace}
+   ${response}=  delete_namespaced_service  ${name}  ${namespace}
+   [return]  ${response}
+
+GET DEPLOYMENTS IN NAMESPACE
+   [Arguments]  ${namespace}
+   ${response}=  get_namespaced_deployments  ${namespace}
+   [return]  ${response}
+
+GET DAEMONSETS IN NAMESPACE
+   [Arguments]  ${namespace}
+   ${response}=  get_namespaced_daemonsets  ${namespace}
+   [return]  ${response}
+
