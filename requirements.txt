@@ -1,4 +1,6 @@
 kubernetes
 robotframework
+# for tests
+mock
 # for example testcases
 robotframework-requests

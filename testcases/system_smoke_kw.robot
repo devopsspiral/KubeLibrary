@@ -15,8 +15,8 @@ kubernetes has "${number}" healthy nodes
     ${node_count}=    get_healthy_nodes_count
     Should Be Equal As integers    ${node_count}    ${number}
 
-getting pods in "${namespace}"
-    @{namespace_pods}=    get_pods_in_namespace    ${namespace}
+getting all pods in "${namespace}"
+    @{namespace_pods}=    get_pods_in_namespace    .*    ${namespace}
     Log    ${namespace_pods}
     Set Test Variable    ${namespace_pods}
 

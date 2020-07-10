@@ -25,7 +25,7 @@ Pods in kube-system are ok
     [Documentation]  Test if all pods in kube-system initiated correctly and are running or succeeded
     [Tags]    cluster    smoke
     Given kubernetes API responds
-    When getting pods in "kube-system"
+    When getting all pods in  "kube-system"
     Then all pods in "kube-system" are running or succeeded
 
 Grafana has correct version

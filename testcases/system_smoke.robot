@@ -18,14 +18,14 @@ Pods in kube-system are ok
     [Documentation]  Test if all pods in kube-system initiated correctly and are running or succeeded
     [Tags]    cluster    smoke
     Given kubernetes API responds
-    When getting pods in "kube-system"
+    When getting all pods in "kube-system"
     Then all pods in "kube-system" are running or succeeded
 
 Traefik has enough replicas
     [Documentation]  Test if Ingress (Traefik) has enough replicas
     [Tags]    cluster    smoke
     Given kubernetes API responds
-    When getting pods in "kube-system"
+    When getting all pods in "kube-system"
     Then "traefik*" has "${NUM_WORKERS}" replicas
 
 Grafana has correct version

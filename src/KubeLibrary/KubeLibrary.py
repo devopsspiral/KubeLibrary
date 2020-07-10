@@ -1,3 +1,5 @@
+import json
+import re
 import ssl
 import urllib3
 from kubernetes import client, config
@@ -5,6 +7,7 @@ from robot.api import logger
 
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 class KubeLibrary(object):
     """KubeLibrary is a Robot Framework test library for Kubernetes.
@@ -40,16 +43,16 @@ class KubeLibrary(object):
           Default True. Can be set to False for self-signed certificates.
         """
         if incluster:
-          try:
-            config.load_incluster_config()
-          except config.config_exception.ConfigException as e:
-            logger.error('Are you sure tests are executed from within k8s cluster?')
-            raise e
+            try:
+                config.load_incluster_config()
+            except config.config_exception.ConfigException as e:
+                logger.error('Are you sure tests are executed from within k8s cluster?')
+                raise e
         else:
-          try:
-              config.load_kube_config(kube_config)
-          except TypeError:
-              logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
+            try:
+                config.load_kube_config(kube_config)
+            except TypeError:
+                logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self.v1 = client.CoreV1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
@@ -64,13 +67,13 @@ class KubeLibrary(object):
         header_params = {}
         auth_settings = ['BearerToken']
         resp = self.v1.api_client.call_api('/api/v1/', 'GET',
-                                                path_params,
-                                                query_params,
-                                                header_params,
-                                                response_type='str',
-                                                auth_settings=auth_settings,
-                                                async_req=False,
-                                                _return_http_data_only=False)
+                                           path_params,
+                                           query_params,
+                                           header_params,
+                                           response_type='str',
+                                           auth_settings=auth_settings,
+                                           async_req=False,
+                                           _return_http_data_only=False)
         return resp
 
     def get_healthy_nodes_count(self):
@@ -86,17 +89,96 @@ class KubeLibrary(object):
                     healthy_nods.append(item.metadata.name)
         return len(healthy_nods)
 
+    def get_pod_names_in_namespace(self, name_pattern, namespace):
+        """Gets pod name matching pattern in given namespace.
 
-    def get_pods_in_namespace(self, namespace):
-        """Gets pod names in given namespace.
+        Returns list of strings.
 
-        Returns list pf strings.
-
+        - ``name_pattern``:
+          Pod name pattern to check
         - ``namespace``:
           Namespace to check
         """
         ret = self.v1.list_namespaced_pod(namespace, watch=False)
-        return [item.metadata.name for item in ret.items]
+        r = re.compile(name_pattern + '.*')
+        return [item.metadata.name for item in ret.items if r.match(item.metadata.name)]
+
+    def get_pods_in_namespace(self, name_pattern, namespace):
+        """Gets pods matching pattern in given namespace.
+
+        Returns list of pods.
+
+        - ``name_pattern``:
+          Pod name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_pod(namespace, watch=False)
+        r = re.compile(name_pattern)
+        pods = [item for item in ret.items if r.match(item.metadata.name)]
+        return pods
+
+    def filter_pods_names(self, pods):
+        """Filter pod names for list of pods.
+
+        Returns list of strings.
+
+        - ``pods``:
+          List of pods objects
+        """
+        return [pod.metadata.name for pod in pods]
+
+    def filter_pods_containers_by_name(self, pods, name_pattern):
+        """Filters pods containers by name for given list of pods.
+
+        Returns lists of containers (flattens).
+
+        - ``pods``:
+          List of pods objects
+        """
+        containers = []
+        r = re.compile(name_pattern)
+        for pod in pods:
+            for container in pod.spec.containers:
+                if r.match(container.name):
+                    containers.append(container)
+        return containers
+
+    def filter_containers_images(self, containers):
+        """Filters container images for given lists of containers.
+
+        Returns list of images.
+
+        - ``containers``:
+          List of containers
+        """
+        return [container.image for container in containers]
+
+    def filter_containers_resources(self, containers):
+        """Filters container resources for given lists of containers.
+
+        Returns list of resources.
+
+        - ``containers``:
+          List of containers
+        """
+        return [container.resources for container in containers]
+
+    def filter_pods_containers_statuses_by_name(self, pods, name_pattern):
+        """Filters pods containers statuses by container name for given list of pods.
+
+        Returns lists of containers statuses.
+
+        - ``pods``:
+          List of pods objects
+        """
+        container_statuses = []
+        r = re.compile(name_pattern)
+        for pod in pods:
+            for container_status in pod.status.container_statuses:
+                if r.match(container_status.name):
+                    container_statuses.append(container_status)
+        return container_statuses
 
     def get_pod_status_in_namespace(self, name, namespace):
         """Gets pod status in given namespace.
@@ -109,22 +191,84 @@ class KubeLibrary(object):
         ret = self.v1.read_namespaced_pod_status(name, namespace)
         return ret.status.phase
 
+    def assert_pod_has_labels(self, pod, labels_json):
+        """Assert pod has labels.
 
-    def get_pods_images_in_namespace(self, pattern, namespace, exclude='|'):
-        """Gets pods container images in given namespace.
+        Returns True/False
 
-        Returns list of strings.
-
-        - ``pattern``:
-          Name or part of the name of pod to include
-        - ``namespace``:
-          Namespace to check
-        - ``exclude``:
-          Part of pod name to exclude
+        - ``pod``:
+          Pod object.
+        - ``labels_json``:
+          JSON representing labels
         """
-        ret = self.v1.list_namespaced_pod(namespace, watch=False)
-        containers = [item.spec.containers for item in ret.items if pattern in item.metadata.name and exclude not in item.metadata.name]
-        return [item.image for sublist in containers for item in sublist]
+        try:
+            labels = json.loads(labels_json)
+            for k, v in labels.items():
+                if pod.metadata.labels and k in pod.metadata.labels:
+                    if pod.metadata.labels[k] != v:
+                        logger.error(f'Label "{k}" value "{v}" not matching actual "{pod.metadata.labels[k]}"')
+                        return False
+                else:
+                    logger.error(f'Label "{k}" not found in actual')
+                    return False
+            return True
+        except json.JSONDecodeError as e:
+            logger.error(f'Failed parsing Pod Labels JSON:{labels_json}')
+            return False
+
+    def assert_pod_has_annotations(self, pod, annotations_json):
+        """Assert pod has annotations.
+
+        Returns True/False
+
+        - ``pod``:
+          Pod object.
+        - ``annotations_json``:
+          JSON representing annotations
+        """
+        try:
+            annotations = json.loads(annotations_json)
+            for k, v in annotations.items():
+                if pod.metadata.annotations and k in pod.metadata.annotations:
+                    if pod.metadata.annotations[k] != v:
+                        logger.error(f'Annotation "{k}" value "{v}" not matching actual "{pod.metadata.annotations[k]}"')
+                        return False
+                else:
+                    logger.error(f'Annotation "{k}" not found in actual')
+                    return False
+            return True
+        except json.JSONDecodeError as e:
+            logger.error(f'Failed parsing Pod Annotations JSON:{annotations_json}')
+            return False
+
+    def assert_container_has_env_vars(self, container, env_vars_json):
+        """Assert container has env vars.
+
+        Returns True/False
+
+        - ``container``:
+          Container object.
+        - ``env_var_json``:
+          JSON representing env vars i.e.: {"EXAMPLE_VAR": "examplevalue"}
+        """
+        try:
+            env_vars = json.loads(env_vars_json)
+            for k, v in env_vars.items():
+                found = False
+                for ev in container.env:
+                    if k == ev.name and v == ev.value:
+                        found = True
+                        break
+                    elif k == ev.name and v != ev.value:
+                        logger.error(f'Env var "{k}" value "{v}" not matching actual "{ev.value}"')
+                        return False
+                if not found:
+                    logger.error(f'Env var "{k}" not found in actual')
+                    return False
+            return True
+        except json.JSONDecodeError as e:
+            logger.error(f'Failed parsing Container Env Var JSON:{env_vars_json}')
+            return False
 
     def get_services_in_namespace(self, namespace):
         """Gets services in given namespace.
@@ -200,5 +344,3 @@ class KubeLibrary(object):
         """
         ret = self.v1.list_node(watch=False)
         return [item.status.node_info.kubelet_version for item in ret.items]
-
-

@@ -1,0 +1,89 @@
+*** Settings ***
+Library           Collections
+Library           RequestsLibrary
+#Library           KubeLibrary
+Library           KubeLibrary    None    True    False
+#Library           ../../src/KubeLibrary/KubeLibrary.py  ~/.kube/k3d
+
+*** Keywords ***
+
+waited for pods matching "${name_pattern}" in namespace "${namespace}" to be running
+    Wait Until Keyword Succeeds    ${KLIB_POD_TIMEOUT}    ${KLIB_POD_RETRY_INTERVAL}   pod "${name_pattern}" status in namespace "${namespace}" is running
+
+pod "${name_pattern}" status in namespace "${namespace}" is running 
+    @{namespace_pods}=    get_pod_names_in_namespace  ${name_pattern}    ${namespace}
+    ${num_of_pods}=    Get Length    ${namespace_pods}
+    Should Be True    ${num_of_pods} >= 1    No pods matching "${name_pattern}" found
+    FOR    ${pod}    IN    @{namespace_pods}
+        ${status}=    get_pod_status_in_namespace    ${pod}    ${namespace}
+        Should Be True     '${status}'=='Running'
+    END
+
+getting pods matching "${name_pattern}" in namespace "${namespace}"
+    @{namespace_pods}=    get_pods_in_namespace  ${name_pattern}    ${namespace}
+    Set Test Variable    ${namespace_pods}
+
+all pods containers are using "${container_image}" image
+    @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
+    @{containers_images}=    filter_containers_images    ${containers}
+    FOR    ${item}    IN    @{containers_images}
+        Should Be Equal As Strings    ${item}    ${container_image}
+    END
+
+pods have "${pod_replicas}" replicas
+    ${count}=    Get Length   ${namespace_pods}
+    Should Be True    ${count} == ${pod_replicas}
+
+pods containers were not restarted
+    @{containers_statuses}=    filter_pods_containers_statuses_by_name    ${namespace_pods}    .*
+    FOR    ${container_status}    IN    @{containers_statuses}
+        Should Be True    ${container_status.restart_count} == 0
+    END
+
+pods have labels "${pod_labels}"
+    FOR    ${pod}    IN    @{namespace_pods}
+        ${assertion}=    assert_pod_has_labels    ${pod}    ${pod_labels}
+        Should Be True    ${assertion}
+    END
+
+pods have annotations "${pod_annotations}"
+    FOR    ${pod}    IN    @{namespace_pods}
+        ${assertion}=    assert_pod_has_annotations    ${pod}    ${pod_annotations}
+        Should Be True    ${assertion}
+    END
+
+
+pods containers have resource requests cpu "${container_resource_requests_cpu}"
+    @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
+    @{containers_resources}=    filter_containers_resources    ${containers}
+    FOR    ${item}    IN    @{containers_resources}
+        Should Be Equal As Strings    ${item.requests['cpu']}    ${container_resource_requests_cpu}
+    END
+
+pods containers have resource requests memory "${container_resource_requests_memory}"
+    @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
+    @{containers_resources}=    filter_containers_resources    ${containers}
+    FOR    ${item}    IN    @{containers_resources}
+        Should Be Equal As Strings    ${item.requests['memory']}    ${container_resource_requests_memory}
+    END
+
+pods containers have resource limits cpu "${container_resource_limits_cpu}"
+    @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
+    @{containers_resources}=    filter_containers_resources    ${containers}
+    FOR    ${item}    IN    @{containers_resources}
+        Should Be Equal As Strings    ${item.limits['cpu']}    ${container_resource_limits_cpu}
+    END
+
+pods containers have resource limits memory "${container_resource_requests_memory}"
+    @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
+    @{containers_resources}=    filter_containers_resources    ${containers}
+    FOR    ${item}    IN    @{containers_resources}
+        Should Be Equal As Strings    ${item.limits['memory']}    ${container_resource_requests_memory}
+    END
+
+pods containers have env variables "${container_env_vars}"
+    @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
+    FOR    ${container}    IN    @{containers}
+        ${assertion}=    assert_container_has_env_vars    ${container}    ${container_env_vars}
+        Should Be True    ${assertion}
+    END

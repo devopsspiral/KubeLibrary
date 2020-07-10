@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="robotframework-kubelibrary",
-    version="0.1.3",
+    version="0.1.4",
     author="Michał Wcisło",
     author_email="mwcislo999@gmail.com",
     description="Kubernetes library for Robot Framework",
@@ -23,7 +23,7 @@ setuptools.setup(
     ],
     keywords="robotframework testing test automation kubernetes",
     python_requires='>=3.6',
-    package_dir  = {'' : 'src'},
+    package_dir={'': 'src'},
     install_requires=[
         'kubernetes>=10.0.1',
         'robotframework'
