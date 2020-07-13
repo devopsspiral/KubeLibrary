@@ -59,11 +59,11 @@ robot -i grafana testcases/
 
 # run octopus tests
 KLIB_RESOURCE_LIMITS_MEMORY=30Mi
-KLIB_POD_PATTERN=octopus.*
+KLIB_POD_PATTERN='octopus.*'
 KLIB_RESOURCE_REQUESTS_CPU=100m
-KLIB_POD_LABELS={"app":"octopus"}
+KLIB_POD_LABELS='{"app":"octopus"}'
 KLIB_RESOURCE_LIMITS_CPU=100m
-KLIB_ENV_VARS={"SECRET_NAME":"webhook-server-secret"}
+KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}'
 KLIB_POD_NAMESPACE=default
 KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
 
