@@ -1,8 +1,11 @@
 *** Settings ***
 Library           Collections
 Library           RequestsLibrary
+# For regular execution
 #Library           KubeLibrary
+# For incluster execution
 Library           KubeLibrary    None    True    False
+# For development
 #Library           ../src/KubeLibrary/KubeLibrary.py
 
 *** Keywords ***
@@ -15,13 +18,13 @@ kubernetes has "${number}" healthy nodes
     ${node_count}=    get_healthy_nodes_count
     Should Be Equal As integers    ${node_count}    ${number}
 
-getting all pods in "${namespace}"
-    @{namespace_pods}=    get_pods_in_namespace    .*    ${namespace}
-    Log    ${namespace_pods}
-    Set Test Variable    ${namespace_pods}
+getting all pods names in "${namespace}"
+    @{namespace_pods_names}=    get_pod_names_in_namespace    .*    ${namespace}
+    Log    ${namespace_pods_names}
+    Set Test Variable    ${namespace_pods_names}
 
 all pods in "${namespace}" are running or succeeded
-    FOR    ${name}    IN    @{namespace_pods}
+    FOR    ${name}    IN    @{namespace_pods_names}
          ${status}=    get_pod_status_in_namespace    ${name}    ${namespace}
          Should Be True     '${status}'=='Running' or '${status}'=='Succeeded'
     END
@@ -47,11 +50,11 @@ Kubernetes version is correct
     END
 
 "${service}" has "${number}" replicas
-    ${count}=    Get Match Count    ${namespace_pods}    ${service}
+    ${count}=    Get Match Count    ${namespace_pods_names}    ${service}
     Should Be True    ${number} == ${count}
 
 "${service}" has at least "${number}" replicas
-    ${count}=    Get Match Count    ${namespace_pods}    ${service}
+    ${count}=    Get Match Count    ${namespace_pods_names}    ${service}
     Should Be True    ${count} >= ${number}
 
 getting pvcs in "${namespace}"

@@ -2,7 +2,7 @@
 Resource          ./system_smoke_kw.robot
 
 *** Variables ***
-${KUBELET_VERSION}     v1.16.2-k3s.1
+${KUBELET_VERSION}     v1.17.2+k3s1
 ${NUM_NODES}           2
 ${NUM_WORKERS}         1
 
@@ -18,22 +18,15 @@ Pods in kube-system are ok
     [Documentation]  Test if all pods in kube-system initiated correctly and are running or succeeded
     [Tags]    cluster    smoke
     Given kubernetes API responds
-    When getting all pods in "kube-system"
+    When getting all pods names in "kube-system"
     Then all pods in "kube-system" are running or succeeded
 
 Traefik has enough replicas
     [Documentation]  Test if Ingress (Traefik) has enough replicas
     [Tags]    cluster    smoke
     Given kubernetes API responds
-    When getting all pods in "kube-system"
+    When getting all pods names in "kube-system"
     Then "traefik*" has "${NUM_WORKERS}" replicas
-
-Grafana has correct version
-    [Documentation]  Test if Grafana container image is in correct version
-    [Tags]    grafana
-    Given kubernetes API responds
-    When accessing "grafana-" excluding "svclb" container images version in "default"
-    Then "grafana/grafana:6.5.0" version is used
 
 Grafana is persistent
     [Documentation]  Test if Grafana is deployed with persistent storage
@@ -51,6 +44,7 @@ Grafana has 1GB storage
 
 Grafana service points to pods
     [Documentation]  Test if Grafana service selectors points to pods
+    [Tags]    grafana
     Given kubernetes API responds
     When getting "grafana" endpoint in "default"
     Then endpoint points to "grafana*" pod
