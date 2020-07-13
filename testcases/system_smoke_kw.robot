@@ -8,8 +8,8 @@ Library           KubeLibrary    None    True    False
 *** Keywords ***
 kubernetes API responds
     [Documentation]  Check if API response code is 200
-    @{ping}=    k8s_api_ping
-    Should Be Equal As integers    @{ping}[1]    200
+    ${ping}=    k8s_api_ping
+    Should Be Equal As integers    ${ping}[1]    200
 
 kubernetes has "${number}" healthy nodes
     ${node_count}=    get_healthy_nodes_count
@@ -21,9 +21,10 @@ getting all pods in "${namespace}"
     Set Test Variable    ${namespace_pods}
 
 all pods in "${namespace}" are running or succeeded
-    : FOR    ${name}    IN    @{namespace_pods}
-    \     ${status}=    get_pod_status_in_namespace    ${name}    ${namespace}
-    \     Should Be True     '${status}'=='Running' or '${status}'=='Succeeded'
+    FOR    ${name}    IN    @{namespace_pods}
+         ${status}=    get_pod_status_in_namespace    ${name}    ${namespace}
+         Should Be True     '${status}'=='Running' or '${status}'=='Succeeded'
+    END
 
 accessing "${pattern}" excluding "${exclude}" container images version in "${namespace}"
     @{pods_images}=    get_pods_images_in_namespace    ${pattern}   ${namespace}    ${exclude}
@@ -31,8 +32,9 @@ accessing "${pattern}" excluding "${exclude}" container images version in "${nam
     Set Test Variable    ${pods_images}
 
 "${version}" version is used
-    : FOR    ${Item}    IN    @{pods_images}
-    \     Should Be Equal As Strings    ${Item}    ${version}
+    FOR    ${Item}    IN    @{pods_images}
+         Should Be Equal As Strings    ${Item}    ${version}
+    END
 
 getting kubelet version
     @{node_kubelet_versions}=    get_kubelet_version
@@ -40,8 +42,9 @@ getting kubelet version
     Set Test Variable    ${node_kubelet_versions}
 
 Kubernetes version is correct
-    : FOR    ${Item}    IN    @{node_kubelet_versions}
-    \     Should Be Equal As Strings    ${Item}    ${KUBELET_VERSION}
+    FOR    ${Item}    IN    @{node_kubelet_versions}
+         Should Be Equal As Strings    ${Item}    ${KUBELET_VERSION}
+    END
 
 "${service}" has "${number}" replicas
     ${count}=    Get Match Count    ${namespace_pods}    ${service}
