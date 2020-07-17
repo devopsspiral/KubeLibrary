@@ -118,6 +118,21 @@ class KubeLibrary(object):
         pods = [item for item in ret.items if r.match(item.metadata.name)]
         return pods
 
+    def get_configmaps_in_namespace(self, name_pattern, namespace):
+        """Gets configmaps matching pattern in given namespace.
+
+        Returns list of configmaps.
+
+        - ``name_pattern``:
+          configmap name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_config_map(namespace, watch=False)
+        r = re.compile(name_pattern)
+        configmaps = [item for item in ret.items if r.match(item.metadata.name)]
+        return configmaps
+
     def filter_pods_names(self, pods):
         """Filter pod names for list of pods.
 
