@@ -2,16 +2,16 @@
 Library           Collections
 Library           RequestsLibrary
 # For regular execution
-Library           KubeLibrary
+#Library           KubeLibrary
 # For incluster execution
-#Library           KubeLibrary    None    True    False
+Library           KubeLibrary    None    True    False
 # For development
 #Library           ../../src/KubeLibrary/KubeLibrary.py  ~/.kube/k3d
 
 *** Keywords ***
 List all configmaps in namespace
-    [Arguments]  ${namespace}  ${label}=${EMPTY}
-    @{namespace_configmaps}=  Get Configmaps In Namespace    .*  ${namespace}  ${label}
+    [Arguments]  ${namespace}
+    @{namespace_configmaps}=  Get Configmaps In Namespace    .*  ${namespace}
     Log  \nConfigmaps in namespace ${namespace}:  console=True
     FOR  ${configmap}  IN  @{namespace_configmaps}
         Log  ${configmap.metadata.name}  console=True
