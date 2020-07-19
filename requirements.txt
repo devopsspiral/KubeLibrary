@@ -1,5 +1,5 @@
 kubernetes
-robotframework
+robotframework>=3.2.0
 # for tests
 mock
 # for example testcases
