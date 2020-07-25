@@ -51,21 +51,21 @@ helm install grafana stable/grafana -f testcases/grafana/values.yaml
 robot -i cluster testcases/
 
 # run grafana tests
-KLIB_POD_PATTERN='grafana.*'
+export KLIB_POD_PATTERN='grafana.*'
 export KLIB_POD_ANNOTATIONS='{"checksumconfig":"3bb97e1695589c9bcdf6a6cd10c03517286ab7697626e6f02dd6fb2bc4a27796"}'
-KLIB_POD_NAMESPACE=default
+export KLIB_POD_NAMESPACE=default
 
 robot -i grafana testcases/
 
 # run octopus tests
-KLIB_RESOURCE_LIMITS_MEMORY=30Mi
-KLIB_POD_PATTERN='octopus.*'
-KLIB_RESOURCE_REQUESTS_CPU=100m
-KLIB_POD_LABELS='{"app":"octopus"}'
-KLIB_RESOURCE_LIMITS_CPU=100m
-KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}'
-KLIB_POD_NAMESPACE=default
-KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
+export KLIB_RESOURCE_LIMITS_MEMORY=30Mi
+export KLIB_POD_PATTERN='octopus.*'
+export KLIB_RESOURCE_REQUESTS_CPU=100m
+export KLIB_POD_LABELS='{"app":"octopus"}'
+export KLIB_RESOURCE_LIMITS_CPU=100m
+export KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}'
+export KLIB_POD_NAMESPACE=default
+export KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
 
 robot -i octopus testcases/
 ```
