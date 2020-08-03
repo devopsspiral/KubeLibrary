@@ -68,6 +68,12 @@ export KLIB_POD_NAMESPACE=default
 export KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
 
 robot -i octopus testcases/
+
+# run other library tests
+kubectl create namespace kubelib-tests
+helm install kubelib-test ./test-objects-chart -n kubelib-tests
+
+robot -i other testcases/
 ```
 
 ## Keywords documentation
