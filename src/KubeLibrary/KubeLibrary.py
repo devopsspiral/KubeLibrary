@@ -231,7 +231,7 @@ class KubeLibrary(object):
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1.list_namespaced_job(namespace)
+        ret = self.batchv1.list_namespaced_job(namespace, watch=False)
         r = re.compile(name_pattern)
         jobs = [item for item in ret.items if r.match(item.metadata.name)]
         return jobs
