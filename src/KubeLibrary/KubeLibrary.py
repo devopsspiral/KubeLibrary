@@ -124,18 +124,10 @@ class KubeLibrary(object):
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
-        self._add_api('v1', client.CoreV1Api)
-        self._add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
-        self._add_api('batchv1', client.BatchV1Api)
-        self._add_api('appsv1', client.AppsV1Api)
-        self._add_api('batchv1_beta1', client.BatchV1beta1Api)
-        self._add_api('custom_object', client.CustomObjectsApi)
-        self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
-
-    def _add_api(self, reference, class_name):
-        self.__dict__[reference] = class_name(self.api_client)
-        if not self.cert_validation:
-            self.__dict__[reference].api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
+        self.v1 = client.CoreV1Api()
+        self.batchv1 = client.BatchV1Api()
+        if not cert_validation:
+            self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
     def k8s_api_ping(self):
         """Performs GET on /api/v1/ for simple check of API availability.
@@ -228,6 +220,21 @@ class KubeLibrary(object):
         r = re.compile(name_pattern)
         configmaps = [item for item in ret.items if r.match(item.metadata.name)]
         return configmaps
+
+    def get_jobs_in_namespace(self, name_pattern, namespace):
+        """Gets jobs matching pattern in given namespace.
+
+        Returns list of jobs.
+
+        - ``name_pattern``:
+          job name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1.list_namespaced_job(namespace)
+        r = re.compile(name_pattern)
+        jobs = [item for item in ret.items if r.match(item.metadata.name)]
+        return jobs
 
     def filter_pods_names(self, pods):
         """Filter pod names for list of pods.
