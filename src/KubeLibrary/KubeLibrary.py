@@ -230,6 +230,21 @@ class KubeLibrary(object):
         configmaps = [item for item in ret.items if r.match(item.metadata.name)]
         return configmaps
 
+    def get_jobs_in_namespace(self, name_pattern, namespace):
+        """Gets jobs matching pattern in given namespace.
+
+        Returns list of jobs.
+
+        - ``name_pattern``:
+          job name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1.list_namespaced_job(namespace)
+        r = re.compile(name_pattern)
+        jobs = [item for item in ret.items if r.match(item.metadata.name)]
+        return jobs
+
     def filter_pods_names(self, pods):
         """Filter pod names for list of pods.
 
