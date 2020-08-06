@@ -70,8 +70,11 @@ export KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
 robot -i octopus testcases/
 
 # run other library tests
-kubectl create namespace kubelib-tests
-helm install kubelib-test ./test-objects-chart -n kubelib-tests
+export KLIB_POD_PATTERN='busybox.*'
+export KLIB_POD_NAMESPACE=kubelib-tests
+
+kubectl create namespace $KLIB_POD_NAMESPACE
+helm install kubelib-test ./test-objects-chart -n $KLIB_POD_NAMESPACE
 
 robot -i other testcases/
 ```

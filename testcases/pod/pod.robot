@@ -61,3 +61,10 @@ Pod has correct env variables
     Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods containers have env variables "${KLIB_ENV_VARS}"
+
+Logs of pod are available
+    [Tags]    other
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
+    Then logs of pod can be retrived
+    And logs contain expected string

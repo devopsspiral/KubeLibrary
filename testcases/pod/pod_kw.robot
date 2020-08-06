@@ -90,3 +90,12 @@ pods containers have env variables "${container_env_vars}"
         ${assertion}=    assert_container_has_env_vars    ${container}    ${container_env_vars}
         Should Be True    ${assertion}
     END
+
+logs of pod can be retrived
+    Set Test Variable    ${POD_NAME}    ${namespace_pods[0].metadata.name}
+    ${pod_logs}=  Get Pod Logs  ${POD_NAME}  ${KLIB_POD_NAMESPACE}  busybox
+    Log  ${pod_logs}  console=True
+    Set Test Variable    ${POD_LOGS}    ${pod_logs}
+
+logs contain expected string
+    Should Contain    ${POD_LOGS}    I am
