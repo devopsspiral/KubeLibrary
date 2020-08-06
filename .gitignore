@@ -6,3 +6,7 @@
 src/robotframework_kubelibrary.egg-info/
 dist/
 build/
+
+log.html
+output.xml
+report.html
