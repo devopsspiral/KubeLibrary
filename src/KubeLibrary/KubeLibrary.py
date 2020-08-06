@@ -214,6 +214,21 @@ class KubeLibrary(object):
         r = re.compile(name_pattern)
         pods = [item for item in ret.items if r.match(item.metadata.name)]
         return pods
+  
+    def get_pod_logs(self, name, namespace, container):
+        """Gets container logs of given pod in given namespace.
+
+        Returns logs.
+
+        - ``name``:
+          Pod name to check
+        - ``namespace``:
+          Namespace to check
+        - ``container``:
+          Container to check
+        """
+        pod_logs = self.v1.read_namespaced_pod_log(name=name, namespace=namespace, container=container, follow=False)
+        return pod_logs
 
     def get_configmaps_in_namespace(self, name_pattern, namespace):
         """Gets configmaps matching pattern in given namespace.
