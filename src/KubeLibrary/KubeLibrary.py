@@ -54,6 +54,7 @@ class KubeLibrary(object):
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self.v1 = client.CoreV1Api()
+        self.batchv1 = client.BatchV1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
@@ -132,6 +133,21 @@ class KubeLibrary(object):
         r = re.compile(name_pattern)
         configmaps = [item for item in ret.items if r.match(item.metadata.name)]
         return configmaps
+
+    def get_jobs_in_namespace(self, name_pattern, namespace):
+        """Gets jobs matching pattern in given namespace.
+
+        Returns list of jobs.
+
+        - ``name_pattern``:
+          job name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1.list_namespaced_job(namespace, watch=False)
+        r = re.compile(name_pattern)
+        jobs = [item for item in ret.items if r.match(item.metadata.name)]
+        return jobs
 
     def filter_pods_names(self, pods):
         """Filter pod names for list of pods.

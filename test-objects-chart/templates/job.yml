@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    TestLabel: mytestlabel
+  name: busybox-job
+spec:
+  backoffLimit: 1
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+    spec:
+      containers:
+      - env:
+        - name: MYENVVAR
+          value: my-env-value
+        image: busybox:latest
+        command: ["ash"]
+        args: ["-c", "export RANDOM_NAME=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1); while true; do sleep 5; echo I am $RANDOM_NAME at $(date); done"]
+        imagePullPolicy: IfNotPresent
+        name: busybox
+        resources: {}
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: regcred
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
