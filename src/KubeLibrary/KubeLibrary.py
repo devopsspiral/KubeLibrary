@@ -42,6 +42,18 @@ class KubeLibrary(object):
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
+        self.reload_config(kube_config=kube_config, incluster=incluster, cert_validation=cert_validation)
+    
+    def reload_config(self, kube_config=None, incluster=False, cert_validation=True):
+        """Reload the KubeLibrary to be configured with different optional arguments.
+           This can be used to connect to a different cluster during the same test.
+        - ``kube_config``:
+          Path pointing to kubeconfig of target Kubernetes cluster.
+        - ``incuster``:
+          Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
+        - ``cert_validation``:
+          Default True. Can be set to False for self-signed certificates.
+        """
         if incluster:
             try:
                 config.load_incluster_config()
@@ -57,18 +69,6 @@ class KubeLibrary(object):
         self.batchv1 = client.BatchV1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
-
-    def reload_config(self, kube_config=None, incluster=False, cert_validation=True):
-        """Reload the KubeLibrary to be configured with different optional arguments.
-           This can be used to connect to a different cluster during the same test.
-        - ``kube_config``:
-          Path pointing to kubeconfig of target Kubernetes cluster.
-        - ``incuster``:
-          Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
-        - ``cert_validation``:
-          Default True. Can be set to False for self-signed certificates.
-        """
-        self.__init__(kube_config=kube_config, incluster=incluster, cert_validation=cert_validation)
 
     def k8s_api_ping(self):
         """Performs GET on /api/v1/ for simple check of API availability.
@@ -88,6 +88,15 @@ class KubeLibrary(object):
                                            async_req=False,
                                            _return_http_data_only=False)
         return resp
+
+    def list_namespaces(self):
+        """Gets a list of available namespaces.
+
+        Returns list of namespaces.
+        """
+        ret = self.v1.list_namespace(watch=False)
+        return [item.metadata.name for item in ret.items]
+
 
     def get_healthy_nodes_count(self):
         """Counts node with KubeletReady and status True.
