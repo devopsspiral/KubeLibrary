@@ -1,8 +1,8 @@
 *** Settings ***
-Library           ${CURDIR}/../../src/KubeLibrary/KubeLibrary.py    kube_config=./cluster1-conf
 
 *** Keywords ***
 Connected to cluster-1 
+    Import Library  KubeLibrary  kube_config=./cluster1-conf
     K8s Api Ping
 
 Cluster has namespace
