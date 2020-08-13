@@ -1,13 +1,13 @@
 *** Settings ***
+Library           ${CURDIR}/../../src/KubeLibrary/KubeLibrary.py    kube_config=./cluster1-conf
 
 *** Keywords ***
 Connected to cluster-1 
-    Import Library  ${CURDIR}/../../src/KubeLibrary/KubeLibrary.py    kube_config=./cluster1-conf
     K8s Api Ping
 
 Cluster has namespace
     [Arguments]  ${namespace}
-    @{namespaces_list}=  List Namespaces
+    @{namespaces_list}=  Get Namespaces
     Should Contain    ${namespaces_list}    ${namespace}
 
 Connected to cluster-2 
@@ -16,6 +16,6 @@ Connected to cluster-2
 
 Cluster has no namespace
     [Arguments]  ${namespace}
-    @{namespaces_list}=  List Namespaces
+    @{namespaces_list}=  Get Namespaces
     Should Not Contain    ${namespaces_list}    ${namespace}
 
