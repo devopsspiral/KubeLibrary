@@ -41,14 +41,15 @@ More examples in testcases/ directory.
 
 To see all the tests passing execute below commands.
 
+### Cluster Tests
 ```
-git clone https://github.com/kyma-incubator/octopus
-helm install octopus octopus/chart/octopus/
-
-helm install grafana stable/grafana -f testcases/grafana/values.yaml
-
 # run cluster tests
 robot -i cluster testcases/
+```
+
+### Grafana Tests
+```
+helm install grafana stable/grafana -f testcases/grafana/values.yaml
 
 # run grafana tests
 export KLIB_POD_PATTERN='grafana.*'
@@ -56,6 +57,12 @@ export KLIB_POD_ANNOTATIONS='{"checksumconfig":"3bb97e1695589c9bcdf6a6cd10c03517
 export KLIB_POD_NAMESPACE=default
 
 robot -i grafana testcases/
+```
+
+### Octopus Tests
+```
+git clone https://github.com/kyma-incubator/octopus
+helm install octopus octopus/chart/octopus/
 
 # run octopus tests
 export KLIB_RESOURCE_LIMITS_MEMORY=30Mi
@@ -68,7 +75,11 @@ export KLIB_POD_NAMESPACE=default
 export KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
 
 robot -i octopus testcases/
+```
 
+### Other Tests
+These tests require the kubelib-test helm-chart to be installed in your test cluster.
+```
 # run other library tests
 export KLIB_POD_PATTERN='busybox.*'
 export KLIB_POD_NAMESPACE=kubelib-tests
@@ -77,6 +88,28 @@ kubectl create namespace $KLIB_POD_NAMESPACE
 helm install kubelib-test ./test-objects-chart -n $KLIB_POD_NAMESPACE
 
 robot -i other testcases/
+```
+### Multi Cluster Tests
+These tests require more than one cluster and utilize [KinD](https://kind.sigs.k8s.io/) as a setup.
+[Download KinD and install it.](https://kind.sigs.k8s.io/docs/user/quick-start/)
+```
+# Create Test Cluster 1
+kind create cluster --kubeconfig ./cluster1-conf --name kind-cluster-1
+
+# Create namespace in Test Cluster 1
+kubectl create namespace test-ns-1 --context kind-kind-cluster-1 --kubeconfig ./cluster1-conf
+
+# Create Test Cluster 2
+kind create cluster --kubeconfig ./cluster2-conf --name kind-cluster-2
+
+# Create namespace in Test Cluster 2
+kubectl create namespace test-ns-2 --context kind-kind-cluster-2 --kubeconfig ./cluster2-conf
+
+robot -i reload-config testcases/
+
+# Clean up
+kind delete cluster --name kind-cluster-1
+kind delete cluster --name kind-cluster-2
 ```
 
 ## Keywords documentation
