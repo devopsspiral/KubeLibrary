@@ -89,7 +89,7 @@ class KubeLibrary(object):
                                            _return_http_data_only=False)
         return resp
 
-    def list_namespaces(self):
+    def get_namespaces(self):
         """Gets a list of available namespaces.
 
         Returns list of namespaces.
