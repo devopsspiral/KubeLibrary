@@ -43,17 +43,14 @@ To see all the tests passing execute below commands.
 
 ### Cluster Tests
 ```
-git clone https://github.com/kyma-incubator/octopus
-helm install octopus octopus/chart/octopus/
-
-helm install grafana stable/grafana -f testcases/grafana/values.yaml
-
 # run cluster tests
 robot -i cluster testcases/
 ```
 
 ### Grafana Tests
 ```
+helm install grafana stable/grafana -f testcases/grafana/values.yaml
+
 # run grafana tests
 export KLIB_POD_PATTERN='grafana.*'
 export KLIB_POD_ANNOTATIONS='{"checksumconfig":"3bb97e1695589c9bcdf6a6cd10c03517286ab7697626e6f02dd6fb2bc4a27796"}'
@@ -64,6 +61,9 @@ robot -i grafana testcases/
 
 ### Octopus Tests
 ```
+git clone https://github.com/kyma-incubator/octopus
+helm install octopus octopus/chart/octopus/
+
 # run octopus tests
 export KLIB_RESOURCE_LIMITS_MEMORY=30Mi
 export KLIB_POD_PATTERN='octopus.*'
