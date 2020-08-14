@@ -26,6 +26,11 @@ getting pods matching "${name_pattern}" in namespace "${namespace}"
     @{namespace_pods}=    get_pods_in_namespace  ${name_pattern}    ${namespace}
     Set Test Variable    ${namespace_pods}
 
+getting pods matching label "${label}" in namespace "${namespace}"
+    @{namespace_pods}=    get_pods_in_namespace  .*    ${namespace}  label_selector=${label}
+    Set Test Variable    ${namespace_pods}
+    ${KLIB_POD_LABELS}=  Convert To Dictionary  ${label}
+
 all pods containers are using "${container_image}" image
     @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
     @{containers_images}=    filter_containers_images    ${containers}
@@ -54,7 +59,6 @@ pods have annotations "${pod_annotations}"
         ${assertion}=    assert_pod_has_annotations    ${pod}    ${pod_annotations}
         Should Be True    ${assertion}
     END
-
 
 pods containers have resource requests cpu "${container_resource_requests_cpu}"
     @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
