@@ -28,6 +28,16 @@ List labels of job
         ...  msg=Expected labels do not match.
     END
 
+List jobs with label
+    [Arguments]  ${job_name}  ${namespace}  ${label}
+    @{namespace_jobs}=  Get Jobs In Namespace    ${job_name}  ${namespace}  ${label}
+    Log  \nList labels in job ${job_name}:  console=True
+    FOR  ${job}  IN  @{namespace_jobs}
+        Log  Labels in ${job.metadata.labels}  console=True
+        Dictionary Should Contain Item    ${job.metadata.labels}    TestLabel    mytestlabel
+        ...  msg=Expected labels do not match.
+    END
+
 Get pod created by job
     [Arguments]  ${job_name}  ${namespace}
     @{namespace_pods}=  Get Pods In Namespace  ${job_name}  ${namespace}
