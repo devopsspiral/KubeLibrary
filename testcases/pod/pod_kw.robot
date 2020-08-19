@@ -1,6 +1,7 @@
 *** Settings ***
 Library           Collections
 Library           RequestsLibrary
+Library           String
 # For regular execution
 #Library           KubeLibrary
 # For incluster execution
@@ -25,6 +26,13 @@ pod "${name_pattern}" status in namespace "${namespace}" is running
 getting pods matching "${name_pattern}" in namespace "${namespace}"
     @{namespace_pods}=    get_pods_in_namespace  ${name_pattern}    ${namespace}
     Set Test Variable    ${namespace_pods}
+
+getting pods matching label "${label}" in namespace "${namespace}"
+    @{namespace_pods}=    get_pods_in_namespace  .*    ${namespace}  label_selector=${label}
+    Set Test Variable    ${namespace_pods}
+    ${label_key}=  Fetch From Left    ${KLIB_POD_LABELS}    =
+    ${label_value}=  Fetch From Right    ${KLIB_POD_LABELS}    =
+    Set Test Variable    ${KLIB_POD_LABELS}    {"${label_key}": "${label_value}"}
 
 all pods containers are using "${container_image}" image
     @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
@@ -54,7 +62,6 @@ pods have annotations "${pod_annotations}"
         ${assertion}=    assert_pod_has_annotations    ${pod}    ${pod_annotations}
         Should Be True    ${assertion}
     END
-
 
 pods containers have resource requests cpu "${container_resource_requests_cpu}"
     @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*

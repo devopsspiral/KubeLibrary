@@ -83,8 +83,10 @@ These tests require the kubelib-test helm-chart to be installed in your test clu
 # run other library tests
 export KLIB_POD_PATTERN='busybox.*'
 export KLIB_POD_NAMESPACE=kubelib-tests
+export KLIB_POD_LABELS='job-name=busybox-job'
 
 kubectl create namespace $KLIB_POD_NAMESPACE
+kubectl label namespaces kubelib-tests test=test
 helm install kubelib-test ./test-objects-chart -n $KLIB_POD_NAMESPACE
 
 robot -i other testcases/
