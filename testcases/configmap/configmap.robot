@@ -6,3 +6,7 @@ Configmap test case example
     [Tags]    grafana
     List all configmaps in namespace  default
     List all key value pairs in configmap  grafana  default
+
+Configmap by label
+    [Tags]    grafana    
+    List all configmaps in namespace  default  app=grafana

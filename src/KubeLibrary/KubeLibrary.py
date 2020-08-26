@@ -89,21 +89,25 @@ class KubeLibrary(object):
                                            _return_http_data_only=False)
         return resp
 
-    def get_namespaces(self):
+    def get_namespaces(self, label_selector=""):
         """Gets a list of available namespaces.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of namespaces.
         """
-        ret = self.v1.list_namespace(watch=False)
+        ret = self.v1.list_namespace(watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
 
-    def get_healthy_nodes_count(self):
+    def get_healthy_nodes_count(self, label_selector=""):
         """Counts node with KubeletReady and status True.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Can be used to check number of healthy nodes. Can be used as prerequisite in tests.
         """
-        ret = self.v1.list_node(watch=False)
+        ret = self.v1.list_node(watch=False, label_selector=label_selector)
         healthy_nods = []
         for item in ret.items:
             for condition in item.status.conditions:
@@ -111,8 +115,10 @@ class KubeLibrary(object):
                     healthy_nods.append(item.metadata.name)
         return len(healthy_nods)
 
-    def get_pod_names_in_namespace(self, name_pattern, namespace):
+    def get_pod_names_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets pod name matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of strings.
 
@@ -121,12 +127,14 @@ class KubeLibrary(object):
         - ``namespace``:
           Namespace to check
         """
-        ret = self.v1.list_namespaced_pod(namespace, watch=False)
+        ret = self.v1.list_namespaced_pod(namespace, watch=False, label_selector=label_selector)
         r = re.compile(name_pattern + '.*')
         return [item.metadata.name for item in ret.items if r.match(item.metadata.name)]
 
-    def get_pods_in_namespace(self, name_pattern, namespace):
+    def get_pods_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets pods matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of pods.
 
@@ -135,7 +143,7 @@ class KubeLibrary(object):
         - ``namespace``:
           Namespace to check
         """
-        ret = self.v1.list_namespaced_pod(namespace, watch=False)
+        ret = self.v1.list_namespaced_pod(namespace, watch=False, label_selector=label_selector)
         r = re.compile(name_pattern)
         pods = [item for item in ret.items if r.match(item.metadata.name)]
         return pods
@@ -155,8 +163,10 @@ class KubeLibrary(object):
         pod_logs = self.v1.read_namespaced_pod_log(name=name, namespace=namespace, container=container, follow=False)
         return pod_logs
 
-    def get_configmaps_in_namespace(self, name_pattern, namespace):
+    def get_configmaps_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets configmaps matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of configmaps.
 
@@ -165,13 +175,15 @@ class KubeLibrary(object):
         - ``namespace``:
           Namespace to check
         """
-        ret = self.v1.list_namespaced_config_map(namespace, watch=False)
+        ret = self.v1.list_namespaced_config_map(namespace, watch=False, label_selector=label_selector)
         r = re.compile(name_pattern)
         configmaps = [item for item in ret.items if r.match(item.metadata.name)]
         return configmaps
 
-    def get_jobs_in_namespace(self, name_pattern, namespace):
+    def get_jobs_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets jobs matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of jobs.
 
@@ -180,7 +192,7 @@ class KubeLibrary(object):
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1.list_namespaced_job(namespace, watch=False)
+        ret = self.batchv1.list_namespaced_job(namespace, watch=False, label_selector=label_selector)
         r = re.compile(name_pattern)
         jobs = [item for item in ret.items if r.match(item.metadata.name)]
         return jobs
@@ -337,15 +349,17 @@ class KubeLibrary(object):
             logger.error(f'Failed parsing Container Env Var JSON:{env_vars_json}')
             return False
 
-    def get_services_in_namespace(self, namespace):
+    def get_services_in_namespace(self, namespace, label_selector=""):
         """Gets services in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of strings.
 
         - ``namespace``:
           Namespace to check
         """
-        ret = self.v1.list_namespaced_service(namespace, watch=False)
+        ret = self.v1.list_namespaced_service(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
     def get_service_details_in_namespace(self, name, namespace):
@@ -378,15 +392,17 @@ class KubeLibrary(object):
         ret = self.v1.read_namespaced_endpoints(name, namespace)
         return ret
 
-    def get_pvc_in_namespace(self, namespace):
+    def get_pvc_in_namespace(self, namespace, label_selector=""):
         """Gets pvcs in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of strings.
 
         - ``namespace``:
           Namespace to check
         """
-        ret = self.v1.list_namespaced_persistent_volume_claim(namespace, watch=False)
+        ret = self.v1.list_namespaced_persistent_volume_claim(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
     def get_pvc_capacity(self, name, namespace):
@@ -404,10 +420,12 @@ class KubeLibrary(object):
         ret = self.v1.read_namespaced_persistent_volume_claim(name, namespace)
         return ret
 
-    def get_kubelet_version(self):
+    def get_kubelet_version(self, label_selector=""):
         """Gets list of kubelet versions on each node.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of strings.
         """
-        ret = self.v1.list_node(watch=False)
+        ret = self.v1.list_node(watch=False, label_selector=label_selector)
         return [item.status.node_info.kubelet_version for item in ret.items]

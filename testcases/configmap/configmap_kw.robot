@@ -10,8 +10,8 @@ Library           KubeLibrary    None    True    False
 
 *** Keywords ***
 List all configmaps in namespace
-    [Arguments]  ${namespace}
-    @{namespace_configmaps}=  Get Configmaps In Namespace    .*  ${namespace}
+    [Arguments]  ${namespace}  ${label}=${EMPTY}
+    @{namespace_configmaps}=  Get Configmaps In Namespace    .*  ${namespace}  ${label}
     Log  \nConfigmaps in namespace ${namespace}:  console=True
     FOR  ${configmap}  IN  @{namespace_configmaps}
         Log  ${configmap.metadata.name}  console=True
