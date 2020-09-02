@@ -1,6 +1,6 @@
 kubernetes
 robotframework>=3.2.2
-# for development
+# for tests
 mock
 flake8
 coverage
