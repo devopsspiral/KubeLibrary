@@ -2,9 +2,9 @@
 Library           Collections
 Library           RequestsLibrary
 # For regular execution
-#Library           KubeLibrary
+Library           KubeLibrary
 # For incluster execution
-Library           KubeLibrary    None    True    False
+#Library           KubeLibrary    None    True    False
 # For development
 #Library           ../../src/KubeLibrary/KubeLibrary.py  ~/.kube/k3d
 
