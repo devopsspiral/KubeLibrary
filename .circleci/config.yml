@@ -35,13 +35,15 @@ jobs:
           name: Run kubectl
           command: |
             export KUBECONFIG=$(k3d kubeconfig write circleci-k8s)
+            chmod a+r $KUBECONFIG
             docker create -v /.kube --name kubeconfig alpine:3.4 /bin/true
             # curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
             # chmod +x kubectl
             # k8s_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-circleci-k8s-serverlb)
             # sed -i "s/0.0.0.0/${k8s_ip}/g" $KUBECONFIG
+            ls -l $KUBECONFIG
             docker cp $KUBECONFIG kubeconfig:/.kube/config
-            docker run --rm --name kubectl --volumes-from kubeconfig bitnami/kubectl:latest get pods
+            docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest get pods
 workflows:
   main:
     jobs:
