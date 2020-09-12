@@ -37,7 +37,7 @@ class AttributeDict(object):
         return getattr(self, key)
 
 
-def mock_list_namespaced_pod(namespace, watch=False):
+def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
     if namespace == 'default':
         with open('test/resources/pods.json') as json_file:
             pods_content = json.load(json_file)
