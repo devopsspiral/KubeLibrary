@@ -46,6 +46,7 @@ jobs:
             docker cp $KUBECONFIG kubeconfig:/.kube/config
             alias helm="docker run --rm -it --name helm --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig -v $(pwd):/apps -v ~/.helm:/root/.helm alpine/helm:latest"
             alias kubectl="docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
+            alias
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
             helm install grafana
             kubectl get pods
