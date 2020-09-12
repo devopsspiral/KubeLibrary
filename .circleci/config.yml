@@ -31,8 +31,7 @@ jobs:
           command: |
             wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
             k3d cluster create circleci-k8s
-            mkdir .kube
-            until $(mv "$(k3d get-kubeconfig --name='circleci-k8s' 2> /dev/null )" ~/.kube/config > /dev/null 2>&1); do sleep 1; done
+            export KUBECONFIG="$(k3d get-kubeconfig --name='k3s-default')"
       - run:
           name: Setup k8s
           command: |
