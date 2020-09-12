@@ -14,12 +14,33 @@ jobs:
       - python/install-deps
       - python/save-cache
       - python/test
-
+  test-on-k8s:
+    executor: python/default
+    environment:
+      PYTHONPATH=./src
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/install-deps testcases/requirements.txt
+      - python/save-cache
+      - run:
+          name: Setup k8s
+          command: |
+            wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+            k3d cluster create circleci-k8s
+            mkdir .kube
+            until $(mv "$(k3d get-kubeconfig --name='circleci-k8s' 2> /dev/null )" ~/.kube/config > /dev/null 2>&1); do sleep 1; done
+      - run:
+          name: Setup k8s
+          command: |
+            curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+            kubectl get pods
 workflows:
   main:
     jobs:
       - build-and-test
-  #     - test-on-k8s
+      - test-on-k8s
   #     - test-coverage
   #     - code-quality
   # publish:
