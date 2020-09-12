@@ -45,10 +45,12 @@ jobs:
             cat $KUBECONFIG
             docker cp $KUBECONFIG kubeconfig:/.kube/config
             shopt -s expand_aliases
-            alias helm="docker run --rm -it --name helm --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig -v $(pwd):/apps -v ~/.helm:/root/.helm alpine/helm:latest"
+            mkdir .helm
+            chmod a+x .helm
+            alias helm="docker run --rm -it --name helm --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig -v $(pwd):/apps -v .helm:/root/.helm alpine/helm:latest"
             alias kubectl="docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
-            alias
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
+            helm repo update
             helm install grafana stable/grafana
             kubectl get pods
 workflows:
