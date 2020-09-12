@@ -44,9 +44,9 @@ jobs:
             sed -i "s/0.0.0.0.*/0.0.0.0:6443/g" $KUBECONFIG
             docker cp $KUBECONFIG kubeconfig:/.kube/config
             shopt -s expand_aliases
-            alias helm="docker run --rm -it --name helm -e KUBECONFIG=/.kube/config --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig -v helm_cache:/root/.cache/helm -v helm_config:/root/.config/helm -v helm_data:/root/.local/share/helm alpine/helm:latest"
+            alias helm="docker run --rm -it --name helm -e KUBECONFIG=/.kube/config --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig --volumes-from data -v helm_cache:/root/.cache/helm -v helm_config:/root/.config/helm -v helm_data:/root/.local/share/helm alpine/helm:latest"
             alias kubectl="docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
-            
+            ls
             docker cp testcases/grafana/values.yaml data:/data/
             
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
@@ -54,7 +54,7 @@ jobs:
             # docker cp octopus data:/data/
             # helm install octopus /data/octopus/chart/octopus/
             helm install grafana stable/grafana -f /data/values.yaml
-            sleep 30
+            sleep 60
             docker run --rm -it --network container:k3d-circleci-k8s-serverlb cirrusci/wget 'wget 0.0.0.0:3000 && cat index.html'
 
             #kubectl get pods
