@@ -44,6 +44,7 @@ jobs:
             ls -l $KUBECONFIG
             cat $KUBECONFIG
             docker cp $KUBECONFIG kubeconfig:/.kube/config
+            shopt -s expand_aliases
             alias helm="docker run --rm -it --name helm --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig -v $(pwd):/apps -v ~/.helm:/root/.helm alpine/helm:latest"
             alias kubectl="docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
             alias
