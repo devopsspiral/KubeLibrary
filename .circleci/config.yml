@@ -48,7 +48,7 @@ jobs:
             cat $KUBECONFIG
             docker cp $KUBECONFIG kubeconfig:/.kube/config
             shopt -s expand_aliases
-            alias helm="docker run --rm -it --name helm --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig -v helm_cache:/root/.cache/helm -v helm_config:/root/.config/helm -v helm_data:/root/.local/share/helm alpine/helm:latest"
+            alias helm="docker run --rm -it --name helm -e KUBECONFIG=/.kube/config --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig -v helm_cache:/root/.cache/helm -v helm_config:/root/.config/helm -v helm_data:/root/.local/share/helm alpine/helm:latest"
             alias kubectl="docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
             helm repo update
