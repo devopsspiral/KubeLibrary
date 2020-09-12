@@ -1,12 +1,23 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@1.0.0
+  python: circleci/python@0.3.2
+
+jobs:
+  build-and-test:
+    executor: python/default
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - python/test
+
 
 workflows:
   main:
     jobs:
-      - python/test
+      - build-and-test
   #     - test-on-k8s
   #     - test-coverage
   #     - code-quality
