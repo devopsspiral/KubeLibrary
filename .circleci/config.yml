@@ -22,7 +22,7 @@ jobs:
       - checkout
       - python/load-cache
       - python/install-deps
-      - python/install-deps
+      - python/install-deps:
           dependency-file: testcases/requirements.txt
       - python/save-cache
       - run:
