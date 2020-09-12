@@ -19,6 +19,7 @@ jobs:
     environment:
       PYTHONPATH=./src
     steps:
+      - setup_remote_docker
       - checkout
       - python/load-cache
       - python/install-deps
