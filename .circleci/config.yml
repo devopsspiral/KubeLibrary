@@ -22,7 +22,8 @@ jobs:
       - checkout
       - python/load-cache
       - python/install-deps
-      - python/install-deps testcases/requirements.txt
+      - python/install-deps
+          dependency-file: testcases/requirements.txt
       - python/save-cache
       - run:
           name: Setup k8s
