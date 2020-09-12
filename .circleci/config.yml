@@ -31,12 +31,13 @@ jobs:
           command: |
             wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
             k3d cluster create circleci-k8s
-            export KUBECONFIG="$(k3d get-kubeconfig --name='k3s-default')"
+            export KUBECONFIG=$(k3d kubeconfig write circleci-k8s)
       - run:
-          name: Setup k8s
+          name: Run kubectl
           command: |
             curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-            kubectl get pods
+            chmod +x kubectl
+            ./kubectl get pods
 workflows:
   main:
     jobs:
