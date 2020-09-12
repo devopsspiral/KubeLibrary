@@ -6,6 +6,8 @@ orbs:
 jobs:
   build-and-test:
     executor: python/default
+    environment:
+      PYTHONPATH=./src
     steps:
       - checkout
       - python/load-cache
