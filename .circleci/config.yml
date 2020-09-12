@@ -37,6 +37,7 @@ jobs:
             export KUBECONFIG=$(k3d kubeconfig write circleci-k8s)
             curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
             chmod +x kubectl
+            cat $KUBECONFIG
             ./kubectl get pods
 workflows:
   main:
