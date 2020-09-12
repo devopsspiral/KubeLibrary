@@ -55,7 +55,7 @@ jobs:
             # helm install octopus /data/octopus/chart/octopus/
             helm install grafana stable/grafana -f /data/values.yaml
             sleep 60
-            docker run --rm -it --network container:k3d-circleci-k8s-serverlb cirrusci/wget 'wget 0.0.0.0:3000 && cat index.html'
+            docker run --rm -it --network container:k3d-circleci-k8s-serverlb cirrusci/wget wget 0.0.0.0:3000
 
             #kubectl get pods
 workflows:
