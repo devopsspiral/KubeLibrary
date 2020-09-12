@@ -50,6 +50,7 @@ jobs:
             alias helm="docker run --rm -it --name helm --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig -v helm_apps:/apps -v dot_helm:/root/.helm alpine/helm:latest"
             alias kubectl="docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
+            docker volume ls
             helm repo update
             helm install grafana stable/grafana --debug
             kubectl get pods
