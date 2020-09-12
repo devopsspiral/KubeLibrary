@@ -39,7 +39,7 @@ jobs:
             chmod +x kubectl
             k8s_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-circleci-k8s-serverlb)
             sed -i "s/0.0.0.0/${k8s_ip}/g" $KUBECONFIG
-            ip netns list
+            docker network ls
 workflows:
   main:
     jobs:
