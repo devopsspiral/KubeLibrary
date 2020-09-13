@@ -4,7 +4,7 @@ orbs:
   python: circleci/python@0.3.2
 
 commands:
-  k3d-up:
+  k3dup:
     description: Starts k8s (k3d/k3s) cluster
     parameters:
       cluster_name:
@@ -41,7 +41,7 @@ jobs:
       - python/install-deps:
           dependency-file: testcases/requirements.txt
       - python/save-cache
-      - k3d-up:
+      - k3dup:
           cluster_name: circleci-k8s
       # - run:
       #     name: Setup k8s
