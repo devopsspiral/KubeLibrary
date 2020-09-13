@@ -58,7 +58,7 @@ jobs:
             sleep 30
             export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" -o jsonpath="{.items[0].metadata.name}")
             proxy --namespace default port-forward $POD_NAME 3000
-            docker run --rm -it --network container:proxy busybox bash -c "wget 0.0.0.0:3000; grep Grafana index.html"
+            docker run --rm -it --network container:proxy busybox /bin/sh -c "wget 0.0.0.0:3000; grep Grafana index.html"
             #kubectl get pods
 workflows:
   main:
