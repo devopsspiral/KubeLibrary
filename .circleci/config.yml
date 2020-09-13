@@ -6,11 +6,11 @@ orbs:
 commands:
   k3dup:
     description: Starts k8s (k3d/k3s) cluster
-    parameters:
-      cluster_name:
-        description: Name for the k3d cluster
-        type: string
-        default: myk3d
+    # parameters:
+    #   cluster_name:
+    #     description: Name for the k3d cluster
+    #     type: string
+    #     default: myk3d
     steps:
       - run:
           name: Setup k8s
@@ -41,8 +41,7 @@ jobs:
       - python/install-deps:
           dependency-file: testcases/requirements.txt
       - python/save-cache
-      - k3dup:
-          cluster_name: circleci-k8s
+      - k3dup
       # - run:
       #     name: Setup k8s
       #     command: |
