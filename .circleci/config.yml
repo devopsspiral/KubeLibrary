@@ -12,6 +12,7 @@ orbs:
             default: myk3d
         steps:
           - run:
+              name: Setup k8s
               command: |
                 wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
                 k3d cluster create <<parameters.cluster_name>>
@@ -40,7 +41,7 @@ jobs:
       - python/install-deps:
           dependency-file: testcases/requirements.txt
       - python/save-cache
-      - k3d/k3d_up:
+      - k3d_up:
           cluster_name: circleci-k8s
       # - run:
       #     name: Setup k8s
