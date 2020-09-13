@@ -45,17 +45,20 @@ jobs:
             docker cp $KUBECONFIG kubeconfig:/.kube/config
             shopt -s expand_aliases
             alias helm="docker run --rm -it --name helm -e KUBECONFIG=/.kube/config --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig --volumes-from data -v helm_cache:/root/.cache/helm -v helm_config:/root/.config/helm -v helm_data:/root/.local/share/helm alpine/helm:latest"
-            alias kubectl="docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
-            ls
+            alias kubectl="docker run --rm -it --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
+            alias proxy="docker run --rm --name proxy --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
+            
             docker cp testcases/grafana/values.yaml data:/data/
             
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
             # git clone https://github.com/kyma-incubator/octopus
             # docker cp octopus data:/data/
             # helm install octopus /data/octopus/chart/octopus/
-            helm install grafana stable/grafana -f /data/values.yaml
-            sleep 60
-            docker run --rm -it --network container:k3d-circleci-k8s-serverlb cirrusci/wget wget 0.0.0.0:3000
+            helm install grafana stable/grafana
+            sleep 30
+            export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" -o jsonpath="{.items[0].metadata.name}")
+            proxy --namespace default port-forward $POD_NAME 3000
+            docker run --rm -it --network container:proxy busybox wget 0.0.0.0:3000
 
             #kubectl get pods
 workflows:
