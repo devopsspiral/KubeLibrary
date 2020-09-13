@@ -54,8 +54,6 @@ jobs:
             # git clone https://github.com/kyma-incubator/octopus
             # docker cp octopus data:/data/
             # helm install octopus /data/octopus/chart/octopus/
-            helm install grafana stable/grafana -f /data/values.yaml
-            sleep 30
             
             #via kubeproxy
             
@@ -68,6 +66,7 @@ jobs:
 
             #docker cp testcases/grafana/values.yaml data:/data/
             #helm install grafana stable/grafana -f /data/values.yaml
+            #sleep 30
             #export SERVICE_IP=$(kubectl get svc --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             #docker run --rm -it --network k3d-circleci-k8s busybox /bin/sh -c "wget ${SERVICE_IP}:3000; grep Grafana index.html"
             
@@ -75,6 +74,7 @@ jobs:
 
             docker cp testcases/grafana/with_ingress.yaml data:/data/
             helm install grafana stable/grafana -f /data/with_ingress.yaml
+            sleep 30
             export INGRESS_IP=$(kubectl get ing --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             docker run --rm -it --network k3d-circleci-k8s busybox /bin/sh -c "echo '${INGRESS_IP}  chart-example.local' >> /etc/hosts; wget http://chart-example.local/; grep Grafana index.html"
             
