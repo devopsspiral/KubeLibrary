@@ -48,7 +48,7 @@ jobs:
             alias kubectl="docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
             alias proxy="docker run -d --rm --name proxy --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
             
-            docker cp testcases/grafana/values.yaml data:/data/
+            
             
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
             # git clone https://github.com/kyma-incubator/octopus
@@ -59,17 +59,22 @@ jobs:
             
             #via kubeproxy
             
+            #helm install grafana stable/grafana
             #export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" -o jsonpath="{.items[0].metadata.name}")
             #proxy --namespace default port-forward $POD_NAME 3000
             #docker run --rm -it --network container:proxy busybox /bin/sh -c "wget ${SERVICE_IP}:3000; grep Grafana index.html"
             
             #via Service type LoadBalancer, similar should be possible with NodePort
 
+            #docker cp testcases/grafana/values.yaml data:/data/
+            #helm install grafana stable/grafana -f /data/values.yaml
             #export SERVICE_IP=$(kubectl get svc --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             #docker run --rm -it --network k3d-circleci-k8s busybox /bin/sh -c "wget ${SERVICE_IP}:3000; grep Grafana index.html"
             
             #via ingress - chart-example.local - is deafult host for ingress in used grafana chart
 
+            docker cp testcases/grafana/with_ingress.yaml data:/data/
+            helm install grafana stable/grafana -f /data/with_ingress.yaml
             export INGRESS_IP=$(kubectl get ing --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             docker run --rm -it --network k3d-circleci-k8s busybox /bin/sh -c "echo '${INGRESS_IP}  chart-example.local' >> /etc/hosts; wget http://chart-example.local/; grep Grafana index.html"
             
