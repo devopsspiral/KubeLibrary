@@ -54,11 +54,13 @@ jobs:
             # git clone https://github.com/kyma-incubator/octopus
             # docker cp octopus data:/data/
             # helm install octopus /data/octopus/chart/octopus/
-            helm install grafana stable/grafana
+            helm install grafana stable/grafana -f /data/values.yaml
             sleep 30
-            export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" -o jsonpath="{.items[0].metadata.name}")
-            proxy --namespace default port-forward $POD_NAME 3000
-            docker run --rm -it --network container:proxy busybox /bin/sh -c "wget 0.0.0.0:3000; grep Grafana index.html"
+            #export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" -o jsonpath="{.items[0].metadata.name}")
+            #proxy --namespace default port-forward $POD_NAME 3000
+            export SERVICE_IP=$(kubectl get svc --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            #docker run --rm -it --network container:proxy busybox /bin/sh -c "wget ${SERVICE_IP}:3000; grep Grafana index.html"
+            docker run --rm -it busybox /bin/sh -c "wget ${SERVICE_IP}:3000; grep Grafana index.html"
             #kubectl get pods
 workflows:
   main:
