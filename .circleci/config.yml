@@ -5,6 +5,7 @@ orbs:
 
 commands:
   k3d-up:
+    description: Starts k8s (k3d/k3s) cluster
     parameters:
       cluster_name:
         description: Name for the k3d cluster
