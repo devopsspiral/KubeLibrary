@@ -2,21 +2,20 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
-  k3d:
-    commands:
-      k3d_up:
-        parameters:
-          cluster_name:
-            description: Name for the k3d cluster
-            type: string
-            default: myk3d
-        steps:
-          - run:
-              name: Setup k8s
-              command: |
-                wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
-                k3d cluster create <<parameters.cluster_name>>
-            
+
+commands:
+  k3d_up:
+    parameters:
+      cluster_name:
+        description: Name for the k3d cluster
+        type: string
+        default: myk3d
+    steps:
+      - run:
+          name: Setup k8s
+          command: |
+            wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+            k3d cluster create <<parameters.cluster_name>>            
 
 jobs:
   build-and-test:
