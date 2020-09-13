@@ -2,6 +2,20 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
+  k3d:
+    commands:
+      k3d_up:
+        parameters:
+          cluster_name:
+            description: Name for the k3d cluster
+            type: string
+            default: myk3d
+        steps:
+          - run:
+              command: |
+                wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+                k3d cluster create <<parameters.cluster_name>>
+            
 
 jobs:
   build-and-test:
@@ -26,11 +40,14 @@ jobs:
       - python/install-deps:
           dependency-file: testcases/requirements.txt
       - python/save-cache
-      - run:
-          name: Setup k8s
-          command: |
-            wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
-            k3d cluster create circleci-k8s
+      - k3d_up:
+          cluster_name: circleci-k8s
+      # - run:
+      #     name: Setup k8s
+      #     command: |
+      #       wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+      #       k3d cluster create circleci-k8s
+      - 
       - run:
           name: Run kubectl
           command: |
@@ -76,7 +93,6 @@ jobs:
             helm install grafana stable/grafana -f /data/with_ingress.yaml
             sleep 30
             export INGRESS_IP=$(kubectl get ing --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-            echo $INGRESS_IP
             docker run --rm -it --network k3d-circleci-k8s busybox /bin/sh -c "echo '${INGRESS_IP}  chart-example.local' >> /etc/hosts; wget http://chart-example.local/; grep Grafana index.html"
             
             #kubectl get pods
