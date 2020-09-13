@@ -76,6 +76,7 @@ jobs:
             helm install grafana stable/grafana -f /data/with_ingress.yaml
             sleep 30
             export INGRESS_IP=$(kubectl get ing --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+            echo $INGRESS_IP
             docker run --rm -it --network k3d-circleci-k8s busybox /bin/sh -c "echo '${INGRESS_IP}  chart-example.local' >> /etc/hosts; wget http://chart-example.local/; grep Grafana index.html"
             
             #kubectl get pods
