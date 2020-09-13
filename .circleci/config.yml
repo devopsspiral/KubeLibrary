@@ -40,7 +40,7 @@ jobs:
       - python/install-deps:
           dependency-file: testcases/requirements.txt
       - python/save-cache
-      - k3d_up:
+      - k3d/k3d_up:
           cluster_name: circleci-k8s
       # - run:
       #     name: Setup k8s
