@@ -18,6 +18,8 @@ commands:
             docker volume create  helm_data
             cat \<<EOF > helpers.sh
             K3D_USING_HELPERS=true
+            K3D_CLUSTER=NotSet
+            K3D_KUBECONFIG=NotSet
             kubectl () {
               docker run --rm --name kubectl -e KUBECONFIG=$K3D_KUBECONFIG --network container:k3d-${K3D_CLUSTER}-serverlb --volumes-from kubeconfig bitnami/kubectl:latest
             }
@@ -29,8 +31,6 @@ commands:
             proxy () {
               docker run -d --rm --name proxy -e KUBECONFIG=$K3D_KUBECONFIG --network container:k3d-${K3D_CLUSTER}-serverlb --volumes-from kubeconfig --volumes-from repo bitnami/kubectl:latest
             }
-            K3D_CLUSTER=NotSet
-            K3D_KUBECONFIG=NotSet
             EOF
 
 
