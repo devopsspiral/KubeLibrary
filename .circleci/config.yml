@@ -8,7 +8,7 @@ commands:
     description: Helpers to make k3d usage easier
     steps:
       - run:
-          name: Setup kubeconfig volume
+          name: Setup helper volumes and functions
           command: |
             docker create -v /.kube --name kubeconfig alpine:3.4 /bin/true
             docker create -v /repo --name repo alpine:3.4 /bin/true
@@ -53,8 +53,8 @@ commands:
             sed -i "s/0.0.0.0.*/0.0.0.0:6443/g" $KUBECONFIG
             if [ -n "$K3D_USING_HELPERS" ]; then
               docker cp $KUBECONFIG kubeconfig:/.kube/<<parameters.cluster_name>>
-              sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" 
-              sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=<<parameters.cluster_name>>/g" 
+              sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" helpers.sh
+              sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=<<parameters.cluster_name>>/g" helpers.sh
             fi
   k3d-use:
     description: Switches context to particular cluster
@@ -67,8 +67,8 @@ commands:
       - run:
           name: Set target cluster
           command: |
-            sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" 
-            sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=<<parameters.cluster_name>>/g" 
+            sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" helpers.sh
+            sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=<<parameters.cluster_name>>/g" helpers.sh
 jobs:
   build-and-test:
     executor: python/default
