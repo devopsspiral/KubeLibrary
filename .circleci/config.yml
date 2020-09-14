@@ -104,6 +104,8 @@ jobs:
           name: Run kubectl
           command: |
             . helpers.sh
+            env
+            cat helpers.sh
             # export KUBECONFIG=$(k3d kubeconfig write circleci-k8s)
             # chmod a+r $KUBECONFIG
             # docker create -v /.kube --name kubeconfig alpine:3.4 /bin/true
