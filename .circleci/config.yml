@@ -51,7 +51,7 @@ commands:
             export KUBECONFIG=$(k3d kubeconfig write <<parameters.cluster_name>>)
             chmod a+r $KUBECONFIG
             sed -i "s/0.0.0.0.*/0.0.0.0:6443/g" $KUBECONFIG
-            if [ -z $K3D_USING_HELPERS ]; then
+            if [ -n "$K3D_USING_HELPERS" ]; then
               docker cp $KUBECONFIG kubeconfig:/.kube/<<parameters.cluster_name>>
               sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" 
               sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=<<parameters.cluster_name>>/g" 
@@ -65,7 +65,7 @@ commands:
         default: myk3d
     steps:
       - run:
-          name: Setup k8s
+          name: Set target cluster
           command: |
             sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" 
             sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=<<parameters.cluster_name>>/g" 
