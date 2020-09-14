@@ -17,7 +17,7 @@ commands:
             docker volume create  helm_cache
             docker volume create  helm_config
             docker volume create  helm_data
-            cat <<EOF > helpers.sh
+            cat \<<EOF > helpers.sh
             kubectl () {
               docker run --rm --name kubectl -e KUBECONFIG=$K3D_KUBECONFIG --network container:k3d-${K3D_CLUSTER}-serverlb --volumes-from kubeconfig bitnami/kubectl:latest
             }
