@@ -53,7 +53,7 @@ helm install grafana stable/grafana -f testcases/grafana/values.yaml
 
 # run grafana tests
 export KLIB_POD_PATTERN='grafana.*'
-export KLIB_POD_ANNOTATIONS='{"checksumconfig":"3bb97e1695589c9bcdf6a6cd10c03517286ab7697626e6f02dd6fb2bc4a27796"}'
+export KLIB_POD_ANNOTATIONS='{"checksum/config":"3bb97e1695589c9bcdf6a6cd10c03517286ab7697626e6f02dd6fb2bc4a27796"}'
 export KLIB_POD_NAMESPACE=default
 
 robot -i grafana testcases/
