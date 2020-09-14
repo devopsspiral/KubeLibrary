@@ -10,7 +10,6 @@ commands:
       - run:
           name: Setup kubeconfig volume
           command: |
-            export K3D_USING_HELPERS=true
             docker create -v /.kube --name kubeconfig alpine:3.4 /bin/true
             docker create -v /repo --name repo alpine:3.4 /bin/true
             docker cp . repo:/repo/
@@ -18,6 +17,7 @@ commands:
             docker volume create  helm_config
             docker volume create  helm_data
             cat \<<EOF > helpers.sh
+            K3D_USING_HELPERS=true
             kubectl () {
               docker run --rm --name kubectl -e KUBECONFIG=$K3D_KUBECONFIG --network container:k3d-${K3D_CLUSTER}-serverlb --volumes-from kubeconfig bitnami/kubectl:latest
             }
@@ -29,6 +29,8 @@ commands:
             proxy () {
               docker run -d --rm --name proxy -e KUBECONFIG=$K3D_KUBECONFIG --network container:k3d-${K3D_CLUSTER}-serverlb --volumes-from kubeconfig --volumes-from repo bitnami/kubectl:latest
             }
+            K3D_CLUSTER=NotSet
+            K3D_KUBECONFIG=NotSet
             EOF
 
 
@@ -43,6 +45,7 @@ commands:
       - run:
           name: Setup k8s
           command: |
+            . helpers.sh
             wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
             k3d cluster create <<parameters.cluster_name>>
             export KUBECONFIG=$(k3d kubeconfig write <<parameters.cluster_name>>)
@@ -50,8 +53,8 @@ commands:
             sed -i "s/0.0.0.0.*/0.0.0.0:6443/g" $KUBECONFIG
             if [ -z $K3D_USING_HELPERS ]; then
               docker cp $KUBECONFIG kubeconfig:/.kube/<<parameters.cluster_name>>
-              export K3D_CLUSTER=<<parameters.cluster_name>>
-              export K3D_KUBECONFIG=/.kube/<<parameters.cluster_name>>
+              sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" 
+              sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=<<parameters.cluster_name>>/g" 
             fi
   k3d-use:
     description: Switches context to particular cluster
@@ -64,8 +67,8 @@ commands:
       - run:
           name: Setup k8s
           command: |
-            export K3D_CLUSTER=<<parameters.cluster_name>>
-            export K3D_KUBECONFIG=/.kube/<<parameters.cluster_name>>
+            sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" 
+            sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=<<parameters.cluster_name>>/g" 
 jobs:
   build-and-test:
     executor: python/default
