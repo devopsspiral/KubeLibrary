@@ -17,6 +17,7 @@ commands:
             docker volume create  helm_cache
             docker volume create  helm_config
             docker volume create  helm_data
+            cat <<EOF > helpers.sh
             kubectl () {
               docker run --rm --name kubectl -e KUBECONFIG=$K3D_KUBECONFIG --network container:k3d-${K3D_CLUSTER}-serverlb --volumes-from kubeconfig bitnami/kubectl:latest
             }
@@ -28,9 +29,8 @@ commands:
             proxy () {
               docker run -d --rm --name proxy -e KUBECONFIG=$K3D_KUBECONFIG --network container:k3d-${K3D_CLUSTER}-serverlb --volumes-from kubeconfig --volumes-from repo bitnami/kubectl:latest
             }
-            export -f kubectl
-            export -f helm
-            export -f proxy
+            EOF
+
 
   k3d-up:
     description: Starts k8s (k3d/k3s) cluster
@@ -100,6 +100,7 @@ jobs:
       - run:
           name: Run kubectl
           command: |
+            . helpers.sh
             # export KUBECONFIG=$(k3d kubeconfig write circleci-k8s)
             # chmod a+r $KUBECONFIG
             # docker create -v /.kube --name kubeconfig alpine:3.4 /bin/true
