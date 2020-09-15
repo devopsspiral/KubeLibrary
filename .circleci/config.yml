@@ -51,11 +51,11 @@ commands:
             k3d cluster create <<parameters.cluster_name>>
             export KUBECONFIG=$(k3d kubeconfig write <<parameters.cluster_name>>)
             chmod a+r $KUBECONFIG
-            sed -i "s/0.0.0.0.*/0.0.0.0:6443/g" $KUBECONFIG
+            sed -i "s#0.0.0.0.*#0.0.0.0:6443#g" $KUBECONFIG
             if [ -n "$K3D_USING_HELPERS" ]; then
               docker cp $KUBECONFIG kubeconfig:/.kube/<<parameters.cluster_name>>
-              sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" helpers.sh
-              sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=/.kube/<<parameters.cluster_name>>/g" helpers.sh
+              sed -i "s#K3D_CLUSTER=.*#K3D_CLUSTER=<<parameters.cluster_name>>#g" helpers.sh
+              sed -i "s#K3D_KUBECONFIG=.*#K3D_KUBECONFIG=/.kube/<<parameters.cluster_name>>#g" helpers.sh
             fi
   k3d-use:
     description: Switches context to particular cluster
@@ -68,8 +68,8 @@ commands:
       - run:
           name: Set target cluster
           command: |
-            sed -i "s/K3D_CLUSTER=.*/K3D_CLUSTER=<<parameters.cluster_name>>/g" helpers.sh
-            sed -i "s/K3D_KUBECONFIG=.*/K3D_KUBECONFIG=/.kube/<<parameters.cluster_name>>/g" helpers.sh
+            sed -i "s#K3D_CLUSTER=.*#K3D_CLUSTER=<<parameters.cluster_name>>#g" helpers.sh
+            sed -i "s#K3D_KUBECONFIG=.*#K3D_KUBECONFIG=/.kube/<<parameters.cluster_name>>#g" helpers.sh
 jobs:
   build-and-test:
     executor: python/default
