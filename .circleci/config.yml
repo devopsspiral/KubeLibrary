@@ -21,15 +21,15 @@ commands:
             export K3D_CLUSTER=NotSet
             export K3D_KUBECONFIG=NotSet
             kubectl () {
-              docker run --rm --name kubectl -e KUBECONFIG=\$K3D_KUBECONFIG --network container:k3d-\${K3D_CLUSTER}-serverlb --volumes-from kubeconfig bitnami/kubectl:latest
+              docker run --rm --name kubectl -e KUBECONFIG=\$K3D_KUBECONFIG --network container:k3d-\${K3D_CLUSTER}-serverlb --volumes-from kubeconfig bitnami/kubectl:latest \$@
             }
 
             helm () {
-              docker run --rm --name helm -e KUBECONFIG=\$K3D_KUBECONFIG --network container:k3d-\${K3D_CLUSTER}-serverlb --volumes-from kubeconfig --volumes-from repo -v helm_cache:/root/.cache/helm -v helm_config:/root/.config/helm -v helm_data:/root/.local/share/helm alpine/helm:latest
+              docker run --rm --name helm -e KUBECONFIG=\$K3D_KUBECONFIG --network container:k3d-\${K3D_CLUSTER}-serverlb --volumes-from kubeconfig --volumes-from repo -v helm_cache:/root/.cache/helm -v helm_config:/root/.config/helm -v helm_data:/root/.local/share/helm alpine/helm:latest \$@
             }
 
             proxy () {
-              docker run -d --rm --name proxy -e KUBECONFIG=\$K3D_KUBECONFIG --network container:k3d-\${K3D_CLUSTER}-serverlb --volumes-from kubeconfig --volumes-from repo bitnami/kubectl:latest
+              docker run -d --rm --name proxy -e KUBECONFIG=\$K3D_KUBECONFIG --network container:k3d-\${K3D_CLUSTER}-serverlb --volumes-from kubeconfig --volumes-from repo bitnami/kubectl:latest \$@
             }
             EOF
             cat helpers.sh
