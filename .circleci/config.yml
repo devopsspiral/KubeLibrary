@@ -146,7 +146,7 @@ jobs:
             #via ingress - chart-example.local - is deafult host for ingress in used grafana chart
 
             # docker cp testcases/grafana/with_ingress.yaml data:/repo/
-            helm install grafana stable/grafana -f /repo/with_ingress.yaml
+            helm install grafana stable/grafana -f /repo/testcases/grafana/with_ingress.yaml
             sleep 30
             export INGRESS_IP=$(kubectl get ing --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
             docker run --rm -it --network k3d-${K3D_CLUSTER} busybox /bin/sh -c "echo '${INGRESS_IP}  chart-example.local' >> /etc/hosts; wget http://chart-example.local/; grep Grafana index.html"
