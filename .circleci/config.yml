@@ -2,74 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
-
-commands:
-  k3d-helpers:
-    description: Helpers to make k3d usage easier
-    steps:
-      - run:
-          name: Setup helper volumes and functions
-          command: |
-            docker create -v /.kube --name kubeconfig alpine:3.4 /bin/true
-            docker create -v /repo --name repo alpine:3.4 /bin/true
-            docker cp . repo:/repo/
-            docker volume create  helm_cache
-            docker volume create  helm_config
-            docker volume create  helm_data
-            cat \<<EOF > helpers.sh
-            export K3D_USING_HELPERS=true
-            export K3D_CLUSTER=NotSet
-            export K3D_KUBECONFIG=NotSet
-            kubectl () {
-              docker run --rm --name kubectl -e KUBECONFIG=\$K3D_KUBECONFIG --network container:k3d-\${K3D_CLUSTER}-serverlb --volumes-from kubeconfig bitnami/kubectl:latest \$@
-            }
-
-            helm () {
-              docker run --rm --name helm -e KUBECONFIG=\$K3D_KUBECONFIG --network container:k3d-\${K3D_CLUSTER}-serverlb --volumes-from kubeconfig --volumes-from repo -v helm_cache:/root/.cache/helm -v helm_config:/root/.config/helm -v helm_data:/root/.local/share/helm alpine/helm:latest \$@
-            }
-
-            proxy () {
-              docker run -d --rm --name proxy -e KUBECONFIG=\$K3D_KUBECONFIG --network container:k3d-\${K3D_CLUSTER}-serverlb --volumes-from kubeconfig --volumes-from repo bitnami/kubectl:latest \$@
-            }
-            EOF
-            cat helpers.sh
-
-
-  k3d-up:
-    description: Starts k8s (k3d/k3s) cluster
-    parameters:
-      cluster_name:
-        description: Name for the k3d cluster
-        type: string
-        default: myk3d
-    steps:
-      - run:
-          name: Setup k8s
-          command: |
-            . helpers.sh
-            wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
-            k3d cluster create <<parameters.cluster_name>>
-            export KUBECONFIG=$(k3d kubeconfig write <<parameters.cluster_name>>)
-            chmod a+r $KUBECONFIG
-            sed -i "s#0.0.0.0.*#0.0.0.0:6443#g" $KUBECONFIG
-            if [ -n "$K3D_USING_HELPERS" ]; then
-              docker cp $KUBECONFIG kubeconfig:/.kube/<<parameters.cluster_name>>
-              sed -i "s#K3D_CLUSTER=.*#K3D_CLUSTER=<<parameters.cluster_name>>#g" helpers.sh
-              sed -i "s#K3D_KUBECONFIG=.*#K3D_KUBECONFIG=/.kube/<<parameters.cluster_name>>#g" helpers.sh
-            fi
-  k3d-use:
-    description: Switches context to particular cluster
-    parameters:
-      cluster_name:
-        description: Name for the k3d cluster
-        type: string
-        default: myk3d
-    steps:
-      - run:
-          name: Set target cluster
-          command: |
-            sed -i "s#K3D_CLUSTER=.*#K3D_CLUSTER=<<parameters.cluster_name>>#g" helpers.sh
-            sed -i "s#K3D_KUBECONFIG=.*#K3D_KUBECONFIG=/.kube/<<parameters.cluster_name>>#g" helpers.sh
+  k3d: devopsspiral/k3d@0.1.2
 jobs:
   build-and-test:
     executor: python/default
@@ -93,65 +26,23 @@ jobs:
       - python/install-deps:
           dependency-file: testcases/requirements.txt
       - python/save-cache
-      - k3d-helpers
-      - k3d-up:
+      - k3d/k3d-helpers
+      - k3d/k3d-up:
           cluster_name: circleci-k8s
-      # - run:
-      #     name: Setup k8s
-      #     command: |
-      #       wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
-      #       k3d cluster create circleci-k8s
-      - run:
+      - k3d/k3d-run:
           name: Run kubectl
           command: |
-            . helpers.sh
-            env
-            cat helpers.sh
-            # export KUBECONFIG=$(k3d kubeconfig write circleci-k8s)
-            # chmod a+r $KUBECONFIG
-            # docker create -v /.kube --name kubeconfig alpine:3.4 /bin/true
-            # docker create -v /repo --name data alpine:3.4 /bin/true
-            # docker volume create  helm_cache
-            # docker volume create  helm_config
-            # docker volume create  helm_data
-            # sed -i "s/0.0.0.0.*/0.0.0.0:6443/g" $KUBECONFIG
-            # docker cp $KUBECONFIG kubeconfig:/.kube/config
-            # shopt -s expand_aliases
-            # alias helm="docker run --rm --name helm -e KUBECONFIG=/.kube/config --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig --volumes-from data -v helm_cache:/root/.cache/helm -v helm_config:/root/.config/helm -v helm_data:/root/.local/share/helm alpine/helm:latest"
-            # alias kubectl="docker run --rm --name kubectl --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
-            # alias proxy="docker run -d --rm --name proxy --network container:k3d-circleci-k8s-serverlb --volumes-from kubeconfig bitnami/kubectl:latest"
-            
-            
-            
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
-            # git clone https://github.com/kyma-incubator/octopus
-            # docker cp octopus data:/repo/
-            # helm install octopus /repo/octopus/chart/octopus/
-            
-            #via kubeproxy
-            
-            #helm install grafana stable/grafana
-            #export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=grafana,app.kubernetes.io/instance=grafana" -o jsonpath="{.items[0].metadata.name}")
-            #proxy --namespace default port-forward $POD_NAME 3000
-            #docker run --rm -it --network container:proxy busybox /bin/sh -c "wget ${SERVICE_IP}:3000; grep Grafana index.html"
-            
-            #via Service type LoadBalancer, similar should be possible with NodePort
+            git clone https://github.com/kyma-incubator/octopus
+            docker cp octopus repo:/repo/
+            helm install octopus /repo/octopus/chart/octopus/
 
-            #docker cp testcases/grafana/values.yaml data:/repo/
-            #helm install grafana stable/grafana -f /repo/values.yaml
-            #sleep 30
-            #export SERVICE_IP=$(kubectl get svc --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-            #docker run --rm -it --network k3d-${K3D_CLUSTER} busybox /bin/sh -c "wget ${SERVICE_IP}:3000; grep Grafana index.html"
-            
-            #via ingress - chart-example.local - is deafult host for ingress in used grafana chart
-
-            # docker cp testcases/grafana/with_ingress.yaml data:/repo/
-            helm install grafana stable/grafana -f /repo/testcases/grafana/with_ingress.yaml
+            helm install grafana stable/grafana
+            helm install grafana2 stable/grafana
             sleep 30
-            export INGRESS_IP=$(kubectl get ing --namespace default grafana -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-            docker run --rm -it --network k3d-${K3D_CLUSTER} busybox /bin/sh -c "echo '${INGRESS_IP}  chart-example.local' >> /etc/hosts; wget http://chart-example.local/; grep Grafana index.html"
-            
-            #kubectl get pods
+            kubectl get pods
+      - k3d/k3d-down:
+          cluster_name: circleci-k8s
 workflows:
   main:
     jobs:
