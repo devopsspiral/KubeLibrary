@@ -28,7 +28,7 @@ jobs:
       - python/save-cache
       - k3d/k3d-helpers
       - k3d/k3d-up:
-          cluster_name: circleci-k8s
+          cluster-name: circleci-k8s
       - k3d/k3d-run:
           name: Run kubectl
           command: |
@@ -42,7 +42,7 @@ jobs:
             sleep 30
             kubectl get pods
       - k3d/k3d-down:
-          cluster_name: circleci-k8s
+          cluster-name: circleci-k8s
 workflows:
   main:
     jobs:
