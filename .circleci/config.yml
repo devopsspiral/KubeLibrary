@@ -30,7 +30,7 @@ jobs:
       - k3d/k3d-up:
           cluster-name: circleci-k8s
       - k3d/k3d-run:
-          name: Run kubectl
+          step-name: Run kubectl
           command: |
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
             git clone https://github.com/kyma-incubator/octopus
