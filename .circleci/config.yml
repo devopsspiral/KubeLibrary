@@ -22,7 +22,7 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
-          name: Setup helper volumes and functions
+          name: Build Kubelibrary container image
           command: |
             docker build -t kubelibrary -f testcases/Dockerfile .
       - k3d/k3d-helpers
