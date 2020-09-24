@@ -21,28 +21,29 @@ jobs:
     steps:
       - setup_remote_docker
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/install-deps:
-          dependency-file: testcases/requirements.txt
-      - python/save-cache
+      - run:
+          name: Setup helper volumes and functions
+          command: |
+            docker build -t kubelibrary -f testcases/Dockerfile .
       - k3d/k3d-helpers
       - k3d/k3d-up:
-          cluster-name: circleci-k8s
+          cluster-name: testk3d
       - k3d/k3d-run:
           step-name: Run kubectl
           command: |
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
-            git clone https://github.com/kyma-incubator/octopus
-            docker cp octopus repo:/repo/
-            helm install octopus /repo/octopus/chart/octopus/
-
-            helm install grafana stable/grafana
-            helm install grafana2 stable/grafana
+            # git clone https://github.com/kyma-incubator/octopus
+            # docker cp octopus repo:/repo/
+            # helm install octopus /repo/octopus/chart/octopus/
+            helm install grafana stable/grafana -f /repo/testcases/grafana/values.yaml
             sleep 30
-            kubectl get pods
+            docker --rm run -t kubelibrary \
+            -e KLIB_POD_PATTERN='grafana.*' \
+            -e KLIB_POD_ANNOTATIONS='{"checksum/config":"3bb97e1695589c9bcdf6a6cd10c03517286ab7697626e6f02dd6fb2bc4a27796"}' \
+            -e KLIB_POD_NAMESPACE=default \
+            -i grafana /root/testcases/
       - k3d/k3d-down:
-          cluster-name: circleci-k8s
+          cluster-name: testk3d
 workflows:
   main:
     jobs:
