@@ -40,7 +40,7 @@ jobs:
             docker run --rm \
             --network container:k3d-\${K3D_CLUSTER}-serverlb \
             --volumes-from kubeconfig \
-            -e -e KUBECONFIG=$K3D_KUBECONFIG \
+            -e KUBECONFIG=$K3D_KUBECONFIG \
             -e KLIB_POD_PATTERN='grafana.*' \
             -e KLIB_POD_ANNOTATIONS='{"checksum/config":"3bb97e1695589c9bcdf6a6cd10c03517286ab7697626e6f02dd6fb2bc4a27796"}' \
             -e KLIB_POD_NAMESPACE=default \
