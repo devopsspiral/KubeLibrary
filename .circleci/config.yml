@@ -31,17 +31,17 @@ jobs:
       - k3d/k3d-run:
           step-name: Run kubectl
           command: |
-            # helm repo add stable https://kubernetes-charts.storage.googleapis.com
+            helm repo add stable https://kubernetes-charts.storage.googleapis.com
             # git clone https://github.com/kyma-incubator/octopus
             # docker cp octopus repo:/repo/
             # helm install octopus /repo/octopus/chart/octopus/
-            # helm install grafana stable/grafana -f /repo/testcases/grafana/values.yaml
-            # sleep 30
-            # docker run --rm \
-            # -e KLIB_POD_PATTERN='grafana.*' \
-            # -e KLIB_POD_ANNOTATIONS='{"checksum/config":"3bb97e1695589c9bcdf6a6cd10c03517286ab7697626e6f02dd6fb2bc4a27796"}' \
-            # -e KLIB_POD_NAMESPACE=default \
-            docker run --rm -it kubelibrary
+            helm install grafana stable/grafana -f /repo/testcases/grafana/values.yaml
+            sleep 30
+            docker run --rm \
+            -e KLIB_POD_PATTERN='grafana.*' \
+            -e KLIB_POD_ANNOTATIONS='{"checksum/config":"3bb97e1695589c9bcdf6a6cd10c03517286ab7697626e6f02dd6fb2bc4a27796"}' \
+            -e KLIB_POD_NAMESPACE=default \
+            kubelibrary -i grafana /testcases/
       - k3d/k3d-down:
           cluster-name: testk3d
 workflows:
