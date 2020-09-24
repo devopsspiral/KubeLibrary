@@ -1,5 +1,7 @@
 FROM python:3.8.1-alpine
-COPY setup.py README.md src testcases ./
+COPY setup.py README.md ./
+COPY src ./src
+COPY testcases ./testcases
 RUN ls && pip install robotframework-requests \
     && python setup.py install \
     && pwd
