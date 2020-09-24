@@ -2,8 +2,8 @@ FROM python:3.8.1-alpine
 COPY setup.py README.md ./
 COPY src ./src
 COPY testcases ./testcases
-RUN ls && pip install robotframework-requests \
-    && python setup.py install \
-    && pwd
+RUN pip install robotframework-requests \
+    && python setup.py install
 
-ENTRYPOINT robot
+ENTRYPOINT ["robot"]
+CMD ["--help"]
