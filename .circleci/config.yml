@@ -105,16 +105,14 @@ jobs:
             docker cp ~/.k3d/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
             docker cp ~/.k3d/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
             docker create --rm \
-            --network k3d-testk3d-1-serverlb \
-            --network k3d-testk3d-2-serverlb \
+            --network k3d-testk3d-1 \
+            --network k3d-testk3d-2 \
             --volumes-from kubeconfig \
             -e KUBE_CONFIG1=$KUBE_CONFIG1 \
             -e KUBE_CONFIG2=$KUBE_CONFIG2 \
             --name kubelibrary kubelibrary -i reload-config /testcases/
-            docker network connect k3d-testk3d-2-serverlb kubelibrary
+            docker network connect k3d-testk3d-2 kubelibrary
             docker start kubelibrary
-      - k3d/k3d-down:
-          cluster-name: testk3d
 workflows:
   main:
     jobs:
