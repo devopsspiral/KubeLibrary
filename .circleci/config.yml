@@ -104,6 +104,7 @@ jobs:
             sed -i "s#0.0.0.0.*#$CLUSTER2_IP:$CLUSTER2_PORT#g" ~/.k3d/kubeconfig-testk3d-2.yaml
             docker cp ~/.k3d/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
             docker cp ~/.k3d/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
+            docker network ls
             docker create --rm \
             --network k3d-testk3d-1 \
             --network k3d-testk3d-2 \
