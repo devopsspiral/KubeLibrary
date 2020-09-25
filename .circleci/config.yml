@@ -38,7 +38,7 @@ jobs:
             helm install grafana stable/grafana -f /repo/testcases/grafana/values.yaml
             sleep 30
             docker run --rm \
-            --network container:k3d-\${K3D_CLUSTER}-serverlb \
+            --network container:k3d-${K3D_CLUSTER}-serverlb \
             --volumes-from kubeconfig \
             -e KUBECONFIG=$K3D_KUBECONFIG \
             -e KLIB_POD_PATTERN='grafana.*' \
