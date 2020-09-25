@@ -5,3 +5,5 @@ persistence:
   enabled: true
   type: pvc
   size: 1Gi
+podAnnotations:
+  kubelibrary: testing
