@@ -114,6 +114,7 @@ jobs:
             --name kubelibrary kubelibrary -i reload-config /testcases/
             docker network connect k3d-testk3d-2 kubelibrary
             docker start kubelibrary
+            docker logs kubelibrary
 workflows:
   main:
     jobs:
