@@ -27,7 +27,13 @@ jobs:
             docker build -t kubelibrary -f testcases/Dockerfile .
       - k3d/k3d-helpers
       - k3d/k3d-up:
-          cluster-name: testk3d
+          cluster-name: testk3d-2
+      - k3d/k3d-run:
+          step-name: Prerequisites for 2nd cluster
+          command: |
+            kubectl create namespace test-ns-2
+      - k3d/k3d-up:
+          cluster-name: testk3d-1
       - k3d/k3d-run:
           step-name: Run examples
           command: |
@@ -41,6 +47,7 @@ jobs:
             kubectl create namespace $KLIB_POD_NAMESPACE
             kubectl label namespaces kubelib-tests test=test
             helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
+            kubectl create namespace test-ns-1
 
             sleep 30
             # Grafana tests
@@ -78,6 +85,13 @@ jobs:
             -e KLIB_POD_NAMESPACE=$KLIB_POD_NAMESPACE \
             kubelibrary -i other /testcases/
 
+            # Multi cluster tests
+            docker run --rm \
+            --network container:k3d-${K3D_CLUSTER}-serverlb \
+            --volumes-from kubeconfig \
+            -e KUBE_CONFIG1=/.kube/testk3d-1 \
+            -e KUBE_CONFIG2=/.kube/testk3d-2 \
+            kubelibrary -i other /testcases/
       - k3d/k3d-down:
           cluster-name: testk3d
 workflows:
