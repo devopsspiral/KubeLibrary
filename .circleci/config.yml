@@ -96,9 +96,9 @@ jobs:
             kubectl create namespace test-ns-1
             export KUBE_CONFIG1=/.kube/testk3d-1
             export KUBE_CONFIG2=/.kube/testk3d-2
-            export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-server-0)
+            export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-serverlb)
             export CLUSTER1_PORT=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "6443/tcp") 0).HostPort}}' k3d-testk3d-1-serverlb)
-            export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
+            export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-serverlb)
             export CLUSTER2_PORT=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "6443/tcp") 0).HostPort}}' k3d-testk3d-2-serverlb)
             sed -i "s#0.0.0.0.*#$CLUSTER1_IP:6443#g" ~/.k3d/kubeconfig-testk3d-1.yaml
             sed -i "s#0.0.0.0.*#$CLUSTER2_IP:6443#g" ~/.k3d/kubeconfig-testk3d-2.yaml
