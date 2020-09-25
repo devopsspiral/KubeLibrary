@@ -79,6 +79,7 @@ jobs:
             kubectl create namespace $KLIB_POD_NAMESPACE
             kubectl label namespaces kubelib-tests test=test
             helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
+            sleep 10
             # Other tests
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
@@ -98,7 +99,7 @@ jobs:
             --volumes-from kubeconfig \
             -e KUBE_CONFIG1=/.kube/testk3d-1 \
             -e KUBE_CONFIG2=/.kube/testk3d-2 \
-            kubelibrary -i other /testcases/
+            kubelibrary -i reload-config /testcases/
       - k3d/k3d-down:
           cluster-name: testk3d
 workflows:
