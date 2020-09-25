@@ -29,14 +29,21 @@ jobs:
       - k3d/k3d-up:
           cluster-name: testk3d
       - k3d/k3d-run:
-          step-name: Run kubectl
+          step-name: Run examples
           command: |
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
-            # git clone https://github.com/kyma-incubator/octopus
-            # docker cp octopus repo:/repo/
-            # helm install octopus /repo/octopus/chart/octopus/
+            git clone https://github.com/kyma-incubator/octopus
+            docker cp octopus repo:/repo/
+            export KLIB_POD_NAMESPACE=kubelib-tests
+
+            helm install octopus /repo/octopus/chart/octopus/
             helm install grafana stable/grafana -f /repo/testcases/grafana/values.yaml
+            kubectl create namespace $KLIB_POD_NAMESPACE
+            kubectl label namespaces kubelib-tests test=test
+            helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
+
             sleep 30
+            # Grafana tests
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
             --volumes-from kubeconfig \
@@ -45,6 +52,32 @@ jobs:
             -e KLIB_POD_ANNOTATIONS='{"kubelibrary":"testing"}' \
             -e KLIB_POD_NAMESPACE=default \
             kubelibrary -i grafana /testcases/
+
+            # Octopus tests
+            docker run --rm \
+            --network container:k3d-${K3D_CLUSTER}-serverlb \
+            --volumes-from kubeconfig \
+            -e KUBECONFIG=$K3D_KUBECONFIG \
+            -e KLIB_POD_PATTERN='octopus.*' \
+            -e KLIB_RESOURCE_LIMITS_MEMORY=30Mi \
+            -e KLIB_RESOURCE_REQUESTS_CPU=100m \
+            -e KLIB_POD_LABELS='{"app":"octopus"}' \
+            -e KLIB_RESOURCE_LIMITS_CPU=100m \
+            -e KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}' \
+            -e KLIB_POD_NAMESPACE=default \
+            -e KLIB_RESOURCE_REQUESTS_MEMORY=20Mi \
+            kubelibrary -i octopus /testcases/
+
+            # Other tests
+            docker run --rm \
+            --network container:k3d-${K3D_CLUSTER}-serverlb \
+            --volumes-from kubeconfig \
+            -e KUBECONFIG=$K3D_KUBECONFIG \
+            -e KLIB_POD_PATTERN='busybox.*' \
+            -e KLIB_POD_LABELS='job-name=busybox-job' \
+            -e KLIB_POD_NAMESPACE=$KLIB_POD_NAMESPACE \
+            kubelibrary -i other /testcases/
+
       - k3d/k3d-down:
           cluster-name: testk3d
 workflows:

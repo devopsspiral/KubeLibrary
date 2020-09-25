@@ -122,6 +122,8 @@ Keywords documentation can be found in docs/.
 
 [DevOps spiral article on KubeLibrary](https://devopsspiral.com/articles/k8s/robotframework-kubelibrary/)
 
+[KubeLibrary: Testing Kubernetes with RobotFramework  | Humanitec](https://humanitec.com/blog/kubelibrary-testing-kubernetes-with-robotframework)
+
 [RobotFramewrok User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
 
 ## Development
