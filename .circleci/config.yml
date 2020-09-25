@@ -106,7 +106,7 @@ jobs:
             docker cp ~/.k3d/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
             docker network ls
             docker version
-            docker create --rm \
+            docker create --rm -it \
             --network k3d-testk3d-1 \
             --volumes-from kubeconfig \
             -e KUBE_CONFIG1=$KUBE_CONFIG1 \
