@@ -142,7 +142,7 @@ jobs:
       - run:
           name: Verify setup.py version matches tag
           command: |
-          SEMVER="${CIRCLE_TAG:1}"
+            SEMVER="${CIRCLE_TAG:1}"
             grep version setup.py | grep "'"'"'version=$SEMVER'"''""'"
       - run:
           name: Publish on Pypi
