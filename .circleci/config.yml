@@ -23,10 +23,16 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - flake8 src/
-      - flake8 test/
-      - coverage run
-      - coverage report
+      - run:
+        name: Linter
+        command: |
+          flake8 src/
+          flake8 test/
+      - run:
+        name: Coverage
+        command: |
+          coverage run
+          coverage report
   test-on-k8s:
     executor: python/default
     environment:
