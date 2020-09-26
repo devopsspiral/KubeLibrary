@@ -348,8 +348,6 @@ class KubeLibrary(object):
             logger.error(f'Failed parsing Container Env Var JSON:{env_vars_json}')
             return False
 
-
-
     def get_services_in_namespace(self, namespace, label_selector=""):
         """Gets services in given namespace.
 
