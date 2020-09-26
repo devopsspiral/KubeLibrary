@@ -146,8 +146,14 @@ jobs:
 workflows:
   main:
     jobs:
-      - build-and-test
-      - lint-and-coverage
+      - build-and-test:
+          filters:
+            tags:
+              only: /.*/
+      - lint-and-coverage:
+          filters:
+            tags:
+              only: /.*/
       # - test-on-k8s
       - publish-to-pypi:
           requires:
