@@ -2,7 +2,7 @@ import json
 import mock
 import re
 import unittest
-from KubeLibrary.KubeLibrary import KubeLibrary
+from KubeLibrary import KubeLibrary
 
 
 class AttributeDict(object):
