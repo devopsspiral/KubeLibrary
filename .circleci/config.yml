@@ -134,17 +134,6 @@ jobs:
             docker network connect k3d-testk3d-2 kubelibrary
             docker start -a kubelibrary
   publish-to-pypi:
-    requires:
-      - build-and-test
-      - lint-and-coverage
-      # - test-on-k8s
-    filters:
-      # ignore any commit on any branch by default
-      branches:
-        ignore: /.*/
-      # only act on version tags
-      tags:
-        only: /^v.*/
     executor: python/default
     environment:
       PYTHONPATH=./src
@@ -161,6 +150,17 @@ workflows:
       - lint-and-coverage
       # - test-on-k8s
       - publish-to-pypi
+          requires:
+            - build-and-test
+            - lint-and-coverage
+            # - test-on-k8s
+          filters:
+            # ignore any commit on any branch by default
+            branches:
+              ignore: /.*/
+            # only act on version tags
+            tags:
+              only: /^v.*/
   #     - test-coverage
   #     - code-quality
   # publish:
