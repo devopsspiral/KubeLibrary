@@ -149,7 +149,7 @@ workflows:
       - build-and-test
       - lint-and-coverage
       # - test-on-k8s
-      - publish-to-pypi
+      - publish-to-pypi:
           requires:
             - build-and-test
             - lint-and-coverage
