@@ -2,7 +2,7 @@ import json
 import mock
 import re
 import unittest
-from KubeLibrary import KubeLibrary
+from KubeLibrary.KubeLibrary import KubeLibrary
 
 
 class AttributeDict(object):
@@ -48,7 +48,7 @@ def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
 class TestKubeLibrary(unittest.TestCase):
 
     def test_KubeLibrary_inits_from_kubeconfig(self):
-        kl = KubeLibrary(kube_config='test/resources/k3d')
+        KubeLibrary(kube_config='test/resources/k3d')
 
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')

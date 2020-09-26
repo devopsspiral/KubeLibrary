@@ -14,6 +14,19 @@ jobs:
       - python/install-deps
       - python/save-cache
       - python/test
+  lint-and-coverage:
+    executor: python/default
+    environment:
+      PYTHONPATH=./src
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - flake8 src/
+      - flake8 test/
+      - coverage run
+      - coverage report
   test-on-k8s:
     executor: python/default
     environment:
@@ -118,6 +131,7 @@ workflows:
   main:
     jobs:
       - build-and-test
+      - lint-and-coverage
       - test-on-k8s
   #     - test-coverage
   #     - code-quality
