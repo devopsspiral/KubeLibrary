@@ -140,6 +140,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Verify setup.py version matches tag
+          command: |
+          SEMVER="${CIRCLE_TAG:1}"
+            grep version setup.py | grep "'"'"'version=$SEMVER'"''""'"
+      - run:
           name: Publish on Pypi
           command: |
             echo "Works"
@@ -167,8 +172,3 @@ workflows:
             # only act on version tags
             tags:
               only: /^v.*/
-  #     - test-coverage
-  #     - code-quality
-  # publish:
-  #   jobs:
-  #     - publish-to-pypi
