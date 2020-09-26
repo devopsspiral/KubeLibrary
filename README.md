@@ -1,4 +1,6 @@
 # KubeLibrary
+[![CircleCI Build Status](https://circleci.com/gh/devopsspiral/KubeLibrary.svg?style=shield "CircleCI Build Status")](https://circleci.com/gh/devopsspiral/KubeLibrary)[![PyPI version](https://badge.fury.io/py/robotframework-kubelibrary.svg)](https://badge.fury.io/py/robotframework-kubelibrary)[![GitHub License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/devopsspiral/k3d-orb/master/LICENSE)[https://img.shields.io/badge/slack-robotframework%2F%23kubernetes-orange](https://robotframework.slack.com/archives/C017AKKS06R)
+
 
 RobotFramework library for testing Kubernetes cluster
 
