@@ -133,12 +133,34 @@ jobs:
             --name kubelibrary kubelibrary -i reload-config /testcases/
             docker network connect k3d-testk3d-2 kubelibrary
             docker start -a kubelibrary
+  publish-to-pypi:
+    requires:
+      - build-and-test
+      - lint-and-coverage
+      # - test-on-k8s
+    filters:
+      # ignore any commit on any branch by default
+      branches:
+        ignore: /.*/
+      # only act on version tags
+      tags:
+        only: /^v.*/
+    executor: python/default
+    environment:
+      PYTHONPATH=./src
+    steps:
+      - checkout
+      - run:
+          name: Publish on Pypi
+          command: |
+            echo "Works"
 workflows:
   main:
     jobs:
       - build-and-test
       - lint-and-coverage
-      - test-on-k8s
+      # - test-on-k8s
+      - publish-to-pypi
   #     - test-coverage
   #     - code-quality
   # publish:
