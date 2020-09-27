@@ -139,18 +139,18 @@ jobs:
       PYTHONPATH=./src
     steps:
       - checkout
-      # - run:
-      #     name: Verify setup.py version matches tag
-      #     command: |
-      #       SEMVER="${CIRCLE_TAG:1}"
-      #       grep  version='"'$SEMVER'"' setup.py
-      #       grep  "## \[$SEMVER\]" CHANGELOG.md
+      - run:
+          name: Verify setup.py version matches tag
+          command: |
+            SEMVER="${CIRCLE_TAG:1}"
+            grep  version='"'$SEMVER'"' setup.py
+            grep  "## \[$SEMVER\]" CHANGELOG.md
       - run:
           name: Publish on Pypi
           command: |
             pip install twine
             python3 setup.py sdist bdist_wheel
-            python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+            python3 -m twine upload dist/*
 workflows:
   main:
     jobs:
@@ -162,16 +162,17 @@ workflows:
           filters:
             tags:
               only: /.*/
-      # - test-on-k8s
+      - test-on-k8s:
+          filters:
+            tags:
+              only: /.*/
       - publish-to-pypi:
           requires:
             - build-and-test
             - lint-and-coverage
-            # - test-on-k8s
+            - test-on-k8s
           filters:
-            # ignore any commit on any branch by default
             branches:
               ignore: /.*/
-            # only act on version tags
             tags:
               only: /^v.*/
