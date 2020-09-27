@@ -67,6 +67,7 @@ class KubeLibrary(object):
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self.v1 = client.CoreV1Api()
         self.batchv1 = client.BatchV1Api()
+        self.appsv1 = client.AppsV1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
@@ -178,6 +179,23 @@ class KubeLibrary(object):
         r = re.compile(name_pattern)
         configmaps = [item for item in ret.items if r.match(item.metadata.name)]
         return configmaps
+
+    def get_deployments_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """Gets deployments matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of deployments.
+
+        - ``name_pattern``:
+          deployment name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_deployment(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        deployments = [item for item in ret.items if r.match(item.metadata.name)]
+        return deployments
 
     def get_jobs_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets jobs matching pattern in given namespace.
