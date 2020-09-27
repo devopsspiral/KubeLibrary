@@ -139,16 +139,18 @@ jobs:
       PYTHONPATH=./src
     steps:
       - checkout
-      - run:
-          name: Verify setup.py version matches tag
-          command: |
-            SEMVER="${CIRCLE_TAG:1}"
-            echo $SEMVER
-            grep  "$SEMVER" setup.py
+      # - run:
+      #     name: Verify setup.py version matches tag
+      #     command: |
+      #       SEMVER="${CIRCLE_TAG:1}"
+      #       grep  version='"'$SEMVER'"' setup.py
+      #       grep  "## \[$SEMVER\]" CHANGELOG.md
       - run:
           name: Publish on Pypi
           command: |
-            echo "Works"
+            pip install twine
+            python3 setup.py sdist bdist_wheel
+            python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 workflows:
   main:
     jobs:
