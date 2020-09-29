@@ -12,7 +12,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class KubeLibrary(object):
     """KubeLibrary is a Robot Framework test library for Kubernetes.
 
-    The approach taken by this library is to provide easy to access kubernetes objects representation that can 
+    The approach taken by this library is to provide easy to access kubernetes objects representation that can
     be then accessed to define highlevel keywords for tests.
 
     = Kubeconfigs =
@@ -26,7 +26,7 @@ class KubeLibrary(object):
     = In cluster execution =
 
     If tests are supposed to be executed from within cluster, KubeLibrary can be configured to use standard
-    token authentication. Just set incluster parameter to True. If True then kubeconfigs are not used, 
+    token authentication. Just set incluster parameter to True. If True then kubeconfigs are not used,
     even if provided.
 
     | ***** Settings *****
@@ -43,7 +43,7 @@ class KubeLibrary(object):
           Default True. Can be set to False for self-signed certificates.
         """
         self.reload_config(kube_config=kube_config, incluster=incluster, cert_validation=cert_validation)
-    
+
     def reload_config(self, kube_config=None, incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
            This can be used to connect to a different cluster during the same test.
@@ -100,7 +100,6 @@ class KubeLibrary(object):
         ret = self.v1.list_namespace(watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
-
     def get_healthy_nodes_count(self, label_selector=""):
         """Counts node with KubeletReady and status True.
 
@@ -148,7 +147,7 @@ class KubeLibrary(object):
         r = re.compile(name_pattern)
         pods = [item for item in ret.items if r.match(item.metadata.name)]
         return pods
-  
+
     def get_pod_logs(self, name, namespace, container):
         """Gets container logs of given pod in given namespace.
 
@@ -309,7 +308,7 @@ class KubeLibrary(object):
                     logger.error(f'Label "{k}" not found in actual')
                     return False
             return True
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             logger.error(f'Failed parsing Pod Labels JSON:{labels_json}')
             return False
 
@@ -334,7 +333,7 @@ class KubeLibrary(object):
                     logger.error(f'Annotation "{k}" not found in actual')
                     return False
             return True
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             logger.error(f'Failed parsing Pod Annotations JSON:{annotations_json}')
             return False
 
@@ -363,7 +362,7 @@ class KubeLibrary(object):
                     logger.error(f'Env var "{k}" not found in actual')
                     return False
             return True
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             logger.error(f'Failed parsing Container Env Var JSON:{env_vars_json}')
             return False
 

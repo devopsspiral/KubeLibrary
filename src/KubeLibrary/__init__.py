@@ -1,4 +1,1 @@
-from .KubeLibrary import KubeLibrary
-
-_version_ = '0.1.0'
-
+from .KubeLibrary import KubeLibrary  # noqa: F401
