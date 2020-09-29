@@ -25,6 +25,7 @@ setuptools.setup(
     python_requires='>=3.6',
     package_dir={'': 'src'},
     install_requires=[
+        'google-auth==1.21.3',
         'kubernetes>=10.0.1',
         'robotframework>=3.2.2'
     ],
