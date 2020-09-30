@@ -20,16 +20,15 @@ jobs:
       PYTHONPATH=./src
     steps:
       - checkout
+      - python/install-deps
       - run:
           name: Linter
           command: |
-            pip install flake8 
             flake8 src/
             flake8 test/
       - run:
           name: Coverage
           command: |
-            pip install coverage mock
             coverage run
             coverage report
   test-on-k8s:
