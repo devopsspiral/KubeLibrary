@@ -59,7 +59,7 @@ jobs:
             helm repo add stable https://kubernetes-charts.storage.googleapis.com
             helm install grafana stable/grafana -f /repo/testcases/grafana/values.yaml
 
-            sleep 30
+            sleep 45
             # Grafana tests
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
