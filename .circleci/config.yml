@@ -29,7 +29,7 @@ jobs:
       - run:
           name: Coverage
           command: |
-            pip install coverage
+            pip install coverage mock
             coverage run
             coverage report
   test-on-k8s:
