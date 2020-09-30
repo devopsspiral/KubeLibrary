@@ -4,7 +4,7 @@
 
 RobotFramework library for testing Kubernetes cluster
 
-## Quick start
+## Turbo start
 
 ```
 # install library itself
