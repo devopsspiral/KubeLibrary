@@ -1,6 +1,6 @@
 .venv
 .vscode
-
+.coverage
 *.pyc
 *.pyo
 src/robotframework_kubelibrary.egg-info/

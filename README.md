@@ -1,4 +1,6 @@
 # KubeLibrary
+[![CircleCI Build Status](https://circleci.com/gh/devopsspiral/KubeLibrary.svg?style=shield)](https://circleci.com/gh/devopsspiral/KubeLibrary)[![PyPI](https://img.shields.io/pypi/v/robotframework-kubelibrary)](https://pypi.org/project/robotframework-kubelibrary/)[![GitHub License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/devopsspiral/k3d-orb/master/LICENSE)[![Slack](https://img.shields.io/badge/slack-robotframework%2F%23kubernetes-blue)](https://robotframework.slack.com/archives/C017AKKS06R)
+
 
 RobotFramework library for testing Kubernetes cluster
 
@@ -53,7 +55,7 @@ helm install grafana stable/grafana -f testcases/grafana/values.yaml
 
 # run grafana tests
 export KLIB_POD_PATTERN='grafana.*'
-export KLIB_POD_ANNOTATIONS='{"checksum/config":"3bb97e1695589c9bcdf6a6cd10c03517286ab7697626e6f02dd6fb2bc4a27796"}'
+export KLIB_POD_ANNOTATIONS='{"kubelibrary":"testing"}'
 export KLIB_POD_NAMESPACE=default
 
 robot -i grafana testcases/
@@ -121,6 +123,8 @@ Keywords documentation can be found in docs/.
 ## Further reading
 
 [DevOps spiral article on KubeLibrary](https://devopsspiral.com/articles/k8s/robotframework-kubelibrary/)
+
+[KubeLibrary: Testing Kubernetes with RobotFramework  | Humanitec](https://humanitec.com/blog/kubelibrary-testing-kubernetes-with-robotframework)
 
 [RobotFramewrok User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
 
