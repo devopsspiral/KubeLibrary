@@ -158,3 +158,18 @@ class TestKubeLibrary(unittest.TestCase):
         pods = re.sub(r'datetime(.+?)\)\)', '1592598289', pods_str)
         with open('test/resources/pods.json', 'w') as outfile:
             json.dump(json.loads(pods), outfile, indent=4)
+
+    def test_list_namespaces(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        namespaces = kl.get_namespaces()
+        self.assertTrue(len(namespaces) > 0)
+
+    def test_get_kubelet_version(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        kl_version = kl.get_kubelet_version()
+        self.assertTrue(len(kl_version) > 0)
+
+    def test_get_service_accounts_in_namespace(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        sa = kl.get_service_accounts_in_namespace('.*', 'default')
+        self.assertEqual(['default', 'kubelib-test-test-objects-chart'], kl.filter_service_accounts_names(sa))
