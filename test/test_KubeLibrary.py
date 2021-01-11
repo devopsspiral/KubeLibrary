@@ -55,7 +55,6 @@ class TestKubeLibrary(unittest.TestCase):
     def test_KubeLibrary_inits_in_cluster(self):
         self.assertRaises(ConfigException, KubeLibrary(kube_config='test/resources/k3d', incluster=True))
 
-
     def test_KubeLibrary_inits_without_cert_validation(self):
         KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
 
