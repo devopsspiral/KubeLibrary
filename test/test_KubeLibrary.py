@@ -4,6 +4,7 @@ import mock
 import re
 import unittest
 from KubeLibrary import KubeLibrary
+from kubernetes.config.config_exception import ConfigException
 
 
 class AttributeDict(object):
@@ -52,13 +53,15 @@ class TestKubeLibrary(unittest.TestCase):
         KubeLibrary(kube_config='test/resources/k3d')
 
     def test_KubeLibrary_inits_in_cluster(self):
-        KubeLibrary(kube_config='test/resources/k3d', incluster=True)
+        self.assertRaises(ConfigException, KubeLibrary(kube_config='test/resources/k3d', incluster=True))
+
 
     def test_KubeLibrary_inits_without_cert_validation(self):
         KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
 
     def test_KubeLibrary_inits_with_wrong_config(self):
         self.assertRaises(TypeError, KubeLibrary(kube_config='test/resources/k3d_false'))
+        self.assertRaises(ConfigException, KubeLibrary(kube_config='test/resources/k3d_false'))
 
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
