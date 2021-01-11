@@ -179,7 +179,7 @@ class KubeLibrary(object):
         r = re.compile(name_pattern)
         configmaps = [item for item in ret.items if r.match(item.metadata.name)]
         return configmaps
-  
+
     def get_service_accounts_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets service accounts matching pattern in given namespace.
 
@@ -468,7 +468,7 @@ class KubeLibrary(object):
         """Creates service account in a namespace
 
         Returns created service account
-        
+
         - ``body``:
           Service Account object.
         - ``namespace``:
@@ -477,7 +477,7 @@ class KubeLibrary(object):
         ret = self.v1.create_namespaced_service_account(namespace=namespace, body=body)
         return ret
 
-    def delete_service_account_in_namespace(self, name, namespace ):
+    def delete_service_account_in_namespace(self, name, namespace):
         """Deletes service account in a namespace
 
         Returns V1status
