@@ -60,7 +60,6 @@ class TestKubeLibrary(unittest.TestCase):
     def test_KubeLibrary_inits_with_wrong_config(self):
         self.assertRaises(TypeError, KubeLibrary(kube_config='test/resources/k3d_false'))
 
-
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
         kl = KubeLibrary(kube_config='test/resources/k3d')
