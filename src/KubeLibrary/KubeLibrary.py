@@ -180,6 +180,23 @@ class KubeLibrary(object):
         configmaps = [item for item in ret.items if r.match(item.metadata.name)]
         return configmaps
 
+    def get_service_accounts_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """Gets service accounts matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of service accounts.
+
+        - ``name_pattern``:
+          Service Account name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_service_account(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        service_accounts = [item for item in ret.items if r.match(item.metadata.name)]
+        return service_accounts
+
     def get_deployments_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets deployments matching pattern in given namespace.
 
@@ -223,6 +240,16 @@ class KubeLibrary(object):
           List of pods objects
         """
         return [pod.metadata.name for pod in pods]
+
+    def filter_service_accounts_names(self, service_accounts):
+        """Filter service accounts names for list of service accounts.
+
+        Returns list of strings.
+
+        - ``service_accounts``:
+          List of service accounts objects
+        """
+        return [sa.metadata.name for sa in service_accounts]
 
     def filter_pods_containers_by_name(self, pods, name_pattern):
         """Filters pods containers by name for given list of pods.
@@ -446,3 +473,30 @@ class KubeLibrary(object):
         """
         ret = self.v1.list_node(watch=False, label_selector=label_selector)
         return [item.status.node_info.kubelet_version for item in ret.items]
+
+    def create_service_account_in_namespace(self, namespace, body):
+        """Creates service account in a namespace
+
+        Returns created service account
+
+        - ``body``:
+          Service Account object.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.create_namespaced_service_account(namespace=namespace, body=body)
+        return ret
+
+    def delete_service_account_in_namespace(self, name, namespace):
+        """Deletes service account in a namespace
+
+        Returns V1status
+
+
+        - ``name``:
+          Service Account name
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.delete_namespaced_service_account(name=name, namespace=namespace)
+        return ret
