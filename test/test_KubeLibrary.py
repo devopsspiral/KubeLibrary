@@ -6,6 +6,7 @@ import unittest
 from KubeLibrary import KubeLibrary
 from kubernetes.config.config_exception import ConfigException
 
+
 class AttributeDict(object):
     """
     Based on http://databio.org/posts/python_AttributeDict.html
