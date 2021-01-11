@@ -3,8 +3,7 @@ import json
 import mock
 import re
 import unittest
-from KubeLibrary import KubeLibrary
-from kubernetes.config.config_exception import ConfigException
+from src.KubeLibrary import KubeLibrary
 
 
 class AttributeDict(object):
@@ -54,9 +53,6 @@ class TestKubeLibrary(unittest.TestCase):
 
     def test_KubeLibrary_inits_without_cert_validation(self):
         KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
-
-    def test_KubeLibrary_inits_with_wrong_config(self):
-        self.assertRaises(ConfigException, KubeLibrary(kube_config='test/resources/k3d_false'))
 
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
@@ -162,3 +158,13 @@ class TestKubeLibrary(unittest.TestCase):
         pods = re.sub(r'datetime(.+?)\)\)', '1592598289', pods_str)
         with open('test/resources/pods.json', 'w') as outfile:
             json.dump(json.loads(pods), outfile, indent=4)
+
+    def test_list_namespaces(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        namespaces = kl.get_namespaces()
+        self.assertTrue(len(namespaces) > 0)
+
+    def test_get_kubelet_version(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        kl_version = kl.get_kubelet_version()
+        self.assertTrue(len(kl_version) > 0)
