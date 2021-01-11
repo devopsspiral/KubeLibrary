@@ -5,8 +5,6 @@ import re
 import unittest
 from KubeLibrary import KubeLibrary
 from kubernetes.config.config_exception import ConfigException
-from kubernetes.config
-
 
 class AttributeDict(object):
     """
