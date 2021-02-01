@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.3.0] - 2021-02-01
 
 ### Added
-- CI implementation #14 by @m-wcislo 
-- keywords to list deployments #13 by @Nilsty 
-- keywords for get/create/delete service accounts #28 by @kutayy 
+- CI implementation [#14](https://github.com/devopsspiral/KubeLibrary/pull/14) by [@m-wcislo](https://github.com/m-wcislo) @m-wcislo 
+- keywords to list deployments [#13](https://github.com/devopsspiral/KubeLibrary/pull/13) by [@Nilsty](https://github.com/Nilsty)
+- keywords for get/create/delete service accounts [#28](https://github.com/devopsspiral/KubeLibrary/pull/28) by [@kutayy](https://github.com/kutayy)   
 
 
 ## [0.2.0] - 2020-09-03
