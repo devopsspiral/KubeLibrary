@@ -61,6 +61,12 @@ def mock_list_namespaced_jobs(namespace, watch=False, label_selector=""):
             list_of_jobs = AttributeDict({'items': jobs_content})
             return list_of_jobs
 
+def mock_list_namespaced_secrets(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/secrets.json') as json_file:
+            secrets_content = json.load(json_file)
+            list_of_secrets = AttributeDict({'items': secrets_content})
+            return list_of_secrets
 
 def mock_list_namespaces(watch=False, label_selector=""):
     with open('test/resources/namespaces.json') as json_file:
@@ -218,3 +224,10 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         jobs = kl.get_jobs_in_namespace('.*', 'default')
         self.assertEqual(['octopus-0', 'octopus-1', 'octopus-2', 'octopus-3'], [item.metadata.name for item in jobs])
+
+    @mock.patch('kubernetes.client.BatchV1Api.list_namespaced_secret')
+    def test_get_secrets_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_secrets
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        secrets = kl.get_secrets_in_namespace('.*', 'default')
+        self.assertEqual(['grafana'], [item.metadata.name for item in secrets])
