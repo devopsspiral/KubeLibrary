@@ -233,4 +233,3 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         secrets = kl.get_secrets_in_namespace('.*', 'default')
         self.assertEqual(['grafana'], [item.metadata.name for item in secrets])
-        
