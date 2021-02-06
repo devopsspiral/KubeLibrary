@@ -1,12 +1,10 @@
 *** Settings ***
-Library           Collections
-Library           RequestsLibrary
 # For regular execution
-### Library           KubeLibrary
+Library           KubeLibrary
 # For incluster execution
 #Library           KubeLibrary    None    True    False
 # For development
-Library           ../../src/KubeLibrary/KubeLibrary.py  
+#Library           ../../src/KubeLibrary/KubeLibrary.py  ~/.kube/k3d
 
 *** Keywords ***
 List all secrets in namespace
@@ -17,18 +15,14 @@ List all secrets in namespace
         Log  ${secret.metadata.name}  console=True
     END
 
-# List all key value pairs in configmap
-#     [Arguments]  ${configmap_name}  ${namespace}
-#     @{namespace_configmaps}=  Get Configmaps In Namespace    ^${configmap_name}$  ${namespace}
-#     Log  \nList of key value pairs in configmap ${configmap_name}:  console=True
-#     FOR  ${configmap}  IN  @{namespace_configmaps}
-#         Log key value pairs  ${configmap.data}
-#     END
-
-# Log key value pairs
-#     [Arguments]  ${configmap_data}
-#     FOR  ${key}  ${value}  IN  &{configmap_data}
-#         Log  ${key} = ${value}  console=True
-#     END
-
-
+Read grafana secrets
+    @{namespace_secrets}=  Get Secrets In Namespace    ^grafana$  default
+    Length Should Be  ${namespace_secrets}  1
+  
+    Set Suite Variable  ${GRAFANA_USER}  ${namespace_secrets[0].data["admin-user"]}
+    ${GRAFANA_USER}=  Evaluate  base64.b64decode($GRAFANA_USER)  modules=base64
+    Log  Grafana user: ${GRAFANA_USER}  console=True
+    
+    Set Suite Variable  ${GRAFANA_PASSWORD}  ${namespace_secrets[0].data["admin-password"]}
+    ${GRAFANA_PASSWORD}=  Evaluate  base64.b64decode($GRAFANA_PASSWORD)  modules=base64
+    Log  Grafana password: ${GRAFANA_PASSWORD}  console=True

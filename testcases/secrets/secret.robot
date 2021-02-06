@@ -5,3 +5,4 @@ Resource          ./secret_kw.robot
 Secrets test case example
     [Tags]    grafana
     List all secrets in namespace  default
+    Read grafana secrets
