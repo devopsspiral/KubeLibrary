@@ -225,7 +225,7 @@ class TestKubeLibrary(unittest.TestCase):
         jobs = kl.get_jobs_in_namespace('.*', 'default')
         self.assertEqual(['octopus-0', 'octopus-1', 'octopus-2', 'octopus-3'], [item.metadata.name for item in jobs])
 
-    @mock.patch('kubernetes.client.BatchV1Api.list_namespaced_secret')
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_secret')
     def test_get_secrets_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_secrets
         kl = KubeLibrary(kube_config='test/resources/k3d')
