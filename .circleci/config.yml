@@ -54,7 +54,7 @@ jobs:
       - k3d/k3d-run:
           step-name: Run Grafana examples
           command: |
-            helm repo add stable https://kubernetes-charts.storage.googleapis.com
+            helm repo add stable https://charts.helm.sh/stable
             helm install grafana stable/grafana -f /repo/testcases/grafana/values.yaml
 
             sleep 45

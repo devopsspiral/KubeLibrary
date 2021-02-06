@@ -1,0 +1,269 @@
+[
+        {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+                "creationTimestamp": "2020-12-04T14:53:42Z",
+                "labels": {
+                    "controller-uid": "cce59116-9392-4eb0-b9bb-b3a72dd4d835",
+                    "job-name": "octopus-0"
+                },
+                "name": "octopus-0",
+                "namespace": "default",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "batch/v1beta",
+                        "blockOwnerDeletion": true,
+                        "kind": "CronJob",
+                        "name": "monitoring-job-prod",
+                        "uid": "e296649c-3c4e-11ea-8cdc-42010a9a0056"
+                    }
+                ],
+                "resourceVersion": "259049170",
+                "selfLink": "/apis/batch/v1/namespaces/default/jobs/octopus-0",
+                "uid": "cce59116-9392-4eb0-b9bb-b3a72dd4d835"
+            },
+            "spec": {
+                "backoffLimit": 6,
+                "completions": 1,
+                "parallelism": 1,
+                "selector": {
+                    "matchLabels": {
+                        "controller-uid": "cce59116-9392-4eb0-b9bb-b3a72dd4d835"
+                    }
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "controller-uid": "cce59116-9392-4eb0-b9bb-b3a72dd4d835",
+                            "job-name": "octopus-0"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "OnFailure",
+                        "schedulerName": "default-scheduler",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30
+                    }
+                }
+            },
+            "status": {
+                "completionTime": "2020-12-04T14:53:46Z",
+                "conditions": [
+                    {
+                        "lastProbeTime": "2020-12-04T14:53:46Z",
+                        "lastTransitionTime": "2020-12-04T14:53:46Z",
+                        "status": "True",
+                        "type": "Complete"
+                    }
+                ],
+                "startTime": "2020-12-04T14:53:42Z",
+                "succeeded": 1
+            }
+        },
+        {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+                "creationTimestamp": "2020-11-30T11:14:09Z",
+                "labels": {
+                    "controller-uid": "1c63b471-812b-4aae-8168-842d8e37b916",
+                    "job-name": "octopus-1"
+                },
+                "name": "octopus-1",
+                "namespace": "default",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "batch/v1beta",
+                        "blockOwnerDeletion": true,
+                        "kind": "CronJob",
+                        "name": "monitoring-job-staging",
+                        "uid": "826080f1-3c50-11ea-8cdc-42010a9a0056"
+                    }
+                ],
+                "resourceVersion": "256386178",
+                "selfLink": "/apis/batch/v1/namespaces/default/jobs/octopus-1",
+                "uid": "1c63b471-812b-4aae-8168-842d8e37b916"
+            },
+            "spec": {
+                "backoffLimit": 6,
+                "completions": 1,
+                "parallelism": 1,
+                "selector": {
+                    "matchLabels": {
+                        "controller-uid": "1c63b471-812b-4aae-8168-842d8e37b916"
+                    }
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "controller-uid": "1c63b471-812b-4aae-8168-842d8e37b916",
+                            "job-name": "octopus-1"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "OnFailure",
+                        "schedulerName": "default-scheduler",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30
+                    }
+                }
+            },
+            "status": {
+                "completionTime": "2020-11-30T11:14:12Z",
+                "conditions": [
+                    {
+                        "lastProbeTime": "2020-11-30T11:14:12Z",
+                        "lastTransitionTime": "2020-11-30T11:14:12Z",
+                        "status": "True",
+                        "type": "Complete"
+                    }
+                ],
+                "startTime": "2020-11-30T11:14:09Z",
+                "succeeded": 1
+            }
+        },
+        {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+                "creationTimestamp": "2020-12-08T08:30:29Z",
+                "labels": {
+                    "controller-uid": "58238c85-7d02-442c-8f87-45a7c26f233d",
+                    "job-name": "octopus-2"
+                },
+                "name": "octopus-2",
+                "namespace": "default",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "batch/v1beta",
+                        "blockOwnerDeletion": true,
+                        "kind": "CronJob",
+                        "name": "monitoring-job-staging",
+                        "uid": "826080f1-3c50-11ea-8cdc-42010a9a0056"
+                    }
+                ],
+                "resourceVersion": "261430323",
+                "selfLink": "/apis/batch/v1/namespaces/default/jobs/octopus-2",
+                "uid": "58238c85-7d02-442c-8f87-45a7c26f233d"
+            },
+            "spec": {
+                "backoffLimit": 6,
+                "completions": 1,
+                "parallelism": 1,
+                "selector": {
+                    "matchLabels": {
+                        "controller-uid": "58238c85-7d02-442c-8f87-45a7c26f233d"
+                    }
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "controller-uid": "58238c85-7d02-442c-8f87-45a7c26f233d",
+                            "job-name": "octopus-2"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "OnFailure",
+                        "schedulerName": "default-scheduler",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30
+                    }
+                }
+            },
+            "status": {
+                "completionTime": "2020-12-08T08:31:07Z",
+                "conditions": [
+                    {
+                        "lastProbeTime": "2020-12-08T08:31:07Z",
+                        "lastTransitionTime": "2020-12-08T08:31:07Z",
+                        "status": "True",
+                        "type": "Complete"
+                    }
+                ],
+                "startTime": "2020-12-08T08:30:29Z",
+                "succeeded": 1
+            }
+        },
+        {
+            "apiVersion": "batch/v1",
+            "kind": "Job",
+            "metadata": {
+                "creationTimestamp": "2020-12-10T08:43:36Z",
+                "labels": {
+                    "controller-uid": "9d0ca880-a0f2-48e6-9b7d-af348c3d0ba1",
+                    "job-name": "octopus-3"
+                },
+                "name": "octopus-3",
+                "namespace": "default",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "batch/v1beta",
+                        "blockOwnerDeletion": true,
+                        "kind": "CronJob",
+                        "name": "monitoring-job-staging",
+                        "uid": "826080f1-3c50-11ea-8cdc-42010a9a0056"
+                    }
+                ],
+                "resourceVersion": "262715903",
+                "selfLink": "/apis/batch/v1/namespaces/default/jobs/octopus-3",
+                "uid": "9d0ca880-a0f2-48e6-9b7d-af348c3d0ba1"
+            },
+            "spec": {
+                "backoffLimit": 6,
+                "completions": 1,
+                "parallelism": 1,
+                "selector": {
+                    "matchLabels": {
+                        "controller-uid": "9d0ca880-a0f2-48e6-9b7d-af348c3d0ba1"
+                    }
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "controller-uid": "9d0ca880-a0f2-48e6-9b7d-af348c3d0ba1",
+                            "job-name": "octopus-3"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "OnFailure",
+                        "schedulerName": "default-scheduler",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30
+                    }
+                }
+            },
+            "status": {
+                "completionTime": "2020-12-10T08:43:58Z",
+                "conditions": [
+                    {
+                        "lastProbeTime": "2020-12-10T08:43:58Z",
+                        "lastTransitionTime": "2020-12-10T08:43:58Z",
+                        "status": "True",
+                        "type": "Complete"
+                    }
+                ],
+                "startTime": "2020-12-10T08:43:36Z",
+                "succeeded": 1
+            }
+        }
+]
