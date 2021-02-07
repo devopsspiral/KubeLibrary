@@ -1,0 +1,66 @@
+[
+    {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "creationTimestamp": "2021-01-11T13:11:58Z",
+            "managedFields": [
+                {
+                    "apiVersion": "v1",
+                    "fieldsType": "FieldsV1",
+                    "fieldsV1": {
+                        "f:status": {
+                            "f:phase": {}
+                        }
+                    },
+                    "manager": "k3s",
+                    "operation": "Update",
+                    "time": "2021-01-11T13:11:58Z"
+                }
+            ],
+            "name": "default",
+            "resourceVersion": "5",
+            "uid": "e068db23-0f18-4535-9821-42b7acf9ca72"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "creationTimestamp": "2021-01-11T13:11:58Z",
+            "managedFields": [
+                {
+                    "apiVersion": "v1",
+                    "fieldsType": "FieldsV1",
+                    "fieldsV1": {
+                        "f:status": {
+                            "f:phase": {}
+                        }
+                    },
+                    "manager": "k3s",
+                    "operation": "Update",
+                    "time": "2021-01-11T13:11:58Z"
+                }
+            ],
+            "name": "kubelib-test-test-objects-chart",
+            "resourceVersion": "5",
+            "uid": "e068db23-0f18-4535-9821-42b7acf9ca72"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    }
+]

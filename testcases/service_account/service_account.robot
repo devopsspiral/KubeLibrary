@@ -9,7 +9,7 @@ Listing Service Accounts
 
 Working on Service Accounts
     [Tags]    other
-    List all service accounts for matching name pattern in namespace    .*     kubelib-tests
-    Edit obtained service account    service_account    test-sa
+    List all service accounts for matching name pattern in namespace    default     kubelib-tests
+    Edit obtained service account    test-sa
     Create new service account in namespace    kubelib-tests
-    Delete service account in namespace    test-sa    kubelib-tests
+    Delete created service account in namespace    test-sa    kubelib-tests

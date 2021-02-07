@@ -4,7 +4,6 @@ import mock
 import re
 import unittest
 from KubeLibrary import KubeLibrary
-from kubernetes.config.config_exception import ConfigException
 
 
 class AttributeDict(object):
@@ -47,6 +46,36 @@ def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
             return list_of_pods
 
 
+def mock_list_namespaced_service_accounts(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/service_accounts.json') as json_file:
+            service_accounts_content = json.load(json_file)
+            list_of_service_accounts = AttributeDict({'items': service_accounts_content})
+            return list_of_service_accounts
+
+
+def mock_list_namespaced_jobs(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/jobs.json') as json_file:
+            jobs_content = json.load(json_file)
+            list_of_jobs = AttributeDict({'items': jobs_content})
+            return list_of_jobs
+
+
+def mock_list_namespaces(watch=False, label_selector=""):
+    with open('test/resources/namespaces.json') as json_file:
+        namespaces_content = json.load(json_file)
+        list_of_namespaces = AttributeDict({'items': namespaces_content})
+        return list_of_namespaces
+
+
+def mock_list_node_info(watch=False, label_selector=""):
+    with open('test/resources/node_info.json') as json_file:
+        node_info_content = json.load(json_file)
+        node_info = AttributeDict(node_info_content)
+        return node_info
+
+
 class TestKubeLibrary(unittest.TestCase):
 
     def test_KubeLibrary_inits_from_kubeconfig(self):
@@ -54,9 +83,6 @@ class TestKubeLibrary(unittest.TestCase):
 
     def test_KubeLibrary_inits_without_cert_validation(self):
         KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
-
-    def test_KubeLibrary_inits_with_wrong_config(self):
-        self.assertRaises(ConfigException, KubeLibrary(kube_config='test/resources/k3d_false'))
 
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
@@ -162,3 +188,33 @@ class TestKubeLibrary(unittest.TestCase):
         pods = re.sub(r'datetime(.+?)\)\)', '1592598289', pods_str)
         with open('test/resources/pods.json', 'w') as outfile:
             json.dump(json.loads(pods), outfile, indent=4)
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespace')
+    def test_list_namespaces(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaces
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        namespaces = kl.get_namespaces()
+        self.assertTrue(len(namespaces) > 0)
+        self.assertEqual(['default', 'kubelib-test-test-objects-chart'], namespaces)
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_service_account')
+    def test_get_service_accounts_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_service_accounts
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        sa = kl.get_service_accounts_in_namespace('.*', 'default')
+        self.assertEqual(['default', 'kubelib-test-test-objects-chart'], kl.filter_service_accounts_names(sa))
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_node')
+    def test_get_kubelet_version(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_node_info
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        kl_version = kl.get_kubelet_version()
+        self.assertTrue(len(kl_version) > 0)
+        self.assertEqual(['v1.20.0+k3s2'], kl_version)
+
+    @mock.patch('kubernetes.client.BatchV1Api.list_namespaced_job')
+    def test_get_jobs_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_jobs
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        jobs = kl.get_jobs_in_namespace('.*', 'default')
+        self.assertEqual(['octopus-0', 'octopus-1', 'octopus-2', 'octopus-3'], [item.metadata.name for item in jobs])

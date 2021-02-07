@@ -29,19 +29,18 @@ List all service accounts for matching name pattern in namespace with label
         ...  msg=Expected labels do not match.
     END
 
-
 Edit obtained service account
-    [Arguments]  ${new_service_account}    ${service_account_name}
-    ${new_service_account.metadata.name}=  Set Variable  ${service_account_name}
-    ${new_service_account.metadata.resource_version}=  Set Variable  ${None}
-    Set Global Variable    ${new_service_account}    ${new_service_account}
+    [Arguments]     ${service_account_name}
+    ${service_account.metadata.name}=  Set Variable  ${service_account_name}
+    ${service_account.metadata.resource_version}=  Set Variable  ${None}
+    Set Global Variable    ${new_service_account}    ${service_account}
 
 Create new service account in namespace
     [Arguments]  ${namespace}
     ${new_sa}=    Create Service Account In Namespace  ${namespace}  ${new_service_account}
     Log  ${new_sa}
 
-Delete service account in namespace
+Delete created service account in namespace
     [Arguments]  ${service_account_name}    ${namespace}
     ${status}=    Delete Service Account In Namespace  ${service_account_name}    ${namespace}
     Log  ${status}
