@@ -56,7 +56,9 @@ robot -i cluster testcases/
 
 ### Grafana Tests
 ```
-helm install grafana stable/grafana -f testcases/grafana/values.yaml
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install grafana grafana/grafana -f testcases/grafana/values.yaml
 
 # run grafana tests
 export KLIB_POD_PATTERN='grafana.*'

@@ -231,6 +231,23 @@ class KubeLibrary(object):
         jobs = [item for item in ret.items if r.match(item.metadata.name)]
         return jobs
 
+    def get_secrets_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """Gets secrets matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of secrets.
+
+        - ``name_pattern``:
+          secret name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_secret(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        secrets = [item for item in ret.items if r.match(item.metadata.name)]
+        return secrets
+
     def filter_pods_names(self, pods):
         """Filter pod names for list of pods.
 
