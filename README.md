@@ -43,6 +43,11 @@ More examples in testcases/ directory.
 
 To see all the tests passing execute below commands.
 
+## Documentation
+
+[Library docs](http://devopsspiral.com/KubeLibrary/)
+
+
 ### Cluster Tests
 ```
 # run cluster tests
@@ -154,5 +159,5 @@ For development cluster you can use k3s/k3d as described in [DevOps spiral artic
 Generate docs
 
 ```
-python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/KubeLibrary.html
+python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html
 ```
