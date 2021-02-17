@@ -25,7 +25,7 @@ class KubeLibrary(object):
 
     = Context =
 
-    By default current context from kubeconfig is used. Setting multiple contexts in 
+    By default current context from kubeconfig is used. Setting multiple contexts in
     different test suites allows working on multiple clusters.
 
     | ***** Settings *****
