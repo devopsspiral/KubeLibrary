@@ -23,6 +23,14 @@ class KubeLibrary(object):
     | ***** Settings *****
     | Library           KubeLibrary          /path/to/kubeconfig
 
+    = Context =
+
+    By default current context from kubeconfig is used. Setting multiple contexts in 
+    different test suites allows working on multiple clusters.
+
+    | ***** Settings *****
+    | Library           KubeLibrary          context=k3d-k3d-cluster2
+
     = In cluster execution =
 
     If tests are supposed to be executed from within cluster, KubeLibrary can be configured to use standard
@@ -33,22 +41,26 @@ class KubeLibrary(object):
     | Library           KubeLibrary          None    True
 
     """
-    def __init__(self, kube_config=None, incluster=False, cert_validation=True):
+    def __init__(self, kube_config=None, context=None, incluster=False, cert_validation=True):
         """KubeLibrary can be configured with several optional arguments.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
+        - ``context``:
+          Active context. If None current_context from kubeconfig is used.
         - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
-        self.reload_config(kube_config=kube_config, incluster=incluster, cert_validation=cert_validation)
+        self.reload_config(kube_config=kube_config, context=context, incluster=incluster, cert_validation=cert_validation)
 
-    def reload_config(self, kube_config=None, incluster=False, cert_validation=True):
+    def reload_config(self, kube_config=None, context=None, incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
            This can be used to connect to a different cluster during the same test.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
+        - ``context``:
+          Active context. If None current_context from kubeconfig is used.
         - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
@@ -62,7 +74,7 @@ class KubeLibrary(object):
                 raise e
         else:
             try:
-                config.load_kube_config(kube_config)
+                config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self.v1 = client.CoreV1Api()
