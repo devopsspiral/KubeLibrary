@@ -3,6 +3,8 @@ import re
 import ssl
 import urllib3
 from kubernetes import client, config
+import subprocess
+
 from robot.api import logger
 
 # supressing SSL warnings when using self-signed certs
