@@ -3,7 +3,7 @@ import re
 import ssl
 import urllib3
 from kubernetes import client, config
-import subprocess
+import requests
 
 from robot.api import logger
 
