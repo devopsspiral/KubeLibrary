@@ -11,5 +11,11 @@ Library           KubeLibrary
 
 *** Keywords ***
 Healthcheck
-    ${output}=  Get Healthcheck
-	Log   \nHealthcheck ${output}:  console=True
+    @{RESPONSE}=  Get Healthcheck	
+	Remove from List    ${RESPONSE}    -1
+    Remove from List    ${RESPONSE}    -1
+    FOR    ${ELEMENT}    IN    @{RESPONSE}
+	    Should Be True      "ok" in """${ELEMENT}""" 
+	    log to console  \n ${ELEMENT}
+	END
+	
