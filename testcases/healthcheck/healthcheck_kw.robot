@@ -16,8 +16,8 @@ Healthcheck
 	      Remove from List    ${RESPONSE}    -1
     END
 
-    FOR    ${ELEMENT}    IN    @{RESPONSE}
+    @{ENDPOINTS} =  Split String    ${RESPONSE}[0]    \n
+    FOR    ${ELEMENT}    IN    @{ENDPOINTS}
 	    Should Be True      "ok" in """${ELEMENT}""" 
-	    log to console  \n ${ELEMENT}
     END
 	
