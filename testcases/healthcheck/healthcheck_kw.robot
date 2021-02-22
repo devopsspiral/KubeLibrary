@@ -12,10 +12,12 @@ Library           KubeLibrary
 *** Keywords ***
 Healthcheck
     @{RESPONSE}=  Get Healthcheck	
-	Remove from List    ${RESPONSE}    -1
-    Remove from List    ${RESPONSE}    -1
+    FOR    ${i}    IN RANGE    2
+	      Remove from List    ${RESPONSE}    -1
+    END
+
     FOR    ${ELEMENT}    IN    @{RESPONSE}
 	    Should Be True      "ok" in """${ELEMENT}""" 
 	    log to console  \n ${ELEMENT}
-	END
+    END
 	
