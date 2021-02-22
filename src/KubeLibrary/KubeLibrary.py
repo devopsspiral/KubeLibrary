@@ -502,6 +502,11 @@ class KubeLibrary(object):
         return ret
 
     def get_healthcheck(self):
+        """Checks cluster level healthcheck
+        Can be used to verify the readiness/current status of the API server     
+
+        Returns tuple of (response data, response status and response headers)
+        """
         path_params = {}
         query_params = []
         header_params = {}
