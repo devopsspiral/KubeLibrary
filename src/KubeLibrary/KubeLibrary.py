@@ -541,11 +541,9 @@ class KubeLibrary(object):
         ret = self.extensionsv1beta1.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
-
-
     def get_ingress_details_in_namespace(self, name, namespace):
         """Gets ingress details in given namespace.
-        Returns Ingress object representation. 
+        Returns Ingress object representation.
           Name of ingress.
         - ``namespace``:
           Namespace to check
