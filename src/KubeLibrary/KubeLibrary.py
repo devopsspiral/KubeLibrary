@@ -78,6 +78,7 @@ class KubeLibrary(object):
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self.v1 = client.CoreV1Api()
+        self.extensionsv1beta1 = client.ExtensionsV1beta1Api()
         self.batchv1 = client.BatchV1Api()
         self.appsv1 = client.AppsV1Api()
         if not cert_validation:
@@ -528,4 +529,26 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.v1.delete_namespaced_service_account(name=name, namespace=namespace)
+        return ret
+
+    def get_ingresses_in_namespace(self, namespace, label_selector=""):
+        """Gets ingresses in given namespace.
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+        Returns list of strings.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.extensionsv1beta1.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+
+
+    def get_ingress_details_in_namespace(self, name, namespace):
+        """Gets ingress details in given namespace.
+        Returns Ingress object representation. 
+          Name of ingress.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
         return ret
