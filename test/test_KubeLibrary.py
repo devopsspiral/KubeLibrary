@@ -4,6 +4,7 @@ import mock
 import re
 import unittest
 from KubeLibrary import KubeLibrary
+from kubernetes.config.config_exception import ConfigException
 
 
 class AttributeDict(object):
@@ -88,6 +89,13 @@ class TestKubeLibrary(unittest.TestCase):
 
     def test_KubeLibrary_inits_from_kubeconfig(self):
         KubeLibrary(kube_config='test/resources/k3d')
+
+    def test_KubeLibrary_inits_with_context(self):
+        KubeLibrary(kube_config='test/resources/multiple_context', context='k3d-k3d-cluster2')
+
+    def test_KubeLibrary_fails_for_wrong_context(self):
+        kl = KubeLibrary(kube_config='test/resources/multiple_context')
+        self.assertRaises(ConfigException, kl.reload_config, kube_config='test/resources/multiple_context', context='k3d-k3d-cluster2-wrong')
 
     def test_KubeLibrary_inits_without_cert_validation(self):
         KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
