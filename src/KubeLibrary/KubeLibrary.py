@@ -80,7 +80,7 @@ class KubeLibrary(object):
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
-        api_client = None
+        self.api_client = None
         if incluster:
             try:
                 config.load_incluster_config()
@@ -93,16 +93,16 @@ class KubeLibrary(object):
             configuration.api_key_prefix['authorization'] = 'Bearer'
             configuration.host = api_url
             configuration.ssl_ca_cert = ca_cert
-            api_client = client.ApiClient(configuration)
+            self.api_client = client.ApiClient(configuration)
         else:
             try:
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
-        self.v1 = client.CoreV1Api(api_client)
-        self.extensionsv1beta1 = client.ExtensionsV1beta1Api(api_client)
-        self.batchv1 = client.BatchV1Api(api_client)
-        self.appsv1 = client.AppsV1Api(api_client)
+        self.v1 = client.CoreV1Api()
+        self.extensionsv1beta1 = client.ExtensionsV1beta1Api()
+        self.batchv1 = client.BatchV1Api()
+        self.appsv1 = client.AppsV1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
