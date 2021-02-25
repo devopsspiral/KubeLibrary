@@ -99,10 +99,10 @@ class KubeLibrary(object):
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
-        self.v1 = client.CoreV1Api()
-        self.extensionsv1beta1 = client.ExtensionsV1beta1Api()
-        self.batchv1 = client.BatchV1Api()
-        self.appsv1 = client.AppsV1Api()
+        self.v1 = client.CoreV1Api(self.api_client)
+        self.extensionsv1beta1 = client.ExtensionsV1beta1Api(self.api_client)
+        self.batchv1 = client.BatchV1Api(self.api_client)
+        self.appsv1 = client.AppsV1Api(self.api_client)
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
