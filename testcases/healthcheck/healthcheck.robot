@@ -5,4 +5,3 @@ Resource          ./healthcheck_kw.robot
 Healthcheck
     [Tags]    other
     Healthcheck
-	
