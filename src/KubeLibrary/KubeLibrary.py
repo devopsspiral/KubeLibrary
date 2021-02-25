@@ -41,7 +41,8 @@ class KubeLibrary(object):
     | Library           KubeLibrary          None    True
 
     """
-    def __init__(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None, incluster=False, cert_validation=True):
+    def __init__(self, kube_config=None, context=None, api_url=None, bearer_token=None,
+                 ca_cert=None, incluster=False, cert_validation=True):
         """KubeLibrary can be configured with several optional arguments.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
@@ -58,7 +59,8 @@ class KubeLibrary(object):
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
-        self.reload_config(kube_config=kube_config, context=context, api_url=api_url, bearer_token=bearer_token, ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
+        self.reload_config(kube_config=kube_config, context=context, api_url=api_url, bearer_token=bearer_token,
+                           ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
     def reload_config(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None, incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
