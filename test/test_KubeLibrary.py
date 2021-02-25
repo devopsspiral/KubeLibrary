@@ -117,7 +117,7 @@ class TestKubeLibrary(unittest.TestCase):
         KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
 
     def test_KubeLibrary_inits_with_bearer_token(self):
-        KubeLibrary(auth={'bearer_token': (k8s_api_url, bearer_token, ca_cert)})
+        KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token, ca_cert=ca_cert)
 
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
