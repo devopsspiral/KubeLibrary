@@ -1,5 +1,5 @@
 *** Settings ***
-Library           KubeLibrary
+Library           KubeLibrary    %{KUBE_CONFIG1=./cluster1-conf}
 # For development
 #Library           ../../src/KubeLibrary/KubeLibrary.py
 
