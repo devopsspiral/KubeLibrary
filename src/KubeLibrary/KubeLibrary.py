@@ -41,43 +41,63 @@ class KubeLibrary(object):
     | Library           KubeLibrary          None    True
 
     """
-    def __init__(self, kube_config=None, context=None, incluster=False, cert_validation=True):
+    def __init__(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None, incluster=False, cert_validation=True):
         """KubeLibrary can be configured with several optional arguments.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
         - ``context``:
           Active context. If None current_context from kubeconfig is used.
+        - ``api_url``:
+          K8s API url, used for bearer token authenticaiton.
+        - ``bearer_token``:
+          Bearer token, used for bearer token authenticaiton.
+        - ``ca_cert``:
+          CA certificate file path, used for bearer token authenticaiton.
         - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
-        self.reload_config(kube_config=kube_config, context=context, incluster=incluster, cert_validation=cert_validation)
+        self.reload_config(kube_config=kube_config, context=context, api_url=api_url, bearer_token=bearer_token, ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
-    def reload_config(self, kube_config=None, context=None, incluster=False, cert_validation=True):
+    def reload_config(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None, incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
            This can be used to connect to a different cluster during the same test.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
         - ``context``:
           Active context. If None current_context from kubeconfig is used.
+        - ``api_url``:
+          K8s API url, used for bearer token authenticaiton.
+        - ``bearer_token``:
+          Bearer token, used for bearer token authenticaiton.
+        - ``ca_cert``:
+          CA certificate file path, used for bearer token authenticaiton.
         - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
+        api_client = None
         if incluster:
             try:
                 config.load_incluster_config()
             except config.config_exception.ConfigException as e:
                 logger.error('Are you sure tests are executed from within k8s cluster?')
                 raise e
+        elif api_url and bearer_token and ca_cert:
+            configuration = client.Configuration()
+            configuration.api_key["authorization"] = bearer_token
+            configuration.api_key_prefix['authorization'] = 'Bearer'
+            configuration.host = api_url
+            configuration.ssl_ca_cert = ca_cert
+            api_client = client.ApiClient(configuration)
         else:
             try:
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
-        self.v1 = client.CoreV1Api()
+        self.v1 = client.CoreV1Api(api_client)
         self.batchv1 = client.BatchV1Api()
         self.appsv1 = client.AppsV1Api()
         if not cert_validation:

@@ -84,6 +84,21 @@ def mock_list_node_info(watch=False, label_selector=""):
         node_info = AttributeDict(node_info_content)
         return node_info
 
+bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05RaWdSUFoyN004TmlGT1pSX28ifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15c2EtdG9rZW4taDRzNzUiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoibXlzYSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjY5MTk5ZmUyLTIzNWItNGY3MC04MjEwLTkzZTk2YmM5ZmEwOCIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0Om15c2EifQ.V8VIYZ0B2y2h9p-2LTZ19klSuZ37HUWi-8F1yjfFTq83R1Dmax6DoDr5gWbVL4A054q5k1L2U12d50gox0V_kVsRTb3KQnRSGCz1YgCqOVNLqnnsyu3kcmDaUDrFlJ4PuZ7R4DfvGCdK-BU9pj2MhcQT-tyfbGR-dwwkjwXTCPRZVW-CUm4qwYbCGTpGbNXPXbEKtseXIxMkRg70Kav3M-YB1LYHQRx_T2IqKAmyhXlbMc8boqoEiSi6TRbMjZ9Yz-nkc82e6kAdc1O2F4kFw-14kg2mX7Hu-02vob_LZmfR08UGu6VTkcfVK5VqZVg2oVBI4swZghQl8_fOtlplOg'
+
+ca_cert = '''-----BEGIN CERTIFICATE-----
+MIIBWDCB/qADAgECAgEAMAoGCCqGSM49BAMCMCMxITAfBgNVBAMMGGszcy1zZXJ2
+ZXItY2FAMTYxNDAyNDk4NTAeFw0yMTAyMjIyMDE2MjVaFw0zMTAyMjAyMDE2MjVa
+MCMxITAfBgNVBAMMGGszcy1zZXJ2ZXItY2FAMTYxNDAyNDk4NTBZMBMGByqGSM49
+AgEGCCqGSM49AwEHA0IABBGqEsECG7jbviqLLsSbp0gBmfc9JQlD10Op9zkB5BAl
+dJUcRjvz1WemQ6wkr9yDpdxOX2B1OCFB54pBTCKir9GjIzAhMA4GA1UdDwEB/wQE
+AwICpDAPBgNVHRMBAf8EBTADAQH/MAoGCCqGSM49BAMCA0kAMEYCIQDHsoSQ7lOy
+M58CwmkdaboGbMDCL3p7P9F2xrSs3S0oQQIhANgx9PtmUFmBHKnpRwWGR00iSNpV
+KJ0+CHBf54Yr5UHx
+-----END CERTIFICATE-----'''
+
+k8s_api_url = 'https://0.0.0.0:38041'
+
 
 class TestKubeLibrary(unittest.TestCase):
 
@@ -99,6 +114,9 @@ class TestKubeLibrary(unittest.TestCase):
 
     def test_KubeLibrary_inits_without_cert_validation(self):
         KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
+
+    def test_KubeLibrary_inits_with_bearer_token(self):
+        KubeLibrary(auth={'bearer_token': (k8s_api_url, bearer_token, ca_cert)})
 
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
