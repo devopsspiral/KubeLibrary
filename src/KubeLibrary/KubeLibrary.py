@@ -31,11 +31,24 @@ class KubeLibrary(object):
     | ***** Settings *****
     | Library           KubeLibrary          context=k3d-k3d-cluster2
 
+    = Bearer token authentication =
+
+    It is possible to authenticate using bearer token by passing API url, bearer token and optionally CA certificate.
+
+    | ***** Settings *****
+    | Library           KubeLibrary          api_url=%{K8S_API_URL}    bearer_token=%{K8S_TOKEN}    ca_cert=%{K8S_CA_CRT}
+
     = In cluster execution =
 
     If tests are supposed to be executed from within cluster, KubeLibrary can be configured to use standard
-    token authentication. Just set incluster parameter to True. If True then kubeconfigs are not used,
-    even if provided.
+    token authentication. Just set incluster parameter to True.
+
+    = Auth methods precedence =
+
+    If enabled, auth methods takes precedence in following order:
+    1. Incluster
+    2. Bearer Token
+    3. Kubeconfig
 
     | ***** Settings *****
     | Library           KubeLibrary          None    True
