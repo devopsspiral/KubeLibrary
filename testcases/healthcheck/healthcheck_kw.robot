@@ -15,8 +15,12 @@ Healthcheck
     FOR    ${i}    IN RANGE    2
         Remove from List    ${RESPONSE}    -1
     END
-
+    
     @{ENDPOINTS} =  Split String    ${RESPONSE}[0]    \n
+    FOR    ${i}    IN RANGE    2
+        Remove from List    ${ENDPOINTS}    -1
+    END
+    
     FOR    ${ELEMENT}    IN    @{ENDPOINTS}
         Should Be True      "ok" in """${ELEMENT}""" 
     END
