@@ -53,7 +53,7 @@ class KubeLibrary(object):
         - ``bearer_token``:
           Bearer token, used for bearer token authenticaiton.
         - ``ca_cert``:
-          CA certificate file path, used for bearer token authenticaiton.
+          Optional CA certificate file path, used for bearer token authenticaiton.
         - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
@@ -74,7 +74,7 @@ class KubeLibrary(object):
         - ``bearer_token``:
           Bearer token, used for bearer token authenticaiton.
         - ``ca_cert``:
-          CA certificate file path, used for bearer token authenticaiton.
+          Optional CA certificate file path, used for bearer token authenticaiton.
         - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
@@ -87,7 +87,7 @@ class KubeLibrary(object):
             except config.config_exception.ConfigException as e:
                 logger.error('Are you sure tests are executed from within k8s cluster?')
                 raise e
-        elif api_url and bearer_token and ca_cert:
+        elif api_url and bearer_token:
             configuration = client.Configuration()
             configuration.api_key["authorization"] = bearer_token
             configuration.api_key_prefix['authorization'] = 'Bearer'
