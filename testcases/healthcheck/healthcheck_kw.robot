@@ -12,15 +12,8 @@ Library           KubeLibrary
 *** Keywords ***
 Healthcheck
     @{RESPONSE}=  Get Healthcheck	
-    FOR    ${i}    IN RANGE    2
-        Remove from List    ${RESPONSE}    -1
-    END
-    
     @{ENDPOINTS} =  Split String    ${RESPONSE}[0]    \n
-    FOR    ${i}    IN RANGE    2
-        Remove from List    ${ENDPOINTS}    -1
-    END
-    
     FOR    ${ELEMENT}    IN    @{ENDPOINTS}
-        Should Be True      "ok" in """${ELEMENT}""" 
+        Should Be True      "ok" or "healthz check passed" in """${ELEMENT}""" 
     END
+    Should Be Equal As Strings  ${RESPONSE}[1]  200
