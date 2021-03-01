@@ -530,7 +530,7 @@ class KubeLibrary(object):
         """
         ret = self.v1.delete_namespaced_service_account(name=name, namespace=namespace)
         return ret
-      
+
     def get_healthcheck(self):
         """Checks cluster level healthcheck
         Can be used to verify the readiness/current status of the API server
@@ -549,7 +549,7 @@ class KubeLibrary(object):
                                            async_req=False,
                                            _return_http_data_only=False)
         return resp
-      
+
     def get_ingresses_in_namespace(self, namespace, label_selector=""):
         """Gets ingresses in given namespace.
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
