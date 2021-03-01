@@ -531,16 +531,28 @@ class KubeLibrary(object):
         ret = self.v1.delete_namespaced_service_account(name=name, namespace=namespace)
         return ret
 
-    def get_healthcheck(self):
-        """Checks cluster level healthcheck
+    def get_healthcheck(self, endpoint='/readyz', verbose=False):
+        """Performs GET on /readyz or /livez for simple health check.
+
         Can be used to verify the readiness/current status of the API server
         Returns tuple of (response data, response status and response headers)
+
+        - ``endpoint``:
+            /readyz, /livez or induvidual endpoints like '/livez/etcd'. defaults to /readyz
+        - ``verbose``:
+            More detailed output.
+
+        https://kubernetes.io/docs/reference/using-api/health-checks
+
         """
         path_params = {}
         query_params = []
         header_params = {}
         auth_settings = ['BearerToken']
-        resp = self.v1.api_client.call_api('/readyz?verbose=', 'GET',
+        if not (endpoint.startswith('/readyz') or endpoint.startswith('/livez')):
+            raise RuntimeError(f'{endpoint} does not start with "/readyz" or "/livez"')
+        endpoint = endpoint if not verbose else endpoint + '?verbose'
+        resp = self.v1.api_client.call_api(endpoint, 'GET',
                                            path_params,
                                            query_params,
                                            header_params,
