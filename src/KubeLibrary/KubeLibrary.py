@@ -569,4 +569,3 @@ class KubeLibrary(object):
         """
         ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
         return ret
-    
