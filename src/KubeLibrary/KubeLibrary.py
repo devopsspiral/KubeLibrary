@@ -81,6 +81,7 @@ class KubeLibrary(object):
         self.extensionsv1beta1 = client.ExtensionsV1beta1Api()
         self.batchv1 = client.BatchV1Api()
         self.appsv1 = client.AppsV1Api()
+        self.batchv1_beta1 = client.BatchV1beta1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
