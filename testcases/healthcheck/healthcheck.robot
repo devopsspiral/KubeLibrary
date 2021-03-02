@@ -3,5 +3,5 @@ Resource          ./healthcheck_kw.robot
 
 *** Test Cases ***
 Healthcheck
-    [Tags]    prerelease
+    [Tags]    other    prerelease
     Healthcheck
