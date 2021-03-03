@@ -555,6 +555,6 @@ class KubeLibrary(object):
         """Gets a list of available daemonsets.
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
         Returns list of daemonsets.
-        """	
+        """
         ret = self.appsv1.list_namespaced_daemon_set(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
