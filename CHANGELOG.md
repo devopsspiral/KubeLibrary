@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Kubeconfig context support [#36](https://github.com/devopsspiral/KubeLibrary/pull/36) by [@m-wcislo](https://github.com/m-wcislo)
 - Keyword for getting secrets [#31](https://github.com/devopsspiral/KubeLibrary/pull/31 )by [@Nilsty](https://github.com/Nilsty)
+- Keyword for cluster healthcheck [#40](https://github.com/devopsspiral/KubeLibrary/pull/40) by [@satish-nubolab](https://github.com/satish-nubolab)
+- Keyword for list ingress [#38](https://github.com/devopsspiral/KubeLibrary/pull/38) by [@satish-nubolab](https://github.com/satish-nubolab)
 
 ## [0.3.0] - 2021-02-01
 
