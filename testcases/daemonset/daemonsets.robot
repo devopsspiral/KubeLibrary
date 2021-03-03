@@ -4,5 +4,5 @@ Resource          ./daemonsets_kw.robot
 *** Test Cases ***
 Daemonsets test case example
     [Tags]    other    prerelease
-    List all daemonsets  default  
-    List daemonsets filtered by label  default  test=test
+    List all daemonsets  kubelib-tests  
+    List daemonsets filtered by label  kubelib-tests  TestLabel=mytestlabel
