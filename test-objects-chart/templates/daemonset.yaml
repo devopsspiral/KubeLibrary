@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: fluentd-elasticsearch
+  namespace: kubelib-tests
   labels:
-    test: test
+    TestLabel: mytestlabel
 spec:
   selector:
     matchLabels:
