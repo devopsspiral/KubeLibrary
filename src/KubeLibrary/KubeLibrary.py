@@ -360,7 +360,7 @@ class KubeLibrary(object):
             for k, v in labels.items():
                 if pod.metadata.labels and k in pod.metadata.labels:
                     if pod.metadata.labels[k] != v:
-                        logger.error('Label "{k}" value "{v}" not matching actual "{pod.metadata.labels[k]}"')
+                        logger.error(f'Label "{k}" value "{v}" not matching actual "{pod.metadata.labels[k]}"')
                         return False
                 else:
                     logger.error(f'Label "{k}" not found in actual')
