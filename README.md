@@ -156,7 +156,7 @@ Create keyword and test file, import KubeLibrary using below to point to library
 
 For development cluster you can use k3s/k3d as described in [DevOps spiral article on K3d and skaffold](https://devopsspiral.com/articles/k8s/k3d-skaffold/).
 
-Generate docs
+### Generate docs
 
 ```
 python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html
