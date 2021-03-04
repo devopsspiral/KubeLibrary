@@ -558,3 +558,14 @@ class KubeLibrary(object):
         """
         ret = self.appsv1.list_namespaced_daemon_set(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
+    
+	def get_daemonset_details_in_namespace(self, name, namespace):
+        """Gets deamonset details in given namespace.
+        Returns Daemonset object representation.
+          Name of daemonset.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
+        return ret
+    
