@@ -8,6 +8,7 @@ Library           KubeLibrary
 
 *** Keywords ***
 List all daemonsets
+    Sleep  10s
     [Arguments]  ${namespace} 
     @{namespace_daemonsets}=  Get Daemonsets In Namespace    ${namespace}  
     Length Should Be  ${namespace_daemonsets}  1
