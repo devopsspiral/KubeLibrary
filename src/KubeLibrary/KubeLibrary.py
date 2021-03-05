@@ -4,10 +4,18 @@ import ssl
 import urllib3
 from kubernetes import client, config
 from robot.api import logger
-from exceptions import BearerTokenWithPrefixException
 
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+
+class BearerTokenWithPrefixException(Exception):
+
+    ROBOT_SUPPRESS_NAME = True
+
+    def __init__(self):
+        super().__init__("Unnecessary 'Bearer ' prefix in token")
+    pass
 
 
 class KubeLibrary(object):

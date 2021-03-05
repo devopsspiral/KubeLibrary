@@ -4,8 +4,7 @@ import mock
 import re
 import ssl
 import unittest
-from KubeLibrary import KubeLibrary
-from KubeLibrary.exceptions import BearerTokenWithPrefixException
+from KubeLibrary import KubeLibrary, BearerTokenWithPrefixException
 from kubernetes.config.config_exception import ConfigException
 
 
@@ -137,7 +136,7 @@ class TestKubeLibrary(unittest.TestCase):
             self.assertEqual(kl.api_client.configuration.api_key, target.api_client.configuration.api_key)
         self.assertEqual(kl.api_client.configuration.ssl_ca_cert, None)
 
-    def test_KubeLibrary_inits_with_bearer_token(self):
+    def test_inits_with_bearer_token_raises_BearerTokenWithPrefixException(self):
         kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token)
         self.assertRaises(BearerTokenWithPrefixException, kl.reload_config, api_url=k8s_api_url, bearer_token='Bearer prefix should fail')
 
