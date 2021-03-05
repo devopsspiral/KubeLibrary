@@ -572,7 +572,7 @@ class KubeLibrary(object):
 
     def get_daemonsets_in_namespace(self, namespace, label_selector=""):
         """Gets a list of available daemonsets.
-        
+
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of deaemonsets.
@@ -585,9 +585,9 @@ class KubeLibrary(object):
 
     def get_daemonset_details_in_namespace(self, name, namespace):
         """Gets deamonset details in given namespace.
-        
+
         Returns daemonset object representation.
-        
+
         - ``name``:
           Name of the daemonset
         - ``namespace``:
