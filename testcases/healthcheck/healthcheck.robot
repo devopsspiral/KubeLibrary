@@ -1,10 +1,11 @@
 *** Settings ***
 Library           Collections
 Resource          ./healthcheck_kw.robot
+Default Tags      prerelease
 
 *** Test Cases ***
 Healthcheck
-    [Tags]    other    prerelease
+    [Tags]    other
     Healthcheck
 
 Health API Reports Ok
