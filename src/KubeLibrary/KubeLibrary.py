@@ -61,7 +61,7 @@ class KubeLibrary(object):
           Path pointing to kubeconfig of target Kubernetes cluster.
         - ``context``:
           Active context. If None current_context from kubeconfig is used.
-        - ``incuster``:
+        - ``incluster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
