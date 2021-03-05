@@ -52,6 +52,14 @@ jobs:
       - k3d/k3d-up:
           cluster-name: testk3d-1
       - k3d/k3d-run:
+          step-name: Run Smoke examples
+          command: |
+            docker run --rm \
+            --network container:k3d-${K3D_CLUSTER}-serverlb \
+            --volumes-from kubeconfig \
+            -e KUBECONFIG=$K3D_KUBECONFIG \
+            kubelibrary -i smoke /testcases/
+      - k3d/k3d-run:
           step-name: Run Grafana examples
           command: |
             helm repo add grafana https://grafana.github.io/helm-charts
