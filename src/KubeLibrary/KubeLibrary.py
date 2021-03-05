@@ -569,3 +569,29 @@ class KubeLibrary(object):
         """
         ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
         return ret
+
+    def get_daemonsets_in_namespace(self, namespace, label_selector=""):
+        """Gets a list of available daemonsets.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of deaemonsets.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_daemon_set(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_daemonset_details_in_namespace(self, name, namespace):
+        """Gets deamonset details in given namespace.
+
+        Returns daemonset object representation.
+
+        - ``name``:
+          Name of the daemonset
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
+        return ret
