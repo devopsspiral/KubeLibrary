@@ -2,8 +2,10 @@
 import json
 import mock
 import re
+import ssl
 import unittest
 from KubeLibrary import KubeLibrary
+from KubeLibrary.exceptions import BearerTokenWithPrefixException
 from kubernetes.config.config_exception import ConfigException
 
 
@@ -103,6 +105,8 @@ k8s_api_url = 'https://0.0.0.0:38041'
 
 class TestKubeLibrary(unittest.TestCase):
 
+    apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1',)
+
     def test_KubeLibrary_inits_from_kubeconfig(self):
         KubeLibrary(kube_config='test/resources/k3d')
 
@@ -113,16 +117,29 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/multiple_context')
         self.assertRaises(ConfigException, kl.reload_config, kube_config='test/resources/multiple_context', context='k3d-k3d-cluster2-wrong')
 
+    def test_inits_all_api_clients(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        self.assertIsNotNone(kl.v1)
+        self.assertIsNotNone(kl.extensionsv1beta1)
+        self.assertIsNotNone(kl.batchv1)
+        self.assertIsNotNone(kl.appsv1)
+
     def test_KubeLibrary_inits_without_cert_validation(self):
-        KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
+        kl = KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
+        for api in TestKubeLibrary.apis:
+            target = getattr(kl, api)
+            self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
 
     def test_KubeLibrary_inits_with_bearer_token(self):
         kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token)
-        self.assertEqual(kl.api_client.configuration.api_key, kl.v1.api_client.configuration.api_key)
-        self.assertEqual(kl.api_client.configuration.api_key, kl.extensionsv1beta1.api_client.configuration.api_key)
-        self.assertEqual(kl.api_client.configuration.api_key, kl.batchv1.api_client.configuration.api_key)
-        self.assertEqual(kl.api_client.configuration.api_key, kl.appsv1.api_client.configuration.api_key)
+        for api in TestKubeLibrary.apis:
+            target = getattr(kl, api)
+            self.assertEqual(kl.api_client.configuration.api_key, target.api_client.configuration.api_key)
         self.assertEqual(kl.api_client.configuration.ssl_ca_cert, None)
+
+    def test_KubeLibrary_inits_with_bearer_token(self):
+        kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token)
+        self.assertRaises(BearerTokenWithPrefixException, kl.reload_config, api_url=k8s_api_url, bearer_token='Bearer prefix should fail')
 
     def test_KubeLibrary_inits_with_bearer_token_with_ca_crt(self):
         kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token, ca_cert=ca_cert)

@@ -4,6 +4,7 @@ import ssl
 import urllib3
 from kubernetes import client, config
 from robot.api import logger
+from exceptions import BearerTokenWithPrefixException
 
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -64,7 +65,7 @@ class KubeLibrary(object):
         - ``api_url``:
           K8s API url, used for bearer token authenticaiton.
         - ``bearer_token``:
-          Bearer token, used for bearer token authenticaiton.
+          Bearer token, used for bearer token authenticaiton. Do not include 'Bearer ' prefix.
         - ``ca_cert``:
           Optional CA certificate file path, used for bearer token authenticaiton.
         - ``incuster``:
@@ -85,7 +86,7 @@ class KubeLibrary(object):
         - ``api_url``:
           K8s API url, used for bearer token authenticaiton.
         - ``bearer_token``:
-          Bearer token, used for bearer token authenticaiton.
+          Bearer token, used for bearer token authenticaiton. Do not include 'Bearer ' prefix.
         - ``ca_cert``:
           Optional CA certificate file path, used for bearer token authenticaiton.
         - ``incuster``:
@@ -94,6 +95,7 @@ class KubeLibrary(object):
           Default True. Can be set to False for self-signed certificates.
         """
         self.api_client = None
+        self.cert_validation = cert_validation
         if incluster:
             try:
                 config.load_incluster_config()
@@ -101,6 +103,8 @@ class KubeLibrary(object):
                 logger.error('Are you sure tests are executed from within k8s cluster?')
                 raise e
         elif api_url and bearer_token:
+            if bearer_token.startswith('Bearer '):
+                raise BearerTokenWithPrefixException
             configuration = client.Configuration()
             configuration.api_key["authorization"] = bearer_token
             configuration.api_key_prefix['authorization'] = 'Bearer'
@@ -112,12 +116,15 @@ class KubeLibrary(object):
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
-        self.v1 = client.CoreV1Api(self.api_client)
-        self.extensionsv1beta1 = client.ExtensionsV1beta1Api(self.api_client)
-        self.batchv1 = client.BatchV1Api(self.api_client)
-        self.appsv1 = client.AppsV1Api(self.api_client)
-        if not cert_validation:
-            self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
+        self.add_api('v1', client.CoreV1Api)
+        self.add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
+        self.add_api('batchv1', client.BatchV1Api)
+        self.add_api('appsv1', client.AppsV1Api)
+
+    def add_api(self, reference, class_name):
+        self.__dict__[reference] = class_name(self.api_client)
+        if not self.cert_validation:
+            self.__dict__[reference].api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
     def k8s_api_ping(self):
         """Performs GET on /api/v1/ for simple check of API availability.
