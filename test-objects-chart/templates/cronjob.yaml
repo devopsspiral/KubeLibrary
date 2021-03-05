@@ -2,7 +2,6 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: hello
-  namespace: kubelib-tests
   labels:
     TestLabel: mytestlabel
 spec:
