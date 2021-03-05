@@ -573,8 +573,11 @@ class KubeLibrary(object):
 
     def get_cron_jobs_in_namespace(self, namespace, label_selector=""):
         """Gets cron jobs in given namespace.
+
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
         Returns list of strings.
+
         - ``namespace``:
           Namespace to check
         """
@@ -583,7 +586,10 @@ class KubeLibrary(object):
 
     def get_cron_job_details_in_namespace(self, name, namespace):
         """Gets cron job details in given namespace.
+
         Returns Cron job object representation.
+
+        - ``name``:
           Name of cron job.
         - ``namespace``:
           Namespace to check
