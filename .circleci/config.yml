@@ -66,30 +66,6 @@ jobs:
             kubectl label namespaces kubelib-tests test=test
             helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
       - k3d/k3d-run:
-          step-name: Run Smoke examples
-          command: |
-            sleep 45 # sleep before everything is up and we can start testing
-            K8S_VERSION=$(echo ${K3D_CLUSTER_VERSION:1} | cut -d "-" -f1)
-            docker run --rm \
-            --network container:k3d-${K3D_CLUSTER}-serverlb \
-            --volumes-from kubeconfig \
-            -e KUBECONFIG=$K3D_KUBECONFIG \
-            -e KUBELET_VERSION=$K8S_VERSION \
-            kubelibrary -i smoke /testcases/
-      - k3d/k3d-run:
-          step-name: Run Grafana examples
-          command: |
-            # Grafana tests
-            docker run --rm \
-            --network container:k3d-${K3D_CLUSTER}-serverlb \
-            --volumes-from kubeconfig \
-            -e KUBECONFIG=$K3D_KUBECONFIG \
-            -e KLIB_POD_PATTERN='grafana.*' \
-            -e KLIB_POD_ANNOTATIONS='{"kubelibrary":"testing"}' \
-            -e KLIB_POD_NAMESPACE=default \
-            kubelibrary -i grafana /testcases/
-
-      - k3d/k3d-run:
           step-name: Run Octopus examples
           command: |
             # Octopus tests
@@ -144,6 +120,28 @@ jobs:
             --name kubelibrary kubelibrary -i reload-config /testcases/
             docker network connect k3d-testk3d-2 kubelibrary
             docker start -a kubelibrary
+      - k3d/k3d-run:
+          step-name: Run Smoke examples
+          command: |
+            K8S_VERSION=$(echo ${K3D_CLUSTER_VERSION:1} | cut -d "-" -f1)
+            docker run --rm \
+            --network container:k3d-${K3D_CLUSTER}-serverlb \
+            --volumes-from kubeconfig \
+            -e KUBECONFIG=$K3D_KUBECONFIG \
+            -e KUBELET_VERSION=$K8S_VERSION \
+            kubelibrary -i smoke /testcases/
+      - k3d/k3d-run:
+          step-name: Run Grafana examples
+          command: |
+            # Grafana tests
+            docker run --rm \
+            --network container:k3d-${K3D_CLUSTER}-serverlb \
+            --volumes-from kubeconfig \
+            -e KUBECONFIG=$K3D_KUBECONFIG \
+            -e KLIB_POD_PATTERN='grafana.*' \
+            -e KLIB_POD_ANNOTATIONS='{"kubelibrary":"testing"}' \
+            -e KLIB_POD_NAMESPACE=default \
+            kubelibrary -i grafana /testcases/
   publish-to-pypi:
     executor: python/default
     environment:
