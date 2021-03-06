@@ -3,7 +3,7 @@ Resource          ./system_smoke_kw.robot
 
 *** Variables ***
 ${KUBELET_VERSION}     v1.20.0+k3s2
-${NUM_NODES}           1
+${NUM_NODES}           2
 ${NUM_WORKERS}         1
 
 *** Test Cases ***
