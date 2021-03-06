@@ -68,7 +68,7 @@ jobs:
       - k3d/k3d-run:
           step-name: Run Smoke examples
           command: |
-            sleep 10 # sleep before everything is up and we can start testing
+            sleep 20 # sleep before everything is up and we can start testing
             K8S_VERSION=$(echo ${K3D_CLUSTER_VERSION:1} | cut -d "-" -f1)
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
