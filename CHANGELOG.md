@@ -5,11 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+### Added
 - Bearer token authentication [#39](https://github.com/devopsspiral/KubeLibrary/pull/39) by [@m-wcislo](https://github.com/m-wcislo)
 - List ingress [#38](https://github.com/devopsspiral/KubeLibrary/pull/38) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Kubeconfig context support [#36](https://github.com/devopsspiral/KubeLibrary/pull/36) by [@m-wcislo](https://github.com/m-wcislo)
 - Keyword for getting secrets [#31](https://github.com/devopsspiral/KubeLibrary/pull/31 )by [@Nilsty](https://github.com/Nilsty)
 
+### Fixed
+- cert_validation=False was not affecting all used APIs
 ## [0.3.0] - 2021-02-01
 
 ### Added
