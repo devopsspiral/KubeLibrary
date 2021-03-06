@@ -570,7 +570,6 @@ class KubeLibrary(object):
 
         - ``namespace``:
           Namespace to check
-        """
-		
-        ret = self.rbac_authv1_api.list_namespaced_role_binding(namespace, watch=False) 
+        """	
+        ret = self.rbac_authv1_api.list_namespaced_role_binding(namespace, watch=False)
         return [item.metadata.name for item in ret.items]
