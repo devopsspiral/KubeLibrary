@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
-  k3d: devopsspiral/k3d@dev:alpha
+  k3d: devopsspiral/k3d@0.1.4
 jobs:
   build-and-test:
     executor: python/default
@@ -68,6 +68,7 @@ jobs:
       - k3d/k3d-run:
           step-name: Run Smoke examples
           command: |
+            sleep 10
             K8S_VERSION=$(echo ${K3D_CLUSTER_VERSION:1} | cut -d "-" -f1)
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
