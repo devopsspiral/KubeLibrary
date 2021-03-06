@@ -81,6 +81,7 @@ class KubeLibrary(object):
         self.extensionsv1beta1 = client.ExtensionsV1beta1Api()
         self.batchv1 = client.BatchV1Api()
         self.appsv1 = client.AppsV1Api()
+        self.rbac_authv1_api = client.RbacAuthorizationV1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
@@ -550,3 +551,26 @@ class KubeLibrary(object):
         """
         ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
         return ret
+
+    def get_role_in_namespace(self, namespace):
+        """Gets role in given namespace.
+
+        Returns list of role.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.list_namespaced_role(namespace, watch=False)
+        return [item.metadata.name for item in ret.items]
+
+    def get_role_binding_in_namespace(self, namespace):
+        """Gets role_binding in given namespace.
+
+        Returns list of role_binding.
+
+        - ``namespace``:
+          Namespace to check
+        """
+		
+        ret = self.rbac_authv1_api.list_namespaced_role_binding(namespace, watch=False) 
+        return [item.metadata.name for item in ret.items]
