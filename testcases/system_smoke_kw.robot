@@ -46,7 +46,7 @@ getting kubelet version
 
 Kubernetes version is correct
     FOR    ${Item}    IN    @{node_kubelet_versions}
-         Should Be Equal As Strings    ${Item}    ${KUBELET_VERSION}
+         Should Contain    ${Item}    ${KUBELET_VERSION}
     END
 
 "${service}" has "${number}" replicas
