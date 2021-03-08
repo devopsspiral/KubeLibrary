@@ -589,13 +589,13 @@ class KubeLibrary(object):
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of strings.
-        
+
         - ``namespace``:
           Namespace to check
         """
         ret = self.batchv1_beta1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
-      
+
     def get_cron_job_details_in_namespace(self, name, namespace):
         """Gets cron job details in given namespace.
 
