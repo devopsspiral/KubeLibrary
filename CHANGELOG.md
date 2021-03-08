@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Keyword for cluster healthcheck [#40](https://github.com/devopsspiral/KubeLibrary/pull/40) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Extend cluster healthcheck [#47](https://github.com/devopsspiral/KubeLibrary/pull/47) by [@mika-b](https://github.com/mika-b)
 - Keyword for list ingress [#38](https://github.com/devopsspiral/KubeLibrary/pull/38) by [@satish-nubolab](https://github.com/satish-nubolab)
+- Keyword for list cronjob [#48](https://github.com/devopsspiral/KubeLibrary/pull/48) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Keyword for list daemonset [#50](https://github.com/devopsspiral/KubeLibrary/pull/50) by [@satish-nubolab](https://github.com/satish-nubolab)
 
 ## [0.3.0] - 2021-02-01
