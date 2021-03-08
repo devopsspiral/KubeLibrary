@@ -61,7 +61,7 @@ class KubeLibrary(object):
           Path pointing to kubeconfig of target Kubernetes cluster.
         - ``context``:
           Active context. If None current_context from kubeconfig is used.
-        - ``incuster``:
+        - ``incluster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
@@ -532,16 +532,28 @@ class KubeLibrary(object):
         ret = self.v1.delete_namespaced_service_account(name=name, namespace=namespace)
         return ret
 
-    def get_healthcheck(self):
-        """Checks cluster level healthcheck
+    def get_healthcheck(self, endpoint='/readyz', verbose=False):
+        """Performs GET on /readyz or /livez for simple health check.
+
         Can be used to verify the readiness/current status of the API server
         Returns tuple of (response data, response status and response headers)
+
+        - ``endpoint``:
+            /readyz, /livez or induvidual endpoints like '/livez/etcd'. defaults to /readyz
+        - ``verbose``:
+            More detailed output.
+
+        https://kubernetes.io/docs/reference/using-api/health-checks
+
         """
         path_params = {}
         query_params = []
         header_params = {}
         auth_settings = ['BearerToken']
-        resp = self.v1.api_client.call_api('/readyz?verbose=', 'GET',
+        if not (endpoint.startswith('/readyz') or endpoint.startswith('/livez')):
+            raise RuntimeError(f'{endpoint} does not start with "/readyz" or "/livez"')
+        endpoint = endpoint if not verbose else endpoint + '?verbose'
+        resp = self.v1.api_client.call_api(endpoint, 'GET',
                                            path_params,
                                            query_params,
                                            header_params,
@@ -577,13 +589,13 @@ class KubeLibrary(object):
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of strings.
-
+        
         - ``namespace``:
           Namespace to check
         """
         ret = self.batchv1_beta1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
-
+      
     def get_cron_job_details_in_namespace(self, name, namespace):
         """Gets cron job details in given namespace.
 
@@ -595,4 +607,30 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.batchv1_beta1.read_namespaced_cron_job(name, namespace)
+        return ret
+
+    def get_daemonsets_in_namespace(self, namespace, label_selector=""):
+        """Gets a list of available daemonsets.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of deaemonsets.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_daemon_set(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_daemonset_details_in_namespace(self, name, namespace):
+        """Gets deamonset details in given namespace.
+
+        Returns daemonset object representation.
+
+        - ``name``:
+          Name of the daemonset
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
         return ret

@@ -133,7 +133,7 @@ Keywords documentation can be found in docs/.
 
 [KubeLibrary: Testing Kubernetes with RobotFramework  | Humanitec](https://humanitec.com/blog/kubelibrary-testing-kubernetes-with-robotframework)
 
-[RobotFramewrok User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
+[RobotFramework User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
 
 ## Development
 
@@ -150,9 +150,11 @@ pip install -r requirements
 
 Create keyword and test file, import KubeLibrary using below to point to library under development.
 
-| ***** Settings ***** |
+```
+*** Settings ***
 
-| Library    ../src/KubeLibrary/KubeLibrary.py |
+Library    ../src/KubeLibrary/KubeLibrary.py
+```
 
 For development cluster you can use k3s/k3d as described in [DevOps spiral article on K3d and skaffold](https://devopsspiral.com/articles/k8s/k3d-skaffold/).
 
