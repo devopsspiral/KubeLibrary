@@ -82,6 +82,7 @@ class KubeLibrary(object):
         self.batchv1 = client.BatchV1Api()
         self.appsv1 = client.AppsV1Api()
         self.rbac_authv1_api = client.RbacAuthorizationV1Api()
+        self.batchv1_beta1 = client.BatchV1beta1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
@@ -581,6 +582,32 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
+        return ret
+
+    def get_cron_jobs_in_namespace(self, namespace, label_selector=""):
+        """Gets cron jobs in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_cron_job_details_in_namespace(self, name, namespace):
+        """Gets cron job details in given namespace.
+
+        Returns Cron job object representation.
+
+        - ``name``:
+          Name of cron job.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.read_namespaced_cron_job(name, namespace)
         return ret
 
     def get_daemonsets_in_namespace(self, namespace, label_selector=""):
