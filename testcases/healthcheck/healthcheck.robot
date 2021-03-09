@@ -56,7 +56,7 @@ Health API Reports Ok For poststarthook/generic-apiserver-start-informers
     poststarthook/generic-apiserver-start-informers  ok
 
 Health API Reports Ok For poststarthook/max-in-flight-filter
-    [Tags]    cluster    smoke
+    [Tags]    cluster
     [Template]  Health API Template
     poststarthook/max-in-flight-filter  ok
 
