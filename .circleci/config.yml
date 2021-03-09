@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
-  k3d: devopsspiral/k3d@0.1.3
+  k3d: devopsspiral/k3d@0.1.4
 jobs:
   build-and-test:
     executor: python/default
@@ -51,31 +51,23 @@ jobs:
             kubectl create namespace test-ns-2
       - k3d/k3d-up:
           cluster-name: testk3d-1
+          k3s-version: v1.20.0-k3s2
       - k3d/k3d-run:
-          step-name: Run Grafana examples
+          step-name: Prerequisites for 1st cluster
           command: |
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo update
             helm install grafana grafana/grafana -f /repo/testcases/grafana/values.yaml
-
-            sleep 45
-            # Grafana tests
-            docker run --rm \
-            --network container:k3d-${K3D_CLUSTER}-serverlb \
-            --volumes-from kubeconfig \
-            -e KUBECONFIG=$K3D_KUBECONFIG \
-            -e KLIB_POD_PATTERN='grafana.*' \
-            -e KLIB_POD_ANNOTATIONS='{"kubelibrary":"testing"}' \
-            -e KLIB_POD_NAMESPACE=default \
-            kubelibrary -i grafana /testcases/
-
-      - k3d/k3d-run:
-          step-name: Run Octopus examples
-          command: |
             git clone https://github.com/kyma-incubator/octopus
             docker cp octopus repo:/repo/
             helm install octopus /repo/octopus/chart/octopus/
-
+            export KLIB_POD_NAMESPACE=kubelib-tests
+            kubectl create namespace $KLIB_POD_NAMESPACE
+            kubectl label namespaces kubelib-tests test=test
+            helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
+      - k3d/k3d-run:
+          step-name: Run Octopus examples
+          command: |
             # Octopus tests
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
@@ -94,10 +86,6 @@ jobs:
           step-name: Run Other examples
           command: |
             export KLIB_POD_NAMESPACE=kubelib-tests
-            kubectl create namespace $KLIB_POD_NAMESPACE
-            kubectl label namespaces kubelib-tests test=test
-            helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
-            sleep 10
             # Other tests
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
@@ -132,6 +120,28 @@ jobs:
             --name kubelibrary kubelibrary -i reload-config /testcases/
             docker network connect k3d-testk3d-2 kubelibrary
             docker start -a kubelibrary
+      - k3d/k3d-run:
+          step-name: Run Smoke examples
+          command: |
+            K8S_VERSION=$(echo ${K3D_CLUSTER_VERSION:1} | cut -d "-" -f1)
+            docker run --rm \
+            --network container:k3d-${K3D_CLUSTER}-serverlb \
+            --volumes-from kubeconfig \
+            -e KUBECONFIG=$K3D_KUBECONFIG \
+            -e KUBELET_VERSION=$K8S_VERSION \
+            kubelibrary -i smoke /testcases/
+      - k3d/k3d-run:
+          step-name: Run Grafana examples
+          command: |
+            # Grafana tests
+            docker run --rm \
+            --network container:k3d-${K3D_CLUSTER}-serverlb \
+            --volumes-from kubeconfig \
+            -e KUBECONFIG=$K3D_KUBECONFIG \
+            -e KLIB_POD_PATTERN='grafana.*' \
+            -e KLIB_POD_ANNOTATIONS='{"kubelibrary":"testing"}' \
+            -e KLIB_POD_NAMESPACE=default \
+            kubelibrary -i grafana /testcases/
   publish-to-pypi:
     executor: python/default
     environment:
