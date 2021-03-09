@@ -23,6 +23,14 @@ class KubeLibrary(object):
     | ***** Settings *****
     | Library           KubeLibrary          /path/to/kubeconfig
 
+    = Context =
+
+    By default current context from kubeconfig is used. Setting multiple contexts in
+    different test suites allows working on multiple clusters.
+
+    | ***** Settings *****
+    | Library           KubeLibrary          context=k3d-k3d-cluster2
+
     = In cluster execution =
 
     If tests are supposed to be executed from within cluster, KubeLibrary can be configured to use standard
@@ -33,23 +41,27 @@ class KubeLibrary(object):
     | Library           KubeLibrary          None    True
 
     """
-    def __init__(self, kube_config=None, incluster=False, cert_validation=True):
+    def __init__(self, kube_config=None, context=None, incluster=False, cert_validation=True):
         """KubeLibrary can be configured with several optional arguments.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
+        - ``context``:
+          Active context. If None current_context from kubeconfig is used.
         - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
-        self.reload_config(kube_config=kube_config, incluster=incluster, cert_validation=cert_validation)
+        self.reload_config(kube_config=kube_config, context=context, incluster=incluster, cert_validation=cert_validation)
 
-    def reload_config(self, kube_config=None, incluster=False, cert_validation=True):
+    def reload_config(self, kube_config=None, context=None, incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
            This can be used to connect to a different cluster during the same test.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
-        - ``incuster``:
+        - ``context``:
+          Active context. If None current_context from kubeconfig is used.
+        - ``incluster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
@@ -62,12 +74,14 @@ class KubeLibrary(object):
                 raise e
         else:
             try:
-                config.load_kube_config(kube_config)
+                config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self.v1 = client.CoreV1Api()
+        self.extensionsv1beta1 = client.ExtensionsV1beta1Api()
         self.batchv1 = client.BatchV1Api()
         self.appsv1 = client.AppsV1Api()
+        self.batchv1_beta1 = client.BatchV1beta1Api()
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
@@ -516,4 +530,107 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.v1.delete_namespaced_service_account(name=name, namespace=namespace)
+        return ret
+
+    def get_healthcheck(self, endpoint='/readyz', verbose=False):
+        """Performs GET on /readyz or /livez for simple health check.
+
+        Can be used to verify the readiness/current status of the API server
+        Returns tuple of (response data, response status and response headers)
+
+        - ``endpoint``:
+            /readyz, /livez or induvidual endpoints like '/livez/etcd'. defaults to /readyz
+        - ``verbose``:
+            More detailed output.
+
+        https://kubernetes.io/docs/reference/using-api/health-checks
+
+        """
+        path_params = {}
+        query_params = []
+        header_params = {}
+        auth_settings = ['BearerToken']
+        if not (endpoint.startswith('/readyz') or endpoint.startswith('/livez')):
+            raise RuntimeError(f'{endpoint} does not start with "/readyz" or "/livez"')
+        endpoint = endpoint if not verbose else endpoint + '?verbose'
+        resp = self.v1.api_client.call_api(endpoint, 'GET',
+                                           path_params,
+                                           query_params,
+                                           header_params,
+                                           response_type='str',
+                                           auth_settings=auth_settings,
+                                           async_req=False,
+                                           _return_http_data_only=False)
+        return resp
+
+    def get_ingresses_in_namespace(self, namespace, label_selector=""):
+        """Gets ingresses in given namespace.
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+        Returns list of strings.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.extensionsv1beta1.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_ingress_details_in_namespace(self, name, namespace):
+        """Gets ingress details in given namespace.
+        Returns Ingress object representation.
+          Name of ingress.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
+        return ret
+
+    def get_cron_jobs_in_namespace(self, namespace, label_selector=""):
+        """Gets cron jobs in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_cron_job_details_in_namespace(self, name, namespace):
+        """Gets cron job details in given namespace.
+
+        Returns Cron job object representation.
+
+        - ``name``:
+          Name of cron job.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.read_namespaced_cron_job(name, namespace)
+        return ret
+
+    def get_daemonsets_in_namespace(self, namespace, label_selector=""):
+        """Gets a list of available daemonsets.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of deaemonsets.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_daemon_set(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_daemonset_details_in_namespace(self, name, namespace):
+        """Gets deamonset details in given namespace.
+
+        Returns daemonset object representation.
+
+        - ``name``:
+          Name of the daemonset
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
         return ret

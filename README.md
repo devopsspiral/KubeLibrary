@@ -17,7 +17,7 @@ export KUBECONFIG=~/.kube/config
 pip install robotframework-requests
 git clone https://github.com/devopsspiral/KubeLibrary.git
 cd KubeLibrary
-robot testcases
+robot -e prerelease testcases
 ```
 
 ## Example testcase
@@ -51,7 +51,7 @@ To see all the tests passing execute below commands.
 ### Cluster Tests
 ```
 # run cluster tests
-robot -i cluster testcases/
+robot -i cluster -e prerelease testcases/
 ```
 
 ### Grafana Tests
@@ -65,7 +65,7 @@ export KLIB_POD_PATTERN='grafana.*'
 export KLIB_POD_ANNOTATIONS='{"kubelibrary":"testing"}'
 export KLIB_POD_NAMESPACE=default
 
-robot -i grafana testcases/
+robot -i grafana -e prerelease testcases/
 ```
 
 ### Octopus Tests
@@ -83,7 +83,7 @@ export KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}'
 export KLIB_POD_NAMESPACE=default
 export KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
 
-robot -i octopus testcases/
+robot -i octopus -e prerelease testcases/
 ```
 
 ### Other Tests
@@ -98,7 +98,7 @@ kubectl create namespace $KLIB_POD_NAMESPACE
 kubectl label namespaces kubelib-tests test=test
 helm install kubelib-test ./test-objects-chart -n $KLIB_POD_NAMESPACE
 
-robot -i other testcases/
+robot -i other -e prerelease testcases/
 ```
 ### Multi Cluster Tests
 These tests require more than one cluster and utilize [KinD](https://kind.sigs.k8s.io/) as a setup.
@@ -116,7 +116,7 @@ kind create cluster --kubeconfig ./cluster2-conf --name kind-cluster-2
 # Create namespace in Test Cluster 2
 kubectl create namespace test-ns-2 --context kind-kind-cluster-2 --kubeconfig ./cluster2-conf
 
-robot -i reload-config testcases/
+robot -i reload-config -e prerelease testcases/
 
 # Clean up
 kind delete cluster --name kind-cluster-1
@@ -133,7 +133,7 @@ Keywords documentation can be found in docs/.
 
 [KubeLibrary: Testing Kubernetes with RobotFramework  | Humanitec](https://humanitec.com/blog/kubelibrary-testing-kubernetes-with-robotframework)
 
-[RobotFramewrok User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
+[RobotFramework User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
 
 ## Development
 
@@ -150,13 +150,15 @@ pip install -r requirements
 
 Create keyword and test file, import KubeLibrary using below to point to library under development.
 
-| ***** Settings ***** |
+```
+*** Settings ***
 
-| Library    ../src/KubeLibrary/KubeLibrary.py |
+Library    ../src/KubeLibrary/KubeLibrary.py
+```
 
 For development cluster you can use k3s/k3d as described in [DevOps spiral article on K3d and skaffold](https://devopsspiral.com/articles/k8s/k3d-skaffold/).
 
-Generate docs
+### Generate docs
 
 ```
 python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html

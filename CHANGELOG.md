@@ -4,10 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## In progress
+
+- Kubeconfig context support [#36](https://github.com/devopsspiral/KubeLibrary/pull/36) by [@m-wcislo](https://github.com/m-wcislo)
+- Keyword for getting secrets [#31](https://github.com/devopsspiral/KubeLibrary/pull/31 )by [@Nilsty](https://github.com/Nilsty)
+- Keyword for cluster healthcheck [#40](https://github.com/devopsspiral/KubeLibrary/pull/40) by [@satish-nubolab](https://github.com/satish-nubolab)
+- Extend cluster healthcheck [#47](https://github.com/devopsspiral/KubeLibrary/pull/47) by [@mika-b](https://github.com/mika-b)
+- Keyword for list ingress [#38](https://github.com/devopsspiral/KubeLibrary/pull/38) by [@satish-nubolab](https://github.com/satish-nubolab)
+- Keyword for list cronjob [#48](https://github.com/devopsspiral/KubeLibrary/pull/48) by [@satish-nubolab](https://github.com/satish-nubolab)
+- Keyword for list daemonset [#50](https://github.com/devopsspiral/KubeLibrary/pull/50) by [@satish-nubolab](https://github.com/satish-nubolab)
+
 ## [0.3.0] - 2021-02-01
 
 ### Added
-- CI implementation [#14](https://github.com/devopsspiral/KubeLibrary/pull/14) by [@m-wcislo](https://github.com/m-wcislo) @m-wcislo 
+- CI implementation [#14](https://github.com/devopsspiral/KubeLibrary/pull/14) by [@m-wcislo](https://github.com/m-wcislo)
 - keywords to list deployments [#13](https://github.com/devopsspiral/KubeLibrary/pull/13) by [@Nilsty](https://github.com/Nilsty)
 - keywords for get/create/delete service accounts [#28](https://github.com/devopsspiral/KubeLibrary/pull/28) by [@kutayy](https://github.com/kutayy)   
 
