@@ -44,7 +44,7 @@ Get pod created by job
     FOR  ${pod}  IN  @{namespace_pods}
         Log  \nList labels in pod ${pod.metadata.name}:  console=True
         Log  ${pod.metadata.labels}  console=True
-        Dictionary Should Contain Item    ${pod.metadata.labels}    job-name    busybox-job
+        Dictionary Should Contain Item    ${pod.metadata.labels}    job-name    ${job_name}
         ...  msg=Could not find job name label.
     END
 
