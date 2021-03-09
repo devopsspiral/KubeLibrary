@@ -637,7 +637,7 @@ class KubeLibrary(object):
 
     def get_cluster_role(self):
         """Gets a list of cluster_role.
-       
+
         Returns list of cluster_role.
         """
         ret = self.rbac_authv1_api.list_cluster_role(watch=False)
@@ -645,9 +645,8 @@ class KubeLibrary(object):
 
     def get_cluster_role_binding(self):
         """Gets a list of cluster_role_binding.
-       
+
         Returns list of cluster_role_binding.
         """
         ret = self.rbac_authv1_api.list_cluster_role_binding(watch=False)
         return [item.metadata.name for item in ret.items]
-
