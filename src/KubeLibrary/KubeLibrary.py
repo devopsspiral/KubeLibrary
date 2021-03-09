@@ -634,3 +634,20 @@ class KubeLibrary(object):
         """
         ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
         return ret
+
+    def get_cluster_role(self):
+        """Gets a list of cluster_role.
+       
+        Returns list of cluster_role.
+        """
+        ret = self.rbac_authv1_api.list_cluster_role(watch=False)
+        return [item.metadata.name for item in ret.items]
+
+    def get_cluster_role_binding(self):
+        """Gets a list of cluster_role_binding.
+       
+        Returns list of cluster_role_binding.
+        """
+        ret = self.rbac_authv1_api.list_cluster_role_binding(watch=False)
+        return [item.metadata.name for item in ret.items]
+
