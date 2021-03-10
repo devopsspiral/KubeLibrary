@@ -134,6 +134,7 @@ jobs:
           step-name: Run Grafana examples
           command: |
             # Grafana tests
+            K8S_VERSION=$(echo ${K3D_CLUSTER_VERSION:1} | cut -d "-" -f1)
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
             --volumes-from kubeconfig \
@@ -141,6 +142,7 @@ jobs:
             -e KLIB_POD_PATTERN='grafana.*' \
             -e KLIB_POD_ANNOTATIONS='{"kubelibrary":"testing"}' \
             -e KLIB_POD_NAMESPACE=default \
+            -e KUBELET_VERSION=$K8S_VERSION \
             kubelibrary -i grafana /testcases/
   publish-to-pypi:
     executor: python/default
