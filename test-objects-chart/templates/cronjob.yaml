@@ -9,6 +9,9 @@ spec:
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            TestLabel: mytestlabel
         spec:
           containers:
           - name: hello
