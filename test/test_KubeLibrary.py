@@ -113,9 +113,6 @@ class TestKubeLibrary(unittest.TestCase):
             target = getattr(kl, api)
             self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
 
-    def test_KubeLibrary_inits_without_cert_validation(self):
-        KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
-
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
         kl = KubeLibrary(kube_config='test/resources/k3d')
