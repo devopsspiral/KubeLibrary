@@ -88,7 +88,8 @@ def mock_list_node_info(watch=False, label_selector=""):
 
 class TestKubeLibrary(unittest.TestCase):
 
-    apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1',)
+    apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
+            'custom_object')
 
     def test_KubeLibrary_inits_from_kubeconfig(self):
         KubeLibrary(kube_config='test/resources/k3d')
@@ -102,10 +103,8 @@ class TestKubeLibrary(unittest.TestCase):
 
     def test_inits_all_api_clients(self):
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        self.assertIsNotNone(kl.v1)
-        self.assertIsNotNone(kl.extensionsv1beta1)
-        self.assertIsNotNone(kl.batchv1)
-        self.assertIsNotNone(kl.appsv1)
+        for api in TestKubeLibrary.apis:
+            self.assertIsNotNone(getattr(kl, api))
 
     def test_KubeLibrary_inits_without_cert_validation(self):
         kl = KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
