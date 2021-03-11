@@ -87,6 +87,8 @@ def mock_list_node_info(watch=False, label_selector=""):
 
 class TestKubeLibrary(unittest.TestCase):
 
+    apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1',)
+
     def test_KubeLibrary_inits_from_kubeconfig(self):
         KubeLibrary(kube_config='test/resources/k3d')
 
@@ -96,6 +98,19 @@ class TestKubeLibrary(unittest.TestCase):
     def test_KubeLibrary_fails_for_wrong_context(self):
         kl = KubeLibrary(kube_config='test/resources/multiple_context')
         self.assertRaises(ConfigException, kl.reload_config, kube_config='test/resources/multiple_context', context='k3d-k3d-cluster2-wrong')
+
+    def test_inits_all_api_clients(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        self.assertIsNotNone(kl.v1)
+        self.assertIsNotNone(kl.extensionsv1beta1)
+        self.assertIsNotNone(kl.batchv1)
+        self.assertIsNotNone(kl.appsv1)
+
+    def test_KubeLibrary_inits_without_cert_validation(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
+        for api in TestKubeLibrary.apis:
+            target = getattr(kl, api)
+            self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
 
     def test_KubeLibrary_inits_without_cert_validation(self):
         KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
