@@ -77,11 +77,14 @@ class KubeLibrary(object):
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
+
         self.v1 = client.CoreV1Api()
         self.extensionsv1beta1 = client.ExtensionsV1beta1Api()
         self.batchv1 = client.BatchV1Api()
         self.appsv1 = client.AppsV1Api()
         self.batchv1_beta1 = client.BatchV1beta1Api()
+        self.custom_object = client.CustomObjectsApi()
+
         if not cert_validation:
             self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
@@ -634,3 +637,63 @@ class KubeLibrary(object):
         """
         ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
         return ret
+
+    def list_cluster_custom_objects(self, group, version, plural):
+        """Lists cluster level custom objects.
+
+        Returns an object.
+
+        - ``group``:
+          API Group, e.g. 'k8s.cni.cncf.io'
+        - ``version``:
+          API version, e.g. 'v1'
+        - ``plural``:
+          e.g. 'network-attachment-definitions'
+
+        As in ``GET /apis/{group}/{version}/{plural}``
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_object.list_cluster_custom_object(group, version, plural)
+
+    def get_cluster_custom_object(self, group, version, plural, name):
+        """Get cluster level custom object.
+
+        Returns an object.
+
+        - ``group``:
+          API Group, e.g. 'scheduling.k8s.io'
+        - ``version``:
+          API version, e.g. 'v1'
+        - ``plural``:
+          e.g. 'priorityclasses'
+        - ``name``:
+          e.g. 'system-node-critical'
+
+        As in ``GET /apis/{group}/{version}/{plural}/{name}``
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_object.get_cluster_custom_object(group, version, plural, name)
+
+    def get_custom_object_in_namespace(self, group, version, namespace, plural, name):
+        """Get custom object in namespace.
+
+        Returns an object.
+
+        - ``group``:
+          API Group, e.g. 'k8s.cni.cncf.io'
+        - ``version``:
+          API version, e.g. 'v1'
+        - ``namespace``:
+          Namespace, e.g. 'default'
+        - ``plural``:
+          e.g. 'network-attachment-definitions'
+        - ``name``:
+          e.g. 'my-network'
+
+        As in ``GET /apis/{group}/{version}/namespaces/{namespace}/{plural}/{name}``
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)
