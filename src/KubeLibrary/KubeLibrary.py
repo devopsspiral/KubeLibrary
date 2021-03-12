@@ -66,6 +66,7 @@ class KubeLibrary(object):
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
+        self.cert_validation = cert_validation
         if incluster:
             try:
                 config.load_incluster_config()
@@ -78,15 +79,17 @@ class KubeLibrary(object):
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
 
-        self.v1 = client.CoreV1Api()
-        self.extensionsv1beta1 = client.ExtensionsV1beta1Api()
-        self.batchv1 = client.BatchV1Api()
-        self.appsv1 = client.AppsV1Api()
-        self.batchv1_beta1 = client.BatchV1beta1Api()
-        self.custom_object = client.CustomObjectsApi()
+        self.add_api('v1', client.CoreV1Api)
+        self.add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
+        self.add_api('batchv1', client.BatchV1Api)
+        self.add_api('appsv1', client.AppsV1Api)
+        self.add_api('batchv1_beta1', client.BatchV1beta1Api)
+        self.add_api('custom_object', client.CustomObjectsApi)
 
-        if not cert_validation:
-            self.v1.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
+    def add_api(self, reference, class_name):
+        self.__dict__[reference] = class_name()
+        if not self.cert_validation:
+            self.__dict__[reference].api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
     def k8s_api_ping(self):
         """Performs GET on /api/v1/ for simple check of API availability.
