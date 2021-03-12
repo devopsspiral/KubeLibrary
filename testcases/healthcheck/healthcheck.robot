@@ -1,7 +1,6 @@
 *** Settings ***
 Library           Collections
 Resource          ./healthcheck_kw.robot
-Default Tags      prerelease
 
 *** Test Cases ***
 Healthcheck
