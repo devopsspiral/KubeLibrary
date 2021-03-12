@@ -79,14 +79,14 @@ class KubeLibrary(object):
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
 
-        self.add_api('v1', client.CoreV1Api)
-        self.add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
-        self.add_api('batchv1', client.BatchV1Api)
-        self.add_api('appsv1', client.AppsV1Api)
-        self.add_api('batchv1_beta1', client.BatchV1beta1Api)
-        self.add_api('custom_object', client.CustomObjectsApi)
+        self._add_api('v1', client.CoreV1Api)
+        self._add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
+        self._add_api('batchv1', client.BatchV1Api)
+        self._add_api('appsv1', client.AppsV1Api)
+        self._add_api('batchv1_beta1', client.BatchV1beta1Api)
+        self._add_api('custom_object', client.CustomObjectsApi)
 
-    def add_api(self, reference, class_name):
+    def _add_api(self, reference, class_name):
         self.__dict__[reference] = class_name()
         if not self.cert_validation:
             self.__dict__[reference].api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE

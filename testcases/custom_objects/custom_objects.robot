@@ -1,6 +1,5 @@
 *** Settings ***
 Library         KubeLibrary
-Default Tags    prerelease
 
 *** Test Cases ***
 Get List Of Cluster Custom Objects
