@@ -222,7 +222,10 @@ class KubeLibrary(object):
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
-        Returns list of deployments.
+        Returns a list of deployment objects.
+
+        | ${deployments}=    | Get Deployments In Namespace    | .* | default |
+        | Log  | ${deployments[0].metadata.name} |
 
         - ``name_pattern``:
           deployment name pattern to check
