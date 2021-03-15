@@ -263,11 +263,11 @@ class TestKubeLibrary(unittest.TestCase):
         mock_lnp.side_effect = mock_list_namespaced_role
         kl = KubeLibrary(kube_config='test/resources/k3d')
         role = kl.get_role_in_namespace('default')
-        self.assertEqual(['pod-reader'], [item.metadata.name for item in role])
+        self.assertEqual(['pod-reader'], [item for item in role])
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role_binding')
     def test_get_role_binding_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_role_binding
         kl = KubeLibrary(kube_config='test/resources/k3d')
         role_bind = kl.get_role_binding_in_namespace('default')
-        self.assertEqual(['read-pods'], [item.metadata.name for item in role_bind])
+        self.assertEqual(['read-pods'], [item for item in role_bind])
