@@ -1,0 +1,40 @@
+[
+	{
+		"apiVersion": "rbac.authorization.k8s.io/v1",
+		"kind": "ClusterRole",
+		"metadata": {
+			"creationTimestamp": "2021-03-16T12:06:59Z",
+			"managedFields": [
+				{
+					"apiVersion": "rbac.authorization.k8s.io/v1",
+					"fieldsType": "FieldsV1",
+					"fieldsV1": {
+						"f:rules": {}
+					},
+					"manager": "kubectl",
+					"operation": "Update",
+					"time": "2021-03-16T12:06:59Z"
+				}
+			],
+			"name": "secret-reader",
+			"resourceVersion": "678",
+			"selfLink": "/apis/rbac.authorization.k8s.io/v1/clusterroles/secret-reader",
+			"uid": "8fe2238a-9132-4b5d-a1d6-8c68b7c6abf0"
+		},
+		"rules": [
+			{
+				"apiGroups": [
+					""
+				],
+				"resources": [
+					"secrets"
+				],
+				"verbs": [
+					"get",
+					"watch",
+					"list"
+				]
+			}
+		]
+	}
+]

@@ -1,0 +1,42 @@
+[
+	{
+		"apiVersion": "rbac.authorization.k8s.io/v1",
+		"kind": "ClusterRoleBinding",
+		"metadata": {
+			"creationTimestamp": "2021-03-16T12:25:09Z",
+			"managedFields": [
+				{
+					"apiVersion": "rbac.authorization.k8s.io/v1",
+					"fieldsType": "FieldsV1",
+					"fieldsV1": {
+						"f:roleRef": {
+							"f:apiGroup": {},
+							"f:kind": {},
+							"f:name": {}
+						},
+						"f:subjects": {}
+					},
+					"manager": "kubectl",
+					"operation": "Update",
+					"time": "2021-03-16T12:25:09Z"
+				}
+			],
+			"name": "read-secrets-global",
+			"resourceVersion": "3556",
+			"selfLink": "/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/read-secrets-global",
+			"uid": "e31d1893-811b-4b63-8051-0c8ffba31140"
+		},
+		"roleRef": {
+			"apiGroup": "rbac.authorization.k8s.io",
+			"kind": "ClusterRole",
+			"name": "secret-reader"
+		},
+		"subjects": [
+			{
+				"apiGroup": "rbac.authorization.k8s.io",
+				"kind": "Group",
+				"name": "manager"
+			}
+		]
+	}
+]
