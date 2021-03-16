@@ -39,11 +39,13 @@ class AttributeDict(object):
         """
         return getattr(self, key)
 
+
 def mock_list_cluster_role(watch=False):
     with open('test/resources/cluster_role.json') as json_file:
         cluster_role_content = json.load(json_file)
         list_of_cluster_role = AttributeDict({'items': cluster_role_content})
         return list_of_cluster_role
+
 
 def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
     if namespace == 'default':
@@ -51,6 +53,8 @@ def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
             pods_content = json.load(json_file)
             list_of_pods = AttributeDict({'items': pods_content})
             return list_of_pods
+
+
 def mock_list_cluster_role_binding(watch=False):
     with open('test/resources/cluster_role_bind.json') as json_file:
         cluster_role_bind_content = json.load(json_file)
@@ -276,4 +280,4 @@ class TestKubeLibrary(unittest.TestCase):
         mock_lnp.side_effect = mock_list_cluster_role_binding
         kl = KubeLibrary(kube_config='test/resources/k3d')
         cluster_role_bind = kl.get_cluster_role_binding()
-        self.assertEqual(['read-secrets-global'], [item for item in cluster_role_bind])		
+        self.assertEqual(['read-secrets-global'], [item for item in cluster_role_bind])
