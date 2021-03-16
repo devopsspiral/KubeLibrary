@@ -2,6 +2,7 @@
 import json
 import mock
 import re
+import ssl
 import unittest
 from KubeLibrary import KubeLibrary
 from kubernetes.config.config_exception import ConfigException
@@ -103,6 +104,9 @@ def mock_list_namespaced_role_binding(namespace, watch=False):
 
 class TestKubeLibrary(unittest.TestCase):
 
+    apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
+            'custom_object')
+
     def test_KubeLibrary_inits_from_kubeconfig(self):
         KubeLibrary(kube_config='test/resources/k3d')
 
@@ -113,8 +117,16 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/multiple_context')
         self.assertRaises(ConfigException, kl.reload_config, kube_config='test/resources/multiple_context', context='k3d-k3d-cluster2-wrong')
 
+    def test_inits_all_api_clients(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        for api in TestKubeLibrary.apis:
+            self.assertIsNotNone(getattr(kl, api))
+
     def test_KubeLibrary_inits_without_cert_validation(self):
-        KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
+        kl = KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
+        for api in TestKubeLibrary.apis:
+            target = getattr(kl, api)
+            self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
 
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
