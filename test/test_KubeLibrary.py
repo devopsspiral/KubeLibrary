@@ -86,7 +86,7 @@ def mock_list_node_info(watch=False, label_selector=""):
         return node_info
 
 
-def mock_list_namespaced_role(namespace, watch=False):
+def mock_list_namespaced_roles(namespace, watch=False):
     if namespace == 'default':
         with open('test/resources/role.json') as json_file:
             role_content = json.load(json_file)
@@ -94,7 +94,7 @@ def mock_list_namespaced_role(namespace, watch=False):
             return list_of_role
 
 
-def mock_list_namespaced_role_binding(namespace, watch=False):
+def mock_list_namespaced_role_bindings(namespace, watch=False):
     if namespace == 'default':
         with open('test/resources/rolebinding.json') as json_file:
             role_bind_content = json.load(json_file)
@@ -271,15 +271,15 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(['grafana'], [item.metadata.name for item in secrets])
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role')
-    def test_get_role_in_namespace(self, mock_lnp):
-        mock_lnp.side_effect = mock_list_namespaced_role
+    def test_get_roles_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_roles
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        role = kl.get_role_in_namespace('default')
-        self.assertEqual(['pod-reader'], [item for item in role])
+        roles = kl.get_roles_in_namespace('default')
+        self.assertEqual(['pod-reader'], [item for item in roles])
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role_binding')
-    def test_get_role_binding_in_namespace(self, mock_lnp):
-        mock_lnp.side_effect = mock_list_namespaced_role_binding
+    def test_get_role_bindings_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_role_bindings
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        role_bind = kl.get_role_binding_in_namespace('default')
-        self.assertEqual(['read-pods'], [item for item in role_bind])
+        role_bindings = kl.get_role_bindings_in_namespace('default')
+        self.assertEqual(['read-pods'], [item for item in role_bindings])
