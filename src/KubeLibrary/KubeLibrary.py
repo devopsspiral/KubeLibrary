@@ -655,6 +655,7 @@ class KubeLibrary(object):
         Returns list of cluster_role_bindings.
         """
         ret = self.rbac_authv1_api.list_cluster_role_binding(watch=False)
+        return ret
 
     def get_roles_in_namespace(self, namespace):
         """Gets roles in given namespace.
