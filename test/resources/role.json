@@ -1,0 +1,41 @@
+ [
+        {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "Role",
+            "metadata": {
+                "creationTimestamp": "2021-03-10T04:54:29Z",
+                "managedFields": [
+                    {
+                        "apiVersion": "rbac.authorization.k8s.io/v1",
+                        "fieldsType": "FieldsV1",
+                        "fieldsV1": {
+                            "f:rules": {}
+                        },
+                        "manager": "kubectl",
+                        "operation": "Update",
+                        "time": "2021-03-10T04:54:29Z"
+                    }
+                ],
+                "name": "pod-reader",
+                "namespace": "default",
+                "resourceVersion": "2157",
+                "selfLink": "/apis/rbac.authorization.k8s.io/v1/namespaces/default/roles/pod-reader",
+                "uid": "f2f5ebcf-d1fa-4607-9d9e-7872ef185614"
+            },
+            "rules": [
+                {
+                    "apiGroups": [
+                        ""
+                    ],
+                    "resources": [
+                        "pods"
+                    ],
+                    "verbs": [
+                        "get",
+                        "watch",
+                        "list"
+                    ]
+                }
+            ]
+        }
+    ]
