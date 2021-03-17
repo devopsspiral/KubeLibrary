@@ -105,7 +105,7 @@ def mock_list_namespaced_role_binding(namespace, watch=False):
 class TestKubeLibrary(unittest.TestCase):
 
     apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
-            'custom_object')
+            'custom_object', 'rbac_authv1_api')
 
     def test_KubeLibrary_inits_from_kubeconfig(self):
         KubeLibrary(kube_config='test/resources/k3d')
