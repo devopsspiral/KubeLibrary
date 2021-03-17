@@ -100,6 +100,22 @@ def mock_list_node_info(watch=False, label_selector=""):
         return node_info
 
 
+def mock_list_namespaced_roles(namespace, watch=False):
+    if namespace == 'default':
+        with open('test/resources/role.json') as json_file:
+            role_content = json.load(json_file)
+            list_of_role = AttributeDict({'items': role_content})
+            return list_of_role
+
+
+def mock_list_namespaced_role_bindings(namespace, watch=False):
+    if namespace == 'default':
+        with open('test/resources/rolebinding.json') as json_file:
+            role_bind_content = json.load(json_file)
+            list_of_role_bind = AttributeDict({'items': role_bind_content})
+            return list_of_role_bind
+
+
 class TestKubeLibrary(unittest.TestCase):
 
     apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
@@ -281,3 +297,17 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         cluster_role_bindings = kl.get_cluster_role_bindings()
         self.assertEqual(['read-secrets-global'], [item for item in cluster_role_bindings])
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role')
+    def test_get_roles_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_roles
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        roles = kl.get_roles_in_namespace('default')
+        self.assertEqual(['pod-reader'], [item for item in roles])
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role_binding')
+    def test_get_role_bindings_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_role_bindings
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        role_bindings = kl.get_role_bindings_in_namespace('default')
+        self.assertEqual(['read-pods'], [item for item in role_bindings])
