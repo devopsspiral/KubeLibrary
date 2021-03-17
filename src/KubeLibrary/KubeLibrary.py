@@ -641,10 +641,10 @@ class KubeLibrary(object):
         ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
         return ret
 
-    def get_role_in_namespace(self, namespace):
-        """Gets role in given namespace.
+    def get_roles_in_namespace(self, namespace):
+        """Gets roles in given namespace.
 
-        Returns list of role.
+        Returns list of roles.
 
         - ``namespace``:
           Namespace to check
@@ -652,10 +652,10 @@ class KubeLibrary(object):
         ret = self.rbac_authv1_api.list_namespaced_role(namespace, watch=False)
         return [item.metadata.name for item in ret.items]
 
-    def get_role_binding_in_namespace(self, namespace):
-        """Gets role_binding in given namespace.
+    def get_role_bindings_in_namespace(self, namespace):
+        """Gets role_bindings in given namespace.
 
-        Returns list of role_binding.
+        Returns list of role_bindings.
 
         - ``namespace``:
           Namespace to check
