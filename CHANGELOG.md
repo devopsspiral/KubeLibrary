@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+- Keyword for list cluster role and cluster role binding [#58](https://github.com/devopsspiral/KubeLibrary/pull/58) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Keyword for getiing role and rolebinding [#56](https://github.com/devopsspiral/KubeLibrary/pull/56) by [@satish-nubolab](https://github.com/satish-nubolab)
 
 ### Added

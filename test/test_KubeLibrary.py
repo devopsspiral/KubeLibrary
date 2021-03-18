@@ -40,12 +40,26 @@ class AttributeDict(object):
         return getattr(self, key)
 
 
+def mock_list_cluster_roles(watch=False):
+    with open('test/resources/cluster_role.json') as json_file:
+        cluster_roles_content = json.load(json_file)
+        list_of_cluster_roles = AttributeDict({'items': cluster_roles_content})
+        return list_of_cluster_roles
+
+
 def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
     if namespace == 'default':
         with open('test/resources/pods.json') as json_file:
             pods_content = json.load(json_file)
             list_of_pods = AttributeDict({'items': pods_content})
             return list_of_pods
+
+
+def mock_list_cluster_role_bindings(watch=False):
+    with open('test/resources/cluster_role_bind.json') as json_file:
+        cluster_role_bindings_content = json.load(json_file)
+        list_of_cluster_role_bindings = AttributeDict({'items': cluster_role_bindings_content})
+        return list_of_cluster_role_bindings
 
 
 def mock_list_namespaced_service_accounts(namespace, watch=False, label_selector=""):
@@ -269,6 +283,20 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         secrets = kl.get_secrets_in_namespace('.*', 'default')
         self.assertEqual(['grafana'], [item.metadata.name for item in secrets])
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_cluster_role')
+    def test_get_cluster_roles_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_cluster_roles
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        cluster_roles = kl.get_cluster_roles()
+        self.assertEqual(['secret-reader'], [item for item in cluster_roles])
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_cluster_role_binding')
+    def test_get_cluster_role_bindings_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_cluster_role_bindings
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        cluster_role_bindings = kl.get_cluster_role_bindings()
+        self.assertEqual(['read-secrets-global'], [item for item in cluster_role_bindings])
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role')
     def test_get_roles_in_namespace(self, mock_lnp):
