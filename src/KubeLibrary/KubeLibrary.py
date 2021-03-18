@@ -78,13 +78,13 @@ class KubeLibrary(object):
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
-
         self._add_api('v1', client.CoreV1Api)
         self._add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
         self._add_api('batchv1', client.BatchV1Api)
         self._add_api('appsv1', client.AppsV1Api)
         self._add_api('batchv1_beta1', client.BatchV1beta1Api)
         self._add_api('custom_object', client.CustomObjectsApi)
+        self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
 
     def _add_api(self, reference, class_name):
         self.__dict__[reference] = class_name()
@@ -640,6 +640,44 @@ class KubeLibrary(object):
         """
         ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
         return ret
+
+    def get_cluster_roles(self):
+        """Gets a list of cluster_roles.
+
+        Returns list of cluster_roles.
+        """
+        ret = self.rbac_authv1_api.list_cluster_role(watch=False)
+        return [item.metadata.name for item in ret.items]
+
+    def get_cluster_role_bindings(self):
+        """Gets a list of cluster_role_bindings.
+
+        Returns list of cluster_role_bindings.
+        """
+        ret = self.rbac_authv1_api.list_cluster_role_binding(watch=False)
+        return [item.metadata.name for item in ret.items]
+
+    def get_roles_in_namespace(self, namespace):
+        """Gets roles in given namespace.
+
+        Returns list of roles.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.list_namespaced_role(namespace, watch=False)
+        return [item.metadata.name for item in ret.items]
+
+    def get_role_bindings_in_namespace(self, namespace):
+        """Gets role_bindings in given namespace.
+
+        Returns list of role_bindings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.list_namespaced_role_binding(namespace, watch=False)
+        return [item.metadata.name for item in ret.items]
 
     def list_cluster_custom_objects(self, group, version, plural):
         """Lists cluster level custom objects.

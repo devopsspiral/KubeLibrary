@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+- Keyword for list cluster role and cluster role binding [#58](https://github.com/devopsspiral/KubeLibrary/pull/58) by [@satish-nubolab](https://github.com/satish-nubolab)
+- Keyword for getiing role and rolebinding [#56](https://github.com/devopsspiral/KubeLibrary/pull/56) by [@satish-nubolab](https://github.com/satish-nubolab)
 
 ### Added
 
@@ -18,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Keyword for list cronjob [#48](https://github.com/devopsspiral/KubeLibrary/pull/48) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Keyword for list daemonset [#50](https://github.com/devopsspiral/KubeLibrary/pull/50) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Keyword for CustomObjectsApi [#54](https://github.com/devopsspiral/KubeLibrary/pull/54) by [@mika-b](https://github.com/mika-b)
+- Example tests for Ambassador CRDs [#63](https://github.com/devopsspiral/KubeLibrary/pull/63) by [@Nilsty](https://github.com/Nilsty)
 
 ### Fixed
 - Fix for cert validation disabling not being possible for all api clients [#61](https://github.com/devopsspiral/KubeLibrary/pull/61) by [@m-wcislo](https://github.com/m-wcislo)
