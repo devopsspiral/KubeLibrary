@@ -312,6 +312,14 @@ class KubeLibrary(object):
                     containers.append(container)
         return containers
 
+    def filter_service_names(self, service):
+        """Filter service  names for list of service .
+        Returns list of strings.
+        - ``service``:
+          List of service objects
+        """
+        return [s.metadata.name for s in service]
+
     def filter_containers_images(self, containers):
         """Filters container images for given lists of containers.
 
