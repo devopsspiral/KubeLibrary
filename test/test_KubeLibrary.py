@@ -1,4 +1,3 @@
-
 import json
 import mock
 import re
@@ -45,6 +44,7 @@ def mock_list_cluster_roles(watch=False):
         cluster_roles_content = json.load(json_file)
         list_of_cluster_roles = AttributeDict({'items': cluster_roles_content})
         return list_of_cluster_roles
+
 
 def mock_list_namespaced_services(namespace, watch=False, label_selector=""):
     if namespace == 'default':
@@ -319,7 +319,7 @@ class TestKubeLibrary(unittest.TestCase):
         role_bindings = kl.get_role_bindings_in_namespace('default')
         self.assertEqual(['read-pods'], [item for item in role_bindings])
 
-   @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_service')
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_service')
     def test_get_services_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_services
         kl = KubeLibrary(kube_config='test/resources/k3d')
