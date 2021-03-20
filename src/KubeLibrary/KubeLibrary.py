@@ -278,14 +278,6 @@ class KubeLibrary(object):
         """
         return [pod.metadata.name for pod in pods]
 
-    def filter_service_names(self, service):
-        """Filter service  names for list of service .
-        Returns list of strings.
-        - ``service``:
-          List of service objects
-        """
-        return [s.metadata.name for s in service]
-
     def filter_service_accounts_names(self, service_accounts):
         """Filter service accounts names for list of service accounts.
 
