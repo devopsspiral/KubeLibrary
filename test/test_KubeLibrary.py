@@ -320,7 +320,7 @@ class TestKubeLibrary(unittest.TestCase):
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
     def test_get_configmaps_in_namespace(self, mock_lnp):
-       mock_lnp.side_effect = mock_list_namespaced_config_map
-       kl = KubeLibrary(kube_config='test/resources/k3d')
-       configmaps = kl.get_configmaps_in_namespace('.*','default')
-       self.assertEqual(['game-demo'], kl.filter_service_names(configmaps))
+        mock_lnp.side_effect = mock_list_namespaced_config_map
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        configmaps = kl.get_configmaps_in_namespace('.*', 'default')
+        self.assertEqual(['game-demo'], kl.filter_service_names(configmaps))
