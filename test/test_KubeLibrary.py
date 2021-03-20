@@ -40,6 +40,13 @@ class AttributeDict(object):
         return getattr(self, key)
 
 
+def mock_list_namespaced_config_map(namespace, watch=False, label_selector=""):
+    with open('test/resources/configmap.json') as json_file:
+        configmap_content = json.load(json_file)
+        configmap = AttributeDict({'items': configmap_content})
+        return configmap
+
+
 def mock_list_cluster_roles(watch=False):
     with open('test/resources/cluster_role.json') as json_file:
         cluster_roles_content = json.load(json_file)
@@ -325,3 +332,10 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         services = kl.get_services_in_namespace('default')
         self.assertEqual(['test-service'], [item for item in services])
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
+    def test_get_configmaps_in_namespace(self, mock_lnp):
+       mock_lnp.side_effect = mock_list_namespaced_config_map
+       kl = KubeLibrary(kube_config='test/resources/k3d')
+       configmaps = kl.get_configmaps_in_namespace('.*','default')
+       self.assertEqual(['game-demo'], kl.filter_service_names(configmaps))

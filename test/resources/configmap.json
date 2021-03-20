@@ -1,0 +1,38 @@
+[
+	{
+		"apiVersion": "v1",
+		"data": {
+			"game.properties": "enemy.types=aliens,monsters\nplayer.maximum-lives=5    \n",
+			"player_initial_lives": "3",
+			"ui_properties_file_name": "user-interface.properties",
+			"user-interface.properties": "color.good=purple\ncolor.bad=yellow\nallow.textmode=true   \n"
+		},
+		"kind": "ConfigMap",
+		"metadata": {
+			"creationTimestamp": "2021-03-17T13:06:44Z",
+			"managedFields": [
+				{
+					"apiVersion": "v1",
+					"fieldsType": "FieldsV1",
+					"fieldsV1": {
+						"f:data": {
+							".": {},
+							"f:game.properties": {},
+							"f:player_initial_lives": {},
+							"f:ui_properties_file_name": {},
+							"f:user-interface.properties": {}
+						}
+					},
+					"manager": "kubectl",
+					"operation": "Update",
+					"time": "2021-03-17T13:06:44Z"
+				}
+			],
+			"name": "game-demo",
+			"namespace": "default",
+			"resourceVersion": "10295",
+			"selfLink": "/api/v1/namespaces/default/configmaps/game-demo",
+			"uid": "78083cf6-4d1a-475a-abf8-0da3d21bb8a5"
+		}
+	}
+]
