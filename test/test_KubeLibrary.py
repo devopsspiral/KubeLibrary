@@ -1,4 +1,3 @@
-
 import json
 import mock
 import re
@@ -320,10 +319,9 @@ class TestKubeLibrary(unittest.TestCase):
         role_bindings = kl.get_role_bindings_in_namespace('default')
         self.assertEqual(['read-pods'], [item for item in role_bindings])
 
-
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim')
     def test_get_pvc_in_namespace(self, mock_lnp):
-   mock_lnp.side_effect = mock_list_pvc
-            kl = KubeLibrary(kube_config='test/resources/k3d')
+        mock_lnp.side_effect = mock_list_pvc
+        kl = KubeLibrary(kube_config='test/resources/k3d')
         pvcs = kl.get_pvc_in_namespace('default')
         self.assertEqual(['myclaim'], [item for item in pvcs])
