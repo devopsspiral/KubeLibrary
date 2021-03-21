@@ -335,7 +335,7 @@ class TestKubeLibrary(unittest.TestCase):
 
     @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_deployment')
     def test_get_deployments_in_namespace(self, mock_lnp):
-       mock_lnp.side_effect = mock_list_namespaced_deployments
-       kl = KubeLibrary(kube_config='test/resources/k3d')
-       deployments = kl.get_deployments_in_namespace('.*','default')
-       self.assertEqual(['nginx-deployment'],kl.filter_deployment_names(deployments))	
+        mock_lnp.side_effect = mock_list_namespaced_deployments
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        deployments = kl.get_deployments_in_namespace('.*', 'default')
+        self.assertEqual(['nginx-deployment'], kl.filter_deployment_names(deployments))
