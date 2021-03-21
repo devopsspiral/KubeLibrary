@@ -268,6 +268,14 @@ class KubeLibrary(object):
         secrets = [item for item in ret.items if r.match(item.metadata.name)]
         return secrets
 
+    def filter_deployment_names(self, deployment):
+        """Filter deployment  names for list of deployments .
+        Returns list of strings.
+        - ``deployment``:
+          List of deployment objects
+        """
+        return [d.metadata.name for d in deployment]
+
     def filter_pods_names(self, pods):
         """Filter pod names for list of pods.
 
