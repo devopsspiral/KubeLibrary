@@ -304,13 +304,13 @@ class KubeLibrary(object):
                     containers.append(container)
         return containers
 
-    def filter_service_names(self, service):
-        """Filter service  names for list of service .
+    def filter_configmap_names(self, configmaps):
+        """Filter configmap  names for list of configmap .
         Returns list of strings.
-        - ``service``:
-          List of service objects
+        - ``configmap``:
+          List of configmap objects
         """
-        return [s.metadata.name for s in service]
+        return [c.metadata.name for c in configmaps]
 
     def filter_containers_images(self, containers):
         """Filters container images for given lists of containers.
