@@ -53,6 +53,14 @@ def mock_list_cluster_roles(watch=False):
         return list_of_cluster_roles
 
 
+def mock_list_namespaced_services(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/service.json') as json_file:
+            services_content = json.load(json_file)
+            list_services = AttributeDict({'items': services_content})
+            return list_services
+
+
 def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
     if namespace == 'default':
         with open('test/resources/pods.json') as json_file:
