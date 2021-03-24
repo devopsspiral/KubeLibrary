@@ -43,9 +43,9 @@ def mock_list_namespaced_deployments(namespace, watch=False, label_selector=""):
     with open('test/resources/deployment.json') as json_file:
         deployments_content = json.load(json_file)
         deployments = AttributeDict({'items': deployments_content})
-        return deployments
+        return deployment
 
-
+      
 def mock_list_cluster_roles(watch=False):
     with open('test/resources/cluster_role.json') as json_file:
         cluster_roles_content = json.load(json_file)
@@ -325,13 +325,6 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         role_bindings = kl.get_role_bindings_in_namespace('default')
         self.assertEqual(['read-pods'], [item for item in role_bindings])
-
-    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_service')
-    def test_get_services_in_namespace(self, mock_lnp):
-        mock_lnp.side_effect = mock_list_namespaced_services
-        kl = KubeLibrary(kube_config='test/resources/k3d')
-        services = kl.get_services_in_namespace('default')
-        self.assertEqual(['test-service'], [item for item in services])
 
     @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_deployment')
     def test_get_deployments_in_namespace(self, mock_lnp):
