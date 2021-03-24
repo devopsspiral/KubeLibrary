@@ -45,7 +45,7 @@ def mock_list_namespaced_deployments(namespace, watch=False, label_selector=""):
         deployments = AttributeDict({'items': deployments_content})
         return deployments
 
-     
+
 def mock_list_cluster_roles(watch=False):
     with open('test/resources/cluster_role.json') as json_file:
         cluster_roles_content = json.load(json_file)
