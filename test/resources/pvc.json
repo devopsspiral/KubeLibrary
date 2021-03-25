@@ -1,0 +1,79 @@
+[
+{
+    "apiVersion": "v1",
+    "kind": "PersistentVolumeClaim",
+    "metadata": {
+        "creationTimestamp": "2021-03-19T03:42:46Z",
+        "finalizers": [
+            "kubernetes.io/pvc-protection"
+        ],
+        "managedFields": [
+            {
+                "apiVersion": "v1",
+                "fieldsType": "FieldsV1",
+                "fieldsV1": {
+                    "f:spec": {
+                        "f:accessModes": {},
+                        "f:resources": {
+                            "f:requests": {
+                                ".": {},
+                                "f:storage": {}
+                            }
+                        },
+                        "f:selector": {
+                            ".": {},
+                            "f:matchExpressions": {},
+                            "f:matchLabels": {
+                                ".": {},
+                                "f:release": {}
+                            }
+                        },
+                        "f:storageClassName": {},
+                        "f:volumeMode": {}
+                    },
+                    "f:status": {
+                        "f:phase": {}
+                    }
+                },
+                "manager": "kubectl",
+                "operation": "Update",
+                "time": "2021-03-19T03:42:46Z"
+            }
+        ],
+        "name": "myclaim",
+        "namespace": "default",
+        "resourceVersion": "4686",
+        "selfLink": "/api/v1/namespaces/default/persistentvolumeclaims/myclaim",
+        "uid": "42708d93-02f5-4488-9bae-497d1a150de8"
+    },
+    "spec": {
+        "accessModes": [
+            "ReadWriteOnce"
+        ],
+        "resources": {
+            "requests": {
+                "storage": "8Gi"
+            }
+        },
+        "selector": {
+            "matchExpressions": [
+                {
+                    "key": "environment",
+                    "operator": "In",
+                    "values": [
+                        "dev"
+                    ]
+                }
+            ],
+            "matchLabels": {
+                "release": "stable"
+            }
+        },
+        "storageClassName": "slow",
+        "volumeMode": "Filesystem"
+    },
+    "status": {
+        "phase": "Pending"
+    }
+}
+]

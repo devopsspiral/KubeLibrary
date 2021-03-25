@@ -46,6 +46,14 @@ def mock_list_namespaced_config_map(namespace, watch=False, label_selector=""):
         return configmap
 
 
+def mock_list_pvc(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/pvc.json') as json_file:
+            pvc_content = json.load(json_file)
+            list_pvc = AttributeDict({'items': pvc_content})
+            return list_pvc
+
+
 def mock_list_cluster_roles(watch=False):
     with open('test/resources/cluster_role.json') as json_file:
         cluster_roles_content = json.load(json_file)
@@ -332,3 +340,10 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         configmaps = kl.get_configmaps_in_namespace('.*', 'default')
         self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim')
+    def test_get_pvc_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_pvc
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        pvcs = kl.get_pvc_in_namespace('default')
+        self.assertEqual(['myclaim'], [item for item in pvcs])
