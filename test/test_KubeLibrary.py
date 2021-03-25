@@ -39,6 +39,13 @@ class AttributeDict(object):
         return getattr(self, key)
 
 
+def mock_list_namespaced_config_map(namespace, watch=False, label_selector=""):
+    with open('test/resources/configmap.json') as json_file:
+        configmap_content = json.load(json_file)
+        configmap = AttributeDict({'items': configmap_content})
+        return configmap
+
+
 def mock_list_pvc(namespace, watch=False, label_selector=""):
     if namespace == 'default':
         with open('test/resources/pvc.json') as json_file:
@@ -326,6 +333,13 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         role_bindings = kl.get_role_bindings_in_namespace('default')
         self.assertEqual(['read-pods'], [item for item in role_bindings])
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
+    def test_get_configmaps_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_config_map
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        configmaps = kl.get_configmaps_in_namespace('.*', 'default')
+        self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim')
     def test_get_pvc_in_namespace(self, mock_lnp):
