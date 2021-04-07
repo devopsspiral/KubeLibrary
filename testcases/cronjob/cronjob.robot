@@ -13,6 +13,7 @@ Jobs by label
 Working on Cron Job
     [Tags]    other
     List all cron jobs in namespace    default
-	Edit obtained cron job    test-cronjob
+    Edit obtained cron job    test-cronjob
     Create new cron job in namespace    default
     Delete created cron job in namespace    test-cronjob    default
+    
