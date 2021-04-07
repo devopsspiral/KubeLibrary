@@ -12,8 +12,8 @@ Jobs by label
 	
 Working on Cron Job
     [Tags]    other
-    List all cron jobs in namespace    default
+    List all cron jobs in namespace    kubelib-tests
     Edit obtained cron job    test-cronjob
-    Create new cron job in namespace    default
-    Delete created cron job in namespace    test-cronjob    default
+    Create new cron job in namespace    kubelib-tests
+    Delete created cron job in namespace    test-cronjob    kubelib-tests
     
