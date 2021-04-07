@@ -756,13 +756,11 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.batchv1_beta1.create_namespaced_cron_job(namespace=namespace, body=body)
-        return ret
-		
-		
-		
+        return ret	
+
     def delete_cron_job_in_namespace(self, name, namespace):
         """Deletes cron_job in a namespace
-        Returns V1status
+        Returns V1 status
         - ``name``:
           Cron Job name
         - ``namespace``:
