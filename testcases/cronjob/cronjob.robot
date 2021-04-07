@@ -1,4 +1,3 @@
-		
 *** Settings ***
 Resource          ./cronjob_kw.robot
 
@@ -10,3 +9,10 @@ Job test case example
 Jobs by label
     [Tags]    other
     List cron jobs with label  ${cron_job_name}  kubelib-tests  TestLabel=mytestlabel
+	
+Working on Cron Job
+    [Tags]    other
+    List all cron jobs in namespace    default
+	Edit obtained cron job    test-cronjob
+    Create new cron job in namespace    default
+    Delete created cron job in namespace    test-cronjob    default
