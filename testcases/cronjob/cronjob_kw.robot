@@ -19,7 +19,7 @@ List all cron jobs in namespace
         ${cronjob_details}=  Get Cron Job Details In Namespace  ${cron_job}  ${namespace}
         Log  ${cronjob_details.metadata.name}  console=True
         Set Global Variable    ${cron_job_name}    ${cronjob_details.metadata.name}
-		Set Global Variable    ${cron_job}    ${cronjob_details}
+	Set Global Variable    ${cron_job}    ${cronjob_details}
     END
 
 List cron jobs with label
@@ -44,12 +44,12 @@ Edit obtained cron job
 
 Create new cron job in namespace
     [Arguments]  ${namespace}
-	Log  \nCreate new cron job in namespace ${namespace}  console=True
+    Log  \nCreate new cron job in namespace ${namespace}  console=True
     ${new_cj}=    Create Cron Job In Namespace  ${namespace}  ${new_cron_job}
     Log  ${new_cj}  console=True
 
 Delete created cron job in namespace
     [Arguments]  ${cron_job_name}    ${namespace}
-	Log  \nDeletee cron job in namespace ${namespace}  console=True
-	${status}=    Delete Cron Job In Namespace  ${cron_job_name}    ${namespace}
+    Log  \nDeletee cron job in namespace ${namespace}  console=True
+    ${status}=    Delete Cron Job In Namespace  ${cron_job_name}    ${namespace}
     Log  ${status}
