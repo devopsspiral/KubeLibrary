@@ -1,4 +1,3 @@
-
 import json
 import mock
 import re
@@ -40,12 +39,49 @@ class AttributeDict(object):
         return getattr(self, key)
 
 
+def mock_list_namespaced_config_map(namespace, watch=False, label_selector=""):
+    with open('test/resources/configmap.json') as json_file:
+        configmap_content = json.load(json_file)
+        configmap = AttributeDict({'items': configmap_content})
+        return configmap
+
+
+def mock_list_pvc(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/pvc.json') as json_file:
+            pvc_content = json.load(json_file)
+            list_pvc = AttributeDict({'items': pvc_content})
+            return list_pvc
+
+
+def mock_list_cluster_roles(watch=False):
+    with open('test/resources/cluster_role.json') as json_file:
+        cluster_roles_content = json.load(json_file)
+        list_of_cluster_roles = AttributeDict({'items': cluster_roles_content})
+        return list_of_cluster_roles
+
+
+def mock_list_namespaced_services(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/service.json') as json_file:
+            services_content = json.load(json_file)
+            list_services = AttributeDict({'items': services_content})
+            return list_services
+
+
 def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
     if namespace == 'default':
         with open('test/resources/pods.json') as json_file:
             pods_content = json.load(json_file)
             list_of_pods = AttributeDict({'items': pods_content})
             return list_of_pods
+
+
+def mock_list_cluster_role_bindings(watch=False):
+    with open('test/resources/cluster_role_bind.json') as json_file:
+        cluster_role_bindings_content = json.load(json_file)
+        list_of_cluster_role_bindings = AttributeDict({'items': cluster_role_bindings_content})
+        return list_of_cluster_role_bindings
 
 
 def mock_list_namespaced_service_accounts(namespace, watch=False, label_selector=""):
@@ -86,6 +122,22 @@ def mock_list_node_info(watch=False, label_selector=""):
         return node_info
 
 
+def mock_list_namespaced_roles(namespace, watch=False):
+    if namespace == 'default':
+        with open('test/resources/role.json') as json_file:
+            role_content = json.load(json_file)
+            list_of_role = AttributeDict({'items': role_content})
+            return list_of_role
+
+
+def mock_list_namespaced_role_bindings(namespace, watch=False):
+    if namespace == 'default':
+        with open('test/resources/rolebinding.json') as json_file:
+            role_bind_content = json.load(json_file)
+            list_of_role_bind = AttributeDict({'items': role_bind_content})
+            return list_of_role_bind
+
+
 bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05RaWdSUFoyN004TmlGT1pSX28ifQ.' \
                'eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1' \
                'lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15c2EtdG' \
@@ -104,7 +156,8 @@ k8s_api_url = 'https://0.0.0.0:38041'
 
 class TestKubeLibrary(unittest.TestCase):
 
-    apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1',)
+    apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
+            'custom_object', 'rbac_authv1_api')
 
     def test_KubeLibrary_inits_from_kubeconfig(self):
         KubeLibrary(kube_config='test/resources/k3d')
@@ -118,10 +171,8 @@ class TestKubeLibrary(unittest.TestCase):
 
     def test_inits_all_api_clients(self):
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        self.assertIsNotNone(kl.v1)
-        self.assertIsNotNone(kl.extensionsv1beta1)
-        self.assertIsNotNone(kl.batchv1)
-        self.assertIsNotNone(kl.appsv1)
+        for api in TestKubeLibrary.apis:
+            self.assertIsNotNone(getattr(kl, api))
 
     def test_KubeLibrary_inits_without_cert_validation(self):
         kl = KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
@@ -285,3 +336,45 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         secrets = kl.get_secrets_in_namespace('.*', 'default')
         self.assertEqual(['grafana'], [item.metadata.name for item in secrets])
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_cluster_role')
+    def test_get_cluster_roles_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_cluster_roles
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        cluster_roles = kl.get_cluster_roles()
+        self.assertEqual(['secret-reader'], [item for item in cluster_roles])
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_cluster_role_binding')
+    def test_get_cluster_role_bindings_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_cluster_role_bindings
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        cluster_role_bindings = kl.get_cluster_role_bindings()
+        self.assertEqual(['read-secrets-global'], [item for item in cluster_role_bindings])
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role')
+    def test_get_roles_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_roles
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        roles = kl.get_roles_in_namespace('default')
+        self.assertEqual(['pod-reader'], [item for item in roles])
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role_binding')
+    def test_get_role_bindings_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_role_bindings
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        role_bindings = kl.get_role_bindings_in_namespace('default')
+        self.assertEqual(['read-pods'], [item for item in role_bindings])
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
+    def test_get_configmaps_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_config_map
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        configmaps = kl.get_configmaps_in_namespace('.*', 'default')
+        self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim')
+    def test_get_pvc_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_pvc
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        pvcs = kl.get_pvc_in_namespace('default')
+        self.assertEqual(['myclaim'], [item for item in pvcs])

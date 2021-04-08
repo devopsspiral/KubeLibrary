@@ -124,12 +124,15 @@ class KubeLibrary(object):
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
-        self.add_api('v1', client.CoreV1Api)
-        self.add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
-        self.add_api('batchv1', client.BatchV1Api)
-        self.add_api('appsv1', client.AppsV1Api)
+        self._add_api('v1', client.CoreV1Api)
+        self._add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
+        self._add_api('batchv1', client.BatchV1Api)
+        self._add_api('appsv1', client.AppsV1Api)
+        self._add_api('batchv1_beta1', client.BatchV1beta1Api)
+        self._add_api('custom_object', client.CustomObjectsApi)
+        self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
 
-    def add_api(self, reference, class_name):
+    def _add_api(self, reference, class_name):
         self.__dict__[reference] = class_name(self.api_client)
         if not self.cert_validation:
             self.__dict__[reference].api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
@@ -346,6 +349,14 @@ class KubeLibrary(object):
                 if r.match(container.name):
                     containers.append(container)
         return containers
+
+    def filter_configmap_names(self, configmaps):
+        """Filter configmap  names for list of configmaps.
+        Returns list of strings.
+        - ``configmaps``:
+          List of configmap objects
+        """
+        return [c.metadata.name for c in configmaps]
 
     def filter_containers_images(self, containers):
         """Filters container images for given lists of containers.
@@ -581,6 +592,37 @@ class KubeLibrary(object):
         ret = self.v1.delete_namespaced_service_account(name=name, namespace=namespace)
         return ret
 
+    def get_healthcheck(self, endpoint='/readyz', verbose=False):
+        """Performs GET on /readyz or /livez for simple health check.
+
+        Can be used to verify the readiness/current status of the API server
+        Returns tuple of (response data, response status and response headers)
+
+        - ``endpoint``:
+            /readyz, /livez or induvidual endpoints like '/livez/etcd'. defaults to /readyz
+        - ``verbose``:
+            More detailed output.
+
+        https://kubernetes.io/docs/reference/using-api/health-checks
+
+        """
+        path_params = {}
+        query_params = []
+        header_params = {}
+        auth_settings = ['BearerToken']
+        if not (endpoint.startswith('/readyz') or endpoint.startswith('/livez')):
+            raise RuntimeError(f'{endpoint} does not start with "/readyz" or "/livez"')
+        endpoint = endpoint if not verbose else endpoint + '?verbose'
+        resp = self.v1.api_client.call_api(endpoint, 'GET',
+                                           path_params,
+                                           query_params,
+                                           header_params,
+                                           response_type='str',
+                                           auth_settings=auth_settings,
+                                           async_req=False,
+                                           _return_http_data_only=False)
+        return resp
+
     def get_ingresses_in_namespace(self, namespace, label_selector=""):
         """Gets ingresses in given namespace.
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -600,3 +642,153 @@ class KubeLibrary(object):
         """
         ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
         return ret
+
+    def get_cron_jobs_in_namespace(self, namespace, label_selector=""):
+        """Gets cron jobs in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_cron_job_details_in_namespace(self, name, namespace):
+        """Gets cron job details in given namespace.
+
+        Returns Cron job object representation.
+
+        - ``name``:
+          Name of cron job.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.read_namespaced_cron_job(name, namespace)
+        return ret
+
+    def get_daemonsets_in_namespace(self, namespace, label_selector=""):
+        """Gets a list of available daemonsets.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of deaemonsets.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_daemon_set(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_daemonset_details_in_namespace(self, name, namespace):
+        """Gets deamonset details in given namespace.
+
+        Returns daemonset object representation.
+
+        - ``name``:
+          Name of the daemonset
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
+        return ret
+
+    def get_cluster_roles(self):
+        """Gets a list of cluster_roles.
+
+        Returns list of cluster_roles.
+        """
+        ret = self.rbac_authv1_api.list_cluster_role(watch=False)
+        return [item.metadata.name for item in ret.items]
+
+    def get_cluster_role_bindings(self):
+        """Gets a list of cluster_role_bindings.
+
+        Returns list of cluster_role_bindings.
+        """
+        ret = self.rbac_authv1_api.list_cluster_role_binding(watch=False)
+        return [item.metadata.name for item in ret.items]
+
+    def get_roles_in_namespace(self, namespace):
+        """Gets roles in given namespace.
+
+        Returns list of roles.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.list_namespaced_role(namespace, watch=False)
+        return [item.metadata.name for item in ret.items]
+
+    def get_role_bindings_in_namespace(self, namespace):
+        """Gets role_bindings in given namespace.
+
+        Returns list of role_bindings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.list_namespaced_role_binding(namespace, watch=False)
+        return [item.metadata.name for item in ret.items]
+
+    def list_cluster_custom_objects(self, group, version, plural):
+        """Lists cluster level custom objects.
+
+        Returns an object.
+
+        - ``group``:
+          API Group, e.g. 'k8s.cni.cncf.io'
+        - ``version``:
+          API version, e.g. 'v1'
+        - ``plural``:
+          e.g. 'network-attachment-definitions'
+
+        As in ``GET /apis/{group}/{version}/{plural}``
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_object.list_cluster_custom_object(group, version, plural)
+
+    def get_cluster_custom_object(self, group, version, plural, name):
+        """Get cluster level custom object.
+
+        Returns an object.
+
+        - ``group``:
+          API Group, e.g. 'scheduling.k8s.io'
+        - ``version``:
+          API version, e.g. 'v1'
+        - ``plural``:
+          e.g. 'priorityclasses'
+        - ``name``:
+          e.g. 'system-node-critical'
+
+        As in ``GET /apis/{group}/{version}/{plural}/{name}``
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_object.get_cluster_custom_object(group, version, plural, name)
+
+    def get_custom_object_in_namespace(self, group, version, namespace, plural, name):
+        """Get custom object in namespace.
+
+        Returns an object.
+
+        - ``group``:
+          API Group, e.g. 'k8s.cni.cncf.io'
+        - ``version``:
+          API version, e.g. 'v1'
+        - ``namespace``:
+          Namespace, e.g. 'default'
+        - ``plural``:
+          e.g. 'network-attachment-definitions'
+        - ``name``:
+          e.g. 'my-network'
+
+        As in ``GET /apis/{group}/{version}/namespaces/{namespace}/{plural}/{name}``
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)

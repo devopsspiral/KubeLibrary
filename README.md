@@ -1,5 +1,5 @@
 # KubeLibrary
-[![CircleCI Build Status](https://circleci.com/gh/devopsspiral/KubeLibrary.svg?style=shield)](https://circleci.com/gh/devopsspiral/KubeLibrary)[![PyPI](https://img.shields.io/pypi/v/robotframework-kubelibrary)](https://pypi.org/project/robotframework-kubelibrary/)[![GitHub License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/devopsspiral/k3d-orb/master/LICENSE)[![Slack](https://img.shields.io/badge/slack-robotframework%2F%23kubernetes-blue)](https://robotframework.slack.com/archives/C017AKKS06R)
+[![CircleCI Build Status](https://circleci.com/gh/devopsspiral/KubeLibrary.svg?style=shield)](https://circleci.com/gh/devopsspiral/KubeLibrary)[![PyPI](https://img.shields.io/pypi/v/robotframework-kubelibrary)](https://pypi.org/project/robotframework-kubelibrary/)[![PyPi downloads](https://img.shields.io/pypi/dm/robotframework-kubelibrary.svg)](https://pypi.python.org/pypi/robotframework-kubelibrary)[![GitHub License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/devopsspiral/k3d-orb/master/LICENSE)[![Slack](https://img.shields.io/badge/slack-robotframework%2F%23kubernetes-blue)](https://robotframework.slack.com/archives/C017AKKS06R)
 
 
 RobotFramework library for testing Kubernetes cluster
@@ -140,7 +140,7 @@ Keywords documentation can be found in docs/.
 
 [KubeLibrary: Testing Kubernetes with RobotFramework  | Humanitec](https://humanitec.com/blog/kubelibrary-testing-kubernetes-with-robotframework)
 
-[RobotFramewrok User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
+[RobotFramework User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
 
 ## Development
 
@@ -157,13 +157,15 @@ pip install -r requirements
 
 Create keyword and test file, import KubeLibrary using below to point to library under development.
 
-| ***** Settings ***** |
+```
+*** Settings ***
 
-| Library    ../src/KubeLibrary/KubeLibrary.py |
+Library    ../src/KubeLibrary/KubeLibrary.py
+```
 
 For development cluster you can use k3s/k3d as described in [DevOps spiral article on K3d and skaffold](https://devopsspiral.com/articles/k8s/k3d-skaffold/).
 
-Generate docs
+### Generate docs
 
 ```
 python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html
