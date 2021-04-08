@@ -747,7 +747,7 @@ class KubeLibrary(object):
         """
         return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)
 
-    def filter_endpoints_names(self, endpoints):       
+    def filter_endpoints_names(self, endpoints):      
         """Filter endpoints names for list of endpoints.
         Returns list of strings.
         - ``endpoints``:
