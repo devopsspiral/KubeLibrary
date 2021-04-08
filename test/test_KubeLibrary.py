@@ -39,6 +39,37 @@ class AttributeDict(object):
         return getattr(self, key)
 
 
+def mock_list_namespaced_daemonsets(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/daemonset.json') as json_file:
+            daemonsets_content = json.load(json_file)
+            list_of_daemonsets = AttributeDict({'items': daemonsets_content})
+            return list_of_daemonsets
+
+
+def mock_list_namespaced_cronjobs(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/cronjob.json') as json_file:
+            cronjobs_content = json.load(json_file)
+            list_of_cronjobs = AttributeDict({'items': cronjobs_content})
+            return list_of_cronjobs
+
+
+def mock_list_namespaced_ingresses(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/ingress.json') as json_file:
+            ingresses_content = json.load(json_file)
+            list_ingresses = AttributeDict({'items': ingresses_content})
+            return list_ingresses
+			
+			
+def mock_read_namespaced_endpoints(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/endpoints.json') as json_file:
+            endpoints_content = json.load(json_file)
+            read_endpoints = AttributeDict({'items': endpoints_content})
+            return read_endpoints
+
 def mock_list_namespaced_config_map(namespace, watch=False, label_selector=""):
     with open('test/resources/configmap.json') as json_file:
         configmap_content = json.load(json_file)
@@ -347,3 +378,32 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         pvcs = kl.get_pvc_in_namespace('default')
         self.assertEqual(['myclaim'], [item for item in pvcs])
+
+    @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_daemon_set')
+    def test_get_daemonsets_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_daemonsets
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        daemonsets = kl.get_daemonsets_in_namespace( 'default')
+        self.assertEqual(['fluentd-elasticsearch'], [item for item in daemonsets])
+
+    @mock.patch('kubernetes.client.ExtensionsV1beta1Api.list_namespaced_ingress')
+    def test_get_ingresses_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_ingresses
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        ingresses = kl.get_ingresses_in_namespace('default')
+        self.assertEqual(['minimal-ingress'], [item for item in ingresses])
+
+    @mock.patch('kubernetes.client.BatchV1beta1Api.list_namespaced_cron_job')
+    def test_get_cronjobs_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_cronjobs
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        cronjobs = kl.get_cron_jobs_in_namespace('default')
+        self.assertEqual(['hello'], [item for item in cronjobs])
+
+    @mock.patch('kubernetes.client.CoreV1Api.read_namespaced_endpoints')
+    def test_get_endpoints_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_read_namespaced_endpoints
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        endpoints = kl.get_endpoints_in_namespace('.*', 'default')
+        print(endpoints)
+        self.assertEqual(['my-service'], kl.filter_endpoints_names(endpoints))	
