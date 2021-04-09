@@ -62,7 +62,7 @@ def mock_list_namespaced_ingresses(namespace, watch=False, label_selector=""):
             list_ingresses = AttributeDict({'items': ingresses_content})
             return list_ingresses
 
-			
+
 def mock_read_namespaced_endpoints(name, namespace):
     if namespace == 'default':
         with open('test/resources/endpoints.json') as json_file:
