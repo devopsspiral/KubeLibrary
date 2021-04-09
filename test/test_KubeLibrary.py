@@ -61,7 +61,7 @@ def mock_list_namespaced_ingresses(namespace, watch=False, label_selector=""):
             ingresses_content = json.load(json_file)
             list_ingresses = AttributeDict({'items': ingresses_content})
             return list_ingresses
-			
+
 			
 def mock_read_namespaced_endpoints(name, namespace):
     if namespace == 'default':
@@ -69,6 +69,7 @@ def mock_read_namespaced_endpoints(name, namespace):
             endpoints_content = json.load(json_file)
             read_endpoints = AttributeDict({'items': endpoints_content})
             return read_endpoints
+
 
 def mock_list_namespaced_config_map(namespace, watch=False, label_selector=""):
     with open('test/resources/configmap.json') as json_file:
@@ -383,7 +384,7 @@ class TestKubeLibrary(unittest.TestCase):
     def test_get_daemonsets_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_daemonsets
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        daemonsets = kl.get_daemonsets_in_namespace( 'default')
+        daemonsets = kl.get_daemonsets_in_namespace('default')
         self.assertEqual(['fluentd-elasticsearch'], [item for item in daemonsets])
 
     @mock.patch('kubernetes.client.ExtensionsV1beta1Api.list_namespaced_ingress')
@@ -405,5 +406,4 @@ class TestKubeLibrary(unittest.TestCase):
         mock_lnp.side_effect = mock_read_namespaced_endpoints
         kl = KubeLibrary(kube_config='test/resources/k3d')
         endpoints = kl.get_endpoints_in_namespace('.*', 'default')
-        print(endpoints)
-        self.assertEqual(['my-service'], kl.filter_endpoints_names(endpoints))	
+        self.assertEqual(['my-service'], kl.filter_endpoints_names(endpoints))
