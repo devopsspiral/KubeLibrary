@@ -346,7 +346,7 @@ class TestKubeLibrary(unittest.TestCase):
         mock_lnp.side_effect = mock_list_namespaced_deployments
         kl = KubeLibrary(kube_config='test/resources/k3d')
         deployments = kl.get_deployments_in_namespace('.*', 'default')
-        self.assertEqual(['nginx-deployment'], kl.filter_deployment_names(deployments))
+        self.assertEqual(['nginx-deployment'], kl.filter_deployments_names(deployments))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim')
     def test_get_pvc_in_namespace(self, mock_lnp):
