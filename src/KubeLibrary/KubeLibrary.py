@@ -110,15 +110,25 @@ class KubeLibrary(object):
                                            _return_http_data_only=False)
         return resp
 
-    def get_namespaces(self, label_selector=""):
-        """Gets a list of available namespaces.
+    def list_namespaces(self, label_selector=""):
+        """Lists available namespaces.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of namespaces.
         """
         ret = self.v1.list_namespace(watch=False, label_selector=label_selector)
-        return [item.metadata.name for item in ret.items]
+        return ret.items
+
+    def get_namespaces(self, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaces.
+        Gets a list of available namespaces.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of namespaces names.
+        """
+        return self.filter_names(self.list_namespaces(label_selector=label_selector))
 
     def get_healthy_nodes_count(self, label_selector=""):
         """Counts node with KubeletReady and status True.
@@ -268,25 +278,46 @@ class KubeLibrary(object):
         secrets = [item for item in ret.items if r.match(item.metadata.name)]
         return secrets
 
+    def filter_names(self, objects):
+        """Filter .metadata.name for list of k8s objects.
+
+        Returns list of strings.
+
+        - ``objects``:
+          List of k8s objects
+        """
+        return [obj.metadata.name for obj in objects]
+
     def filter_pods_names(self, pods):
-        """Filter pod names for list of pods.
+        """*DEPRECATED* Will be removed in v1.0.0. Use filter_names.
+        Filter pod names for list of pods.
 
         Returns list of strings.
 
         - ``pods``:
           List of pods objects
         """
-        return [pod.metadata.name for pod in pods]
+        return self.filter_names(pods)
 
     def filter_service_accounts_names(self, service_accounts):
-        """Filter service accounts names for list of service accounts.
+        """*DEPRECATED* Will be removed in v1.0.0. Use filter_names.
+        Filter service accounts names for list of service accounts.
 
         Returns list of strings.
 
         - ``service_accounts``:
           List of service accounts objects
         """
-        return [sa.metadata.name for sa in service_accounts]
+        return self.filter_names(service_accounts)
+
+    def filter_configmap_names(self, configmaps):
+        """*DEPRECATED* Will be removed in v1.0.0. Use filter_names.
+        Filter configmap  names for list of configmaps.
+        Returns list of strings.
+        - ``configmaps``:
+          List of configmap objects
+        """
+        return self.filter_names(configmaps)
 
     def filter_pods_containers_by_name(self, pods, name_pattern):
         """Filters pods containers by name for given list of pods.
@@ -303,14 +334,6 @@ class KubeLibrary(object):
                 if r.match(container.name):
                     containers.append(container)
         return containers
-
-    def filter_configmap_names(self, configmaps):
-        """Filter configmap  names for list of configmaps.
-        Returns list of strings.
-        - ``configmaps``:
-          List of configmap objects
-        """
-        return [c.metadata.name for c in configmaps]
 
     def filter_containers_images(self, containers):
         """Filters container images for given lists of containers.
@@ -449,7 +472,7 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.v1.list_namespaced_service(namespace, watch=False, label_selector=label_selector)
-        return [item.metadata.name for item in ret.items]
+        return [item for item in ret.items]
 
     def get_service_details_in_namespace(self, name, namespace):
         """Gets service details in given namespace.

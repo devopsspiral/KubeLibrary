@@ -273,6 +273,14 @@ class TestKubeLibrary(unittest.TestCase):
     def test_list_namespaces(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaces
         kl = KubeLibrary(kube_config='test/resources/k3d')
+        namespaces = kl.list_namespaces()
+        self.assertTrue(len(namespaces) > 0)
+        self.assertEqual(['default', 'kubelib-test-test-objects-chart'], kl.filter_names(namespaces))
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespace')
+    def test_get_namespaces(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaces
+        kl = KubeLibrary(kube_config='test/resources/k3d')
         namespaces = kl.get_namespaces()
         self.assertTrue(len(namespaces) > 0)
         self.assertEqual(['default', 'kubelib-test-test-objects-chart'], namespaces)
@@ -347,3 +355,10 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         pvcs = kl.get_pvc_in_namespace('default')
         self.assertEqual(['myclaim'], [item for item in pvcs])
+
+    def test_service_getting(self):
+        kl = KubeLibrary(kube_config='~/.kube/k3d')
+        ret = kl.get_services_in_namespace('default')
+        print(ret)
+        ret = kl.get_service_details_in_namespace('grafana', 'default')
+        print(ret)
