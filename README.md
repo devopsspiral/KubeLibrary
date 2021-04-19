@@ -109,6 +109,13 @@ kind create cluster --kubeconfig ./cluster1-conf --name kind-cluster-1
 
 # Create namespace in Test Cluster 1
 kubectl create namespace test-ns-1 --context kind-kind-cluster-1 --kubeconfig ./cluster1-conf
+# For bearer token auth
+kubectl apply -f testcases/reload-config/sa.yaml
+MYSA_TOKEN_SECRET=$(kubectl get sa mysa -o jsonpath="{.secrets[0].name}")
+export K8S_TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET --template={{.data.token}} | base64 -d)
+kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
+export K8S_API_URL=$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}')
+export K8S_CA_CRT=./ca.crt
 
 # Create Test Cluster 2
 kind create cluster --kubeconfig ./cluster2-conf --name kind-cluster-2
