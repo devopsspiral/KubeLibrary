@@ -3,7 +3,7 @@ import mock
 import re
 import ssl
 import unittest
-from KubeLibrary import KubeLibrary
+from KubeLibrary import KubeLibrary, BearerTokenWithPrefixException
 from kubernetes.config.config_exception import ConfigException
 
 
@@ -170,6 +170,22 @@ def mock_list_namespaced_role_bindings(namespace, watch=False):
             return list_of_role_bind
 
 
+bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05RaWdSUFoyN004TmlGT1pSX28ifQ.' \
+               'eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1' \
+               'lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15c2EtdG' \
+               '9rZW4taDRzNzUiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoibXlzY' \
+               'SIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjY5MTk5ZmUyLTIzNWIt' \
+               'NGY3MC04MjEwLTkzZTk2YmM5ZmEwOCIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0Om15c2EifQ.' \
+               'V8VIYZ0B2y2h9p-2LTZ19klSuZ37HUWi-8F1yjfFTq83R1Dmax6DoDr5gWbVL4A054q5k1L2U12d50gox0V_kVsRTb3' \
+               'KQnRSGCz1YgCqOVNLqnnsyu3kcmDaUDrFlJ4PuZ7R4DfvGCdK-BU9pj2MhcQT-tyfbGR-dwwkjwXTCPRZVW-CUm4qwY' \
+               'bCGTpGbNXPXbEKtseXIxMkRg70Kav3M-YB1LYHQRx_T2IqKAmyhXlbMc8boqoEiSi6TRbMjZ9Yz-nkc82e6kAdc1O2F' \
+               '4kFw-14kg2mX7Hu-02vob_LZmfR08UGu6VTkcfVK5VqZVg2oVBI4swZghQl8_fOtlplOg'
+
+ca_cert = '/path/to/certificate.crt'
+
+k8s_api_url = 'https://0.0.0.0:38041'
+
+
 class TestKubeLibrary(unittest.TestCase):
 
     apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
@@ -195,6 +211,21 @@ class TestKubeLibrary(unittest.TestCase):
         for api in TestKubeLibrary.apis:
             target = getattr(kl, api)
             self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
+
+    def test_KubeLibrary_inits_with_bearer_token(self):
+        kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token)
+        for api in TestKubeLibrary.apis:
+            target = getattr(kl, api)
+            self.assertEqual(kl.api_client.configuration.api_key, target.api_client.configuration.api_key)
+        self.assertEqual(kl.api_client.configuration.ssl_ca_cert, None)
+
+    def test_inits_with_bearer_token_raises_BearerTokenWithPrefixException(self):
+        kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token)
+        self.assertRaises(BearerTokenWithPrefixException, kl.reload_config, api_url=k8s_api_url, bearer_token='Bearer prefix should fail')
+
+    def test_KubeLibrary_inits_with_bearer_token_with_ca_crt(self):
+        kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token, ca_cert=ca_cert)
+        self.assertEqual(kl.api_client.configuration.ssl_ca_cert, ca_cert)
 
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
