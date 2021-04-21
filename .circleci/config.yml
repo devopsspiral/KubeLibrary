@@ -170,7 +170,7 @@ jobs:
       - run:
           name: Build image.html
           command: |
-            python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html            
+            python3 -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html            
 workflows:
   main:
     jobs:
