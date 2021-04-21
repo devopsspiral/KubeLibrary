@@ -198,7 +198,9 @@ workflows:
               only: /^v.*/
       - generate-index file:
           requires:
-            - build-and-test      
+            - build-and-test
+            - lint-and-coverage
+            - test-on-k8s            
           filters:
             tags:
               only: /.*/          
