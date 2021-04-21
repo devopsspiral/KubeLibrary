@@ -197,6 +197,8 @@ workflows:
             tags:
               only: /^v.*/
       - generate-index file:
+          requires:
+            - build-and-test      
           filters:
             tags:
               only: /.*/          
