@@ -167,6 +167,8 @@ jobs:
     environment:
       PYTHONPATH=./src
     steps:
+      - checkout
+      - python/install-deps    
       - run:
           name: Build image.html
           command: |
