@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
-  k3d: devopsspiral/k3d@alpha
+  k3d: devopsspiral/k3d@dev:alpha
 jobs:
   build-and-test:
     executor: python/default
