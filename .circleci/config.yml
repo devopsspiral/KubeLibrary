@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.3.2
-  k3d: devopsspiral/k3d@0.1.4
+  k3d: devopsspiral/k3d@alpha
 jobs:
   build-and-test:
     executor: python/default
@@ -45,6 +45,7 @@ jobs:
       - k3d/k3d-helpers
       - k3d/k3d-up:
           cluster-name: testk3d-2
+          k3s-bin-version: v4.4.2
       - k3d/k3d-run:
           step-name: Prerequisites for 2nd cluster
           command: |
@@ -52,6 +53,7 @@ jobs:
       - k3d/k3d-up:
           cluster-name: testk3d-1
           k3s-version: v1.20.0-k3s2
+          k3s-bin-version: v4.4.2
       - k3d/k3d-run:
           step-name: Prerequisites for 1st cluster
           command: |
