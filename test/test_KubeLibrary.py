@@ -452,4 +452,3 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         configmaps = kl.get_configmaps_in_namespace('.*', 'default')
         self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
-
