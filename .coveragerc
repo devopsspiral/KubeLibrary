@@ -4,3 +4,4 @@ source =
     src/
 [report]
 fail_under = 76
+

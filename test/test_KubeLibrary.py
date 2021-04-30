@@ -78,6 +78,13 @@ def mock_list_namespaced_config_map(namespace, watch=False, label_selector=""):
         return configmap
 
 
+def mock_list_namespaced_deployments(namespace, watch=False, label_selector=""):
+    with open('test/resources/deployment.json') as json_file:
+        deployments_content = json.load(json_file)
+        deployments = AttributeDict({'items': deployments_content})
+        return deployments
+
+
 def mock_list_pvc(namespace, watch=False, label_selector=""):
     if namespace == 'default':
         with open('test/resources/pvc.json') as json_file:
@@ -397,12 +404,12 @@ class TestKubeLibrary(unittest.TestCase):
         role_bindings = kl.get_role_bindings_in_namespace('default')
         self.assertEqual(['read-pods'], [item for item in role_bindings])
 
-    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
-    def test_get_configmaps_in_namespace(self, mock_lnp):
-        mock_lnp.side_effect = mock_list_namespaced_config_map
+    @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_deployment')
+    def test_get_deployments_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_deployments
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        configmaps = kl.get_configmaps_in_namespace('.*', 'default')
-        self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
+        deployments = kl.get_deployments_in_namespace('.*', 'default')
+        self.assertEqual(['nginx-deployment'], kl.filter_deployments_names(deployments))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim')
     def test_get_pvc_in_namespace(self, mock_lnp):
@@ -438,3 +445,11 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         endpoints = kl.get_endpoints_in_namespace('.*', 'default')
         self.assertEqual(['my-service'], kl.filter_endpoints_names(endpoints))
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
+    def test_get_configmaps_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_config_map
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        configmaps = kl.get_configmaps_in_namespace('.*', 'default')
+        self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
+
