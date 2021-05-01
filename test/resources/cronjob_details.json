@@ -4,7 +4,7 @@
     "metadata": {
         "creationTimestamp": "2021-04-19T10:54:19Z",
         "labels": {
-            "Test": "mytest"
+            "TestLabel": "mytestlabel"
         },
         "managedFields": [
             {
