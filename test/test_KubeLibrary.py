@@ -504,7 +504,7 @@ class TestKubeLibrary(unittest.TestCase):
         mock_lnp.side_effect = mock_read_ingress_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
         ingress_details = kl.get_ingress_details_in_namespace('max-ingress', 'default')
-        self.assertEqual('mytestlabel', ingress_details.items[0].metadata.labels.TestLabel)	
+        self.assertEqual('mytestlabel', ingress_details.items[0].metadata.labels.TestLabel)
 
     @mock.patch('kubernetes.client.BatchV1beta1Api.read_namespaced_cron_job')
     def test_get_cron_job_details_in_namespace(self, mock_lnp):
