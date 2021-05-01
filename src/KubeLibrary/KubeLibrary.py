@@ -822,3 +822,11 @@ class KubeLibrary(object):
         """
         ret = self.batchv1_beta1.delete_namespaced_cron_job(name=name, namespace=namespace)
         return ret
+
+    def filter_endpoints_names(self, endpoints):
+        """Filter endpoints names for list of endpoints.
+        Returns list of strings.
+        - ``endpoints``:
+        List of endpoint objects
+        """
+        return [endpoints.metadata.name for endpoints in endpoints.items]
