@@ -447,7 +447,7 @@ class TestKubeLibrary(unittest.TestCase):
     def test_get_service_details_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_read_service_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        service_details = kl.get_service_details_in_namespace('my-service2', 'default')
+        service_details = kl.get_service_details_in_namespace('test-service', 'default')
         self.assertEqual('mytest', service_details.items[0].metadata.labels.Test)
 
     @mock.patch('kubernetes.client.ExtensionsV1beta1Api.read_namespaced_ingress')
