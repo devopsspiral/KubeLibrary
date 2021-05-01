@@ -4,6 +4,9 @@
     "kind": "Ingress",
     "metadata": {
         "creationTimestamp": "2021-03-25T04:04:21Z",
+        "labels": {
+            "TestLabel": "mytestlabel"
+        },
         "generation": 1,
         "managedFields": [
             {
