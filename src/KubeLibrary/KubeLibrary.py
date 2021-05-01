@@ -801,6 +801,28 @@ class KubeLibrary(object):
         """
         return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)
 
+    def create_cron_job_in_namespace(self, namespace, body):
+        """Creates cron_job in a namespace
+        Returns created cron_job
+        - ``body``:
+          Cron_job object.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.create_namespaced_cron_job(namespace=namespace, body=body)
+        return ret
+
+    def delete_cron_job_in_namespace(self, name, namespace):
+        """Deletes cron_job in a namespace
+        Returns V1 status
+        - ``name``:
+          Cron Job name
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.delete_namespaced_cron_job(name=name, namespace=namespace)
+        return ret
+
     def filter_endpoints_names(self, endpoints):
         """Filter endpoints names for list of endpoints.
         Returns list of strings.
