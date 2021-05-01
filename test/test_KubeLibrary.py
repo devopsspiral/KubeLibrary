@@ -349,7 +349,7 @@ class TestKubeLibrary(unittest.TestCase):
         mock_lnp.side_effect = mock_read_daemonset_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
         daemonset_details = kl.get_daemonset_details_in_namespace('fluentd-elasticsearch', 'default')
-        self.assertEqual('fluentd-logging', daemonset_details.items.metadata.labels.k8s-app)
+        self.assertEqual('mytestlabel', daemonset_details.items.metadata.labels.TestLabel)
 
     @mock.patch('kubernetes.client.CoreV1Api.read_namespaced_service')
     def test_get_service_details_in_namespace(self, mock_lnp):
