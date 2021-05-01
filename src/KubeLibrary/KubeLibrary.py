@@ -800,3 +800,11 @@ class KubeLibrary(object):
         https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
         """
         return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)
+
+    def filter_endpoints_names(self, endpoints):
+        """Filter endpoints names for list of endpoints.
+        Returns list of strings.
+        - ``endpoints``:
+        List of endpoint objects
+        """
+        return [endpoints.metadata.name for endpoints in endpoints.items]
