@@ -4,9 +4,9 @@
 		"kind": "Service",
 		"metadata": {
 			"creationTimestamp": "2021-03-17T12:27:33Z",
-      "labels": {
-            "Test": "mytest"
-       },
+                        "labels": {
+                              "Test": "mytest"
+                         },
 			"managedFields": [
 				{
 					"apiVersion": "v1",
@@ -35,7 +35,7 @@
 					"time": "2021-03-17T12:27:33Z"
 				}
 			],
-			"name": "test-service",
+			"name": "my-service2",
 			"namespace": "default",
 			"resourceVersion": "970",
 			"selfLink": "/api/v1/namespaces/default/services/my-service",
