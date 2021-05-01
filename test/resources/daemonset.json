@@ -8,7 +8,7 @@
         "creationTimestamp": "2021-03-25T04:00:10Z",
         "generation": 1,
         "labels": {
-            "k8s-app": "fluentd-logging"
+            "TestLabel": "mytestlabel"
         },
         "managedFields": [
             {
