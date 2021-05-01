@@ -19,3 +19,11 @@ Reload config test case example
     WHEN Connected to cluster-2 
     THEN Cluster has namespace  test-ns-2
     AND Cluster has no namespace  test-ns-1
+
+Authenticate using bearer token
+    [Tags]    reload-config    auth.bearer-token    prerelease
+    [Documentation]  Test authentication using brearer token
+
+    WHEN Connected to cluster-1 using bearer token
+    THEN Cluster has namespace  test-ns-1
+    AND Cluster has no namespace  test-ns-2 
