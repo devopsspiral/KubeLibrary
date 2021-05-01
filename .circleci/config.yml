@@ -45,7 +45,7 @@ jobs:
       - k3d/k3d-helpers
       - k3d/k3d-up:
           cluster-name: testk3d-2
-          k3s-bin-version: v4.4.2
+          #k3s-bin-version: v4.4.2
       - k3d/k3d-run:
           step-name: Prerequisites for 2nd cluster
           command: |
@@ -53,7 +53,7 @@ jobs:
       - k3d/k3d-up:
           cluster-name: testk3d-1
           k3s-version: v1.20.0-k3s2
-          k3s-bin-version: v4.4.2
+          #k3s-bin-version: v4.4.2
       - k3d/k3d-run:
           step-name: Prerequisites for 1st cluster
           command: |
@@ -114,8 +114,8 @@ jobs:
             export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
             export CLUSTER2_PORT=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "6443/tcp") 0).HostPort}}' k3d-testk3d-2-server-0)
             export K8S_API_URL="https://$CLUSTER1_IP:6443"
-            sed -i "s#127.0.0.1.*#$CLUSTER1_IP:6443#g" ~/.k3d/kubeconfig-testk3d-1.yaml
-            sed -i "s#127.0.0.1.*#$CLUSTER2_IP:6443#g" ~/.k3d/kubeconfig-testk3d-2.yaml
+            sed -i "s#https://.*#https://$CLUSTER1_IP:6443#g" ~/.k3d/kubeconfig-testk3d-1.yaml
+            sed -i "s#https://.*#https://$CLUSTER2_IP:6443#g" ~/.k3d/kubeconfig-testk3d-2.yaml
             docker cp ~/.k3d/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
             docker cp ~/.k3d/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
             docker cp ca.crt kubeconfig:$K8S_CA_CRT
