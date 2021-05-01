@@ -1,0 +1,64 @@
+{
+    "apiVersion": "extensions/v1beta1",
+    "kind": "Ingress",
+    "metadata": {
+        "annotations": {
+            "nginx.ingress.kubernetes.io/rewrite-target": "/"
+        },
+        "creationTimestamp": "2021-04-22T12:58:16Z",
+        "generation": 1,
+        "labels": {
+            "TestLabel": "mytestlabel"
+        },
+        "managedFields": [
+            {
+                "apiVersion": "networking.k8s.io/v1beta1",
+                "fieldsType": "FieldsV1",
+                "fieldsV1": {
+                    "f:metadata": {
+                        "f:annotations": {
+                            ".": {},
+                            "f:nginx.ingress.kubernetes.io/rewrite-target": {}
+                        },
+                        "f:labels": {
+                            ".": {},
+                            "f:TestLabel": {}
+                        }
+                    },
+                    "f:spec": {
+                        "f:rules": {}
+                    }
+                },
+                "manager": "kubectl",
+                "operation": "Update",
+                "time": "2021-04-22T12:58:16Z"
+            }
+        ],
+        "name": "max-ingress",
+        "namespace": "default",
+        "resourceVersion": "6341",
+        "selfLink": "/apis/extensions/v1beta1/namespaces/default/ingresses/max-ingress",
+        "uid": "54d58499-ab30-4203-8c32-9c2482e7c9d3"
+    },
+    "spec": {
+        "rules": [
+            {
+                "http": {
+                    "paths": [
+                        {
+                            "backend": {
+                                "serviceName": "test",
+                                "servicePort": 80
+                            },
+                            "path": "/testpath",
+                            "pathType": "Prefix"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "status": {
+        "loadBalancer": {}
+    }
+}
