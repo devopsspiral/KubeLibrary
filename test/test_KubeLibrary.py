@@ -490,25 +490,25 @@ class TestKubeLibrary(unittest.TestCase):
         mock_lnp.side_effect = mock_read_daemonset_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
         daemonset_details = kl.get_daemonset_details_in_namespace('fluentd-elasticsearch', 'default')
-        self.assertEqual('mytestlabel', daemonset_details.items[0].metadata.labels.TestLabel)
+        self.assertEqual('mytestlabel', daemonset_details.items.metadata.labels.TestLabel)
 
     @mock.patch('kubernetes.client.CoreV1Api.read_namespaced_service')
     def test_get_service_details_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_read_service_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
         service_details = kl.get_service_details_in_namespace('minimal-ingress', 'default')
-        self.assertEqual('mytest', service_details.items[0].metadata.labels.Test)
+        self.assertEqual('mytest', service_details.items.metadata.labels.Test)
 
     @mock.patch('kubernetes.client.ExtensionsV1beta1Api.read_namespaced_ingress')
     def test_get_ingress_details_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_read_ingress_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
         ingress_details = kl.get_ingress_details_in_namespace('max-ingress', 'default')
-        self.assertEqual('mytestlabel', ingress_details.items[0].metadata.labels.TestLabel)
+        self.assertEqual('mytestlabel', ingress_details.items.metadata.labels.TestLabel)
 
     @mock.patch('kubernetes.client.BatchV1beta1Api.read_namespaced_cron_job')
     def test_get_cron_job_details_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_read_cron_job_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
         cron_job_details = kl.get_cron_job_details_in_namespace('hello', 'default')
-        self.assertEqual('mytestlabel', cron_job_details.items[0].metadata.labels.TestLabel)
+        self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
