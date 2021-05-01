@@ -208,6 +208,7 @@ def mock_read_cron_job_details_in_namespace(name, namespace):
             read_cron_job_details = AttributeDict({'items': cron_job_details_content})
             return read_cron_job_details
 
+
 bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05RaWdSUFoyN004TmlGT1pSX28ifQ.' \
                'eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1' \
                'lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15c2EtdG' \
@@ -222,7 +223,6 @@ bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05R
 ca_cert = '/path/to/certificate.crt'
 
 k8s_api_url = 'https://0.0.0.0:38041'
-
 
 
 class TestKubeLibrary(unittest.TestCase):
