@@ -1,0 +1,50 @@
+[
+	{
+		"apiVersion": "extensions/v1beta1",
+		"kind": "Ingress",
+		"metadata": {
+			"creationTimestamp": "2021-03-25T04:04:21Z",
+			"generation": 1,
+			"managedFields": [
+				{
+					"apiVersion": "networking.k8s.io/v1beta1",
+					"fieldsType": "FieldsV1",
+					"fieldsV1": {
+						"f:spec": {
+							"f:rules": {}
+						}
+					},
+					"manager": "kubectl",
+					"operation": "Update",
+					"time": "2021-03-25T04:04:21Z"
+				}
+			],
+			"name": "minimal-ingress",
+			"namespace": "default",
+			"resourceVersion": "17529",
+			"selfLink": "/apis/extensions/v1beta1/namespaces/default/ingresses/minimal-ingress",
+			"uid": "e2dc27e7-4a75-4837-bf6a-9a13d7cbaaf3"
+		},
+		"spec": {
+			"rules": [
+				{
+					"http": {
+						"paths": [
+							{
+								"backend": {
+									"serviceName": "test",
+									"servicePort": 80
+								},
+								"path": "/testpath",
+								"pathType": "ImplementationSpecific"
+							}
+						]
+					}
+				}
+			]
+		},
+		"status": {
+			"loadBalancer": {}
+		}
+	}
+]
