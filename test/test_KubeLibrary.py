@@ -513,7 +513,7 @@ class TestKubeLibrary(unittest.TestCase):
         mock_lnp.side_effect = mock_read_hpa_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
         hpa_details = kl.get_hpa_details_in_namespace('kubelib-test-test-objects-chart', 'kubelib-tests')
-        self.assertEqual('kubelib-test-test-objects-chart', hpa_details.spec.name)
+        self.assertEqual('kubelib-test-test-objects-chart', hpa_details.spec.scaleTargetRef.name)
 
     @mock.patch('kubernetes.client.AppsV1Api.read_namespaced_daemon_set')
     def test_get_daemonset_details_in_namespace(self, mock_lnp):
