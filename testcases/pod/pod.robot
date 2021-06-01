@@ -68,3 +68,9 @@ Logs of pod are available
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then logs of pod can be retrived
     And logs contain expected string
+
+List pods by label
+    [Tags]    other
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    When getting pods matching label "${KLIB_POD_LABELS}" in namespace "${KLIB_POD_NAMESPACE}"
+    Then pods have labels "${KLIB_POD_LABELS}"
