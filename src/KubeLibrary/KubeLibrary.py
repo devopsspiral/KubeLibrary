@@ -131,6 +131,7 @@ class KubeLibrary(object):
         self._add_api('batchv1_beta1', client.BatchV1beta1Api)
         self._add_api('custom_object', client.CustomObjectsApi)
         self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
+        self._add_api('autoscalingv1', client.AutoscalingV1Api)
 
     def _add_api(self, reference, class_name):
         self.__dict__[reference] = class_name(self.api_client)
@@ -518,6 +519,34 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.v1.read_namespaced_service(name, namespace)
+        return ret
+
+    def get_hpas_in_namespace(self, namespace, label_selector=""):
+        """Gets Horizontal Pod Autoscalers in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.autoscalingv1.list_namespaced_horizontal_pod_autoscaler(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_hpa_details_in_namespace(self, name, namespace):
+        """Gets Horizontal Pod Autoscaler details in given namespace.
+
+        Returns Horizontal Pod Autoscaler object representation. Can be accessed using
+
+        | Should Be Equal As integers    | ${hpa_details.spec.target_cpu_utilization_percentage}    | 50 |
+
+        - ``name``:
+          Name of Horizontal Pod Autoscaler
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.autoscalingv1.read_namespaced_horizontal_pod_autoscaler(name, namespace)
         return ret
 
     def get_endpoints_in_namespace(self, name, namespace):
