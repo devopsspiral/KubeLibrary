@@ -214,7 +214,7 @@ class KubeLibrary(object):
         r = re.compile(name_pattern)
         pods = [item for item in ret.items if r.match(item.metadata.name)]
         return pods
-  
+
     def get_pod_logs(self, name, namespace, container):
         """Gets container logs of given pod in given namespace.
 
@@ -230,8 +230,10 @@ class KubeLibrary(object):
         pod_logs = self.v1.read_namespaced_pod_log(name=name, namespace=namespace, container=container, follow=False)
         return pod_logs
 
-    def get_configmaps_in_namespace(self, name_pattern, namespace):
+    def get_configmaps_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets configmaps matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of configmaps.
 
@@ -240,13 +242,49 @@ class KubeLibrary(object):
         - ``namespace``:
           Namespace to check
         """
-        ret = self.v1.list_namespaced_config_map(namespace, watch=False)
+        ret = self.v1.list_namespaced_config_map(namespace, watch=False, label_selector=label_selector)
         r = re.compile(name_pattern)
         configmaps = [item for item in ret.items if r.match(item.metadata.name)]
         return configmaps
 
-    def get_jobs_in_namespace(self, name_pattern, namespace):
+    def get_service_accounts_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """Gets service accounts matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of service accounts.
+
+        - ``name_pattern``:
+          Service Account name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_service_account(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        service_accounts = [item for item in ret.items if r.match(item.metadata.name)]
+        return service_accounts
+
+    def get_deployments_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """Gets deployments matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of deployments.
+
+        - ``name_pattern``:
+          deployment name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_deployment(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        deployments = [item for item in ret.items if r.match(item.metadata.name)]
+        return deployments
+
+    def get_jobs_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets jobs matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of jobs.
 
@@ -255,10 +293,35 @@ class KubeLibrary(object):
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1.list_namespaced_job(namespace, watch=False)
+        ret = self.batchv1.list_namespaced_job(namespace, watch=False, label_selector=label_selector)
         r = re.compile(name_pattern)
         jobs = [item for item in ret.items if r.match(item.metadata.name)]
         return jobs
+
+    def get_secrets_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """Gets secrets matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of secrets.
+
+        - ``name_pattern``:
+          secret name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_secret(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        secrets = [item for item in ret.items if r.match(item.metadata.name)]
+        return secrets
+
+    def filter_deployments_names(self, deployments):
+        """Filter deployment  names for list of deployments .
+        Returns list of strings.
+        - ``deployments``:
+          List of deployments objects
+        """
+        return [d.metadata.name for d in deployments]
 
     def filter_pods_names(self, pods):
         """Filter pod names for list of pods.

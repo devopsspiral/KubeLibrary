@@ -7,3 +7,7 @@ Job test case example
     List all jobs in namespace  kubelib-tests
     List labels of job  ${job_name}  kubelib-tests
     Get pod created by job  ${job_name}  kubelib-tests
+
+Jobs by label
+    [Tags]    other
+    List jobs with label  .*  kubelib-tests  TestLabel=mytestlabel

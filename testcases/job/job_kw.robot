@@ -2,9 +2,9 @@
 Library           Collections
 Library           RequestsLibrary
 # For regular execution
-#Library           KubeLibrary
+Library           KubeLibrary
 # For incluster execution
-Library           KubeLibrary    None    True    False
+#Library           KubeLibrary    None    True    False
 # For development
 #Library           ../../src/KubeLibrary/KubeLibrary.py  ~/.kube/k3d
 
@@ -28,13 +28,23 @@ List labels of job
         ...  msg=Expected labels do not match.
     END
 
+List jobs with label
+    [Arguments]  ${job_name}  ${namespace}  ${label}
+    @{namespace_jobs}=  Get Jobs In Namespace    ${job_name}  ${namespace}  ${label}
+    Log  \nList labels in job ${job_name}:  console=True
+    FOR  ${job}  IN  @{namespace_jobs}
+        Log  Labels in ${job.metadata.labels}  console=True
+        Dictionary Should Contain Item    ${job.metadata.labels}    TestLabel    mytestlabel
+        ...  msg=Expected labels do not match.
+    END
+
 Get pod created by job
     [Arguments]  ${job_name}  ${namespace}
     @{namespace_pods}=  Get Pods In Namespace  ${job_name}  ${namespace}
     FOR  ${pod}  IN  @{namespace_pods}
         Log  \nList labels in pod ${pod.metadata.name}:  console=True
         Log  ${pod.metadata.labels}  console=True
-        Dictionary Should Contain Item    ${pod.metadata.labels}    job-name    busybox-job
+        Dictionary Should Contain Item    ${pod.metadata.labels}    job-name    ${job_name}
         ...  msg=Could not find job name label.
     END
 

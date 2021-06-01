@@ -83,16 +83,51 @@ export KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}'
 export KLIB_POD_NAMESPACE=default
 export KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
 
-robot -i octopus testcases/
+robot -i octopus -e prerelease testcases/
+```
 
+### Other Tests
+These tests require the kubelib-test helm-chart to be installed in your test cluster.
+```
 # run other library tests
 export KLIB_POD_PATTERN='busybox.*'
 export KLIB_POD_NAMESPACE=kubelib-tests
+export KLIB_POD_LABELS='job-name=busybox-job'
 
 kubectl create namespace $KLIB_POD_NAMESPACE
+kubectl label namespaces kubelib-tests test=test
 helm install kubelib-test ./test-objects-chart -n $KLIB_POD_NAMESPACE
 
-robot -i other testcases/
+robot -i other -e prerelease testcases/
+```
+### Multi Cluster Tests
+These tests require more than one cluster and utilize [KinD](https://kind.sigs.k8s.io/) as a setup.
+[Download KinD and install it.](https://kind.sigs.k8s.io/docs/user/quick-start/)
+```
+# Create Test Cluster 1
+kind create cluster --kubeconfig ./cluster1-conf --name kind-cluster-1
+
+# Create namespace in Test Cluster 1
+kubectl create namespace test-ns-1 --context kind-kind-cluster-1 --kubeconfig ./cluster1-conf
+# For bearer token auth
+kubectl apply -f testcases/reload-config/sa.yaml
+MYSA_TOKEN_SECRET=$(kubectl get sa mysa -o jsonpath="{.secrets[0].name}")
+export K8S_TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET --template={{.data.token}} | base64 -d)
+kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
+export K8S_API_URL=$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}')
+export K8S_CA_CRT=./ca.crt
+
+# Create Test Cluster 2
+kind create cluster --kubeconfig ./cluster2-conf --name kind-cluster-2
+
+# Create namespace in Test Cluster 2
+kubectl create namespace test-ns-2 --context kind-kind-cluster-2 --kubeconfig ./cluster2-conf
+
+robot -i reload-config -e prerelease testcases/
+
+# Clean up
+kind delete cluster --name kind-cluster-1
+kind delete cluster --name kind-cluster-2
 ```
 
 ## Keywords documentation
