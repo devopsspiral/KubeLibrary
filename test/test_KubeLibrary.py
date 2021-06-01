@@ -506,7 +506,7 @@ class TestKubeLibrary(unittest.TestCase):
         mock_lnp.side_effect = mock_list_namespaced_hpas
         kl = KubeLibrary(kube_config='test/resources/k3d')
         hpas = kl.get_hpas_in_namespace('default')
-        self.assertEqual(['kubelib-test-test-objects-chart'], [item.metadata.name for item in hpas])
+        self.assertEqual(['kubelib-test-test-objects-chart'], [item for item in hpas])
 
     @mock.patch('kubernetes.client.AutoscalingV1Api.read_namespaced_horizontal_pod_autoscaler')
     def test_get_hpa_details_in_namespace(self, mock_lnp):
