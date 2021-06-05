@@ -55,6 +55,14 @@ def mock_read_service_details_in_namespace(name, namespace):
             return read_service_details
 
 
+def mock_read_hpa_details_in_namespace(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/hpa_details.json') as json_file:
+            hpa_details_content = json.load(json_file)
+            read_hpa_details = AttributeDict({'items': hpa_details_content})
+            return read_hpa_details
+
+
 def mock_read_ingress_details_in_namespace(name, namespace):
     if namespace == 'default':
         with open('test/resources/ingress_details.json') as json_file:
@@ -138,6 +146,14 @@ def mock_list_namespaced_services(namespace, watch=False, label_selector=""):
             services_content = json.load(json_file)
             list_services = AttributeDict({'items': services_content})
             return list_services
+
+
+def mock_list_namespaced_hpas(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/hpa.json') as json_file:
+            hpas_content = json.load(json_file)
+            list_hpas = AttributeDict({'items': hpas_content})
+            return list_hpas
 
 
 def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
@@ -228,7 +244,7 @@ k8s_api_url = 'https://0.0.0.0:38041'
 class TestKubeLibrary(unittest.TestCase):
 
     apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
-            'custom_object', 'rbac_authv1_api')
+            'custom_object', 'rbac_authv1_api', 'autoscalingv1')
 
     def test_KubeLibrary_inits_from_kubeconfig(self):
         KubeLibrary(kube_config='test/resources/k3d')
@@ -484,6 +500,20 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         configmaps = kl.get_configmaps_in_namespace('.*', 'default')
         self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
+
+    @mock.patch('kubernetes.client.AutoscalingV1Api.list_namespaced_horizontal_pod_autoscaler')
+    def test_get_hpas_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_hpas
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        hpas = kl.get_hpas_in_namespace('default')
+        self.assertEqual(['kubelib-test-test-objects-chart'], [item for item in hpas])
+
+    @mock.patch('kubernetes.client.AutoscalingV1Api.read_namespaced_horizontal_pod_autoscaler')
+    def test_get_hpa_details_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_read_hpa_details_in_namespace
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        hpa_details = kl.get_hpa_details_in_namespace('kubelib-test-test-objects-chart', 'default')
+        self.assertEqual('kubelib-test-test-objects-chart', hpa_details.items.spec.scaleTargetRef.name)
 
     @mock.patch('kubernetes.client.AppsV1Api.read_namespaced_daemon_set')
     def test_get_daemonset_details_in_namespace(self, mock_lnp):
