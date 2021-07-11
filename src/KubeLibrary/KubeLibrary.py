@@ -280,6 +280,7 @@ class KubeLibrary(object):
         r = re.compile(name_pattern)
         deployments = [item for item in ret.items if r.match(item.metadata.name)]
         return deployments
+    
     def get_replicasets_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets replicasets matching pattern in given namespace.
 
@@ -296,6 +297,7 @@ class KubeLibrary(object):
         r = re.compile(name_pattern)
         replicasets = [item for item in ret.items if r.match(item.metadata.name)]
         return replicasets
+    
     def get_jobs_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets jobs matching pattern in given namespace.
 
