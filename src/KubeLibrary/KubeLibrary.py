@@ -2,7 +2,7 @@ import json
 import re
 import ssl
 import urllib3
-from kubernetes import client, config
+from kubernetes import client, config, stream
 from robot.api import logger
 
 # supressing SSL warnings when using self-signed certs
@@ -859,3 +859,31 @@ class KubeLibrary(object):
         List of endpoint objects
         """
         return [endpoints.metadata.name for endpoints in endpoints.items]
+
+    def execute_in_container(self, command, pod, container, namespace):
+        """Execute a command inside a container.
+
+        Usage example to create a file via the ``touch`` command inside a container.
+        | ${file} | Set Variable | testfile.txt |
+        | ${exec_command} | Create List | touch | /tmp/${file} |
+        | Execute in Container | ${exec_command} | ${pod} | ${container} | ${namespace} |
+
+        Returns sting
+
+        - ``command``:
+          Command to execute. Can be string (single command) or list (command, args)
+        - ``pod``:
+          Pod to execute the command in
+        - ``container``:
+          Container to execute the command in
+        - ``namespace``:
+          Namespace of the container
+
+        """
+
+        ret = stream(self.v1.connect_get_namespaced_pod_exec,
+                     name=pod, namespace=namespace,
+                     command=command, container=container,
+                     stderr=True, stdin=False,
+                     stdout=True, tty=False)
+        return ret

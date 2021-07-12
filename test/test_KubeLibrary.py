@@ -225,6 +225,11 @@ def mock_list_namespaced_role_bindings(namespace, watch=False):
             return list_of_role_bind
 
 
+def mock_execute_in_container(command, pod, container, namespace):
+    if namespace == 'default':
+        return "test_string"
+
+
 bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05RaWdSUFoyN004TmlGT1pSX28ifQ.' \
                'eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1' \
                'lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15c2EtdG' \
@@ -542,3 +547,10 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         cron_job_details = kl.get_cron_job_details_in_namespace('hello', 'default')
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
+
+    @mock.patch('kubernetes.client.CoreV1Api.connect_post_namespaced_pod_exec')
+    def test_execute_in_container(self, mock_lnp):
+        mock_lnp.side_effect = mock_execute_in_container
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        ret = kl.execute_in_container('echo test_string', 'pod_name', 'container_name', 'default')
+        self.assertEqual('test_string', ret)
