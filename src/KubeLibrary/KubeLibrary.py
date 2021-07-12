@@ -2,7 +2,8 @@ import json
 import re
 import ssl
 import urllib3
-from kubernetes import client, config, stream
+from kubernetes import client, config
+from kubernetes.stream import stream
 from robot.api import logger
 
 # supressing SSL warnings when using self-signed certs
