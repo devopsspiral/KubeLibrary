@@ -281,6 +281,23 @@ class KubeLibrary(object):
         deployments = [item for item in ret.items if r.match(item.metadata.name)]
         return deployments
 
+    def get_replicasets_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """Gets replicasets matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of  replicasets.
+
+        - ``name_pattern``:
+          replicaset name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_replica_set(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        replicasets = [item for item in ret.items if r.match(item.metadata.name)]
+        return replicasets
+
     def get_jobs_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets jobs matching pattern in given namespace.
 
