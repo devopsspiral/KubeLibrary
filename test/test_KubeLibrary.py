@@ -124,11 +124,13 @@ def mock_list_namespaced_deployments(namespace, watch=False, label_selector=""):
         deployments = AttributeDict({'items': deployments_content})
         return deployments
 
+
 def mock_list_namespaced_replicasets(namespace, watch=False, label_selector=""):
     with open('test/resources/replicaset.json') as json_file:
         replicasets_content = json.load(json_file)
         replicasets = AttributeDict({'items': replicasets_content})
         return replicasets
+
 
 def mock_list_pvc(namespace, watch=False, label_selector=""):
     if namespace == 'default':
