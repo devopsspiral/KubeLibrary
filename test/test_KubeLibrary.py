@@ -124,11 +124,13 @@ def mock_list_namespaced_deployments(namespace, watch=False, label_selector=""):
         deployments = AttributeDict({'items': deployments_content})
         return deployments
 
+
 def mock_list_namespaced_replicasets(namespace, watch=False, label_selector=""):
     with open('test/resources/replicaset.json') as json_file:
         replicasets_content = json.load(json_file)
         replicasets = AttributeDict({'items': replicasets_content})
         return replicasets
+
 
 def mock_list_pvc(namespace, watch=False, label_selector=""):
     if namespace == 'default':
@@ -464,7 +466,7 @@ class TestKubeLibrary(unittest.TestCase):
         deployments = kl.get_deployments_in_namespace('.*', 'default')
         self.assertEqual(['nginx-deployment'], kl.filter_deployments_names(deployments))
 
-    @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_replicaset')
+    @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_replica_set')
     def test_get_replicasets_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_replicasets
         kl = KubeLibrary(kube_config='test/resources/k3d')
