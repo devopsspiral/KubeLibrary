@@ -1,5 +1,6 @@
 kubernetes
 robotframework>=3.2.2
+backoff
 # for development
 mock
 flake8
