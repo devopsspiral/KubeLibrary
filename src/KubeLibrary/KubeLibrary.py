@@ -87,14 +87,6 @@ class KubeLibrary(object):
         self.reload_config(kube_config=kube_config, context=context, api_url=api_url, bearer_token=bearer_token,
                            ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
-    @property
-    def api_client(self):
-        return self.api_client
-
-    @property
-    def dynamic_client(self):
-      return self.dynamic_client
-
     @staticmethod
     def get_names_from_resource_list(resource_list):
         return {item.metadata.name for item in resource_list.items}
