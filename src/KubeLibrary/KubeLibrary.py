@@ -154,6 +154,9 @@ class KubeLibrary(object):
         if incluster:
             try:
                 config.load_incluster_config()
+                conf = client.Configuration().get_default_copy()
+                conf.verify_ssl = cert_validation
+                self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=conf))
             except config.config_exception.ConfigException as e:
                 logger.error('Are you sure tests are executed from within k8s cluster?')
                 raise e
@@ -166,9 +169,11 @@ class KubeLibrary(object):
             configuration.host = api_url
             configuration.ssl_ca_cert = ca_cert
             self.api_client = client.ApiClient(configuration)
+            self.dynamic_client = dynamic.DynamicClient(self.api_client)
         else:
             try:
                 config.load_kube_config(kube_config, context)
+                self.dynamic_client = dynamic.DynamicClient(config.new_client_from_config(config_file=kube_config, context=context))
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self._add_api('v1', client.CoreV1Api)
@@ -179,7 +184,6 @@ class KubeLibrary(object):
         self._add_api('custom_object', client.CustomObjectsApi)
         self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
         self._add_api('autoscalingv1', client.AutoscalingV1Api)
-        self.dynamic_client = dynamic.DynamicClient(self.api_client)
 
     def _add_api(self, reference, class_name):
         self.__dict__[reference] = class_name(self.api_client)
