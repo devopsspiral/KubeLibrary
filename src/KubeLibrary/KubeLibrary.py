@@ -134,8 +134,7 @@ class KubeLibrary(object):
         yield resource.watch(**kwargs)
 
     @on_predicate(constant, lambda x: x not in ("succeeded", "failed", "unknown"), interval=5, max_time=60)
-    def wait_pod_completion(self, label_selector="", namespace=None):
-        namespace = self.resolve_namespace(namespace)
+    def wait_pod_completion(self, namespace, label_selector=""):
         pod_list = self.get(kind="Pod", api_version="v1", namespace=namespace, label_selector=label_selector)
         assert len(pod_list.items) > 0, f"Found no pods in {namespace} with label selector {label_selector}!"
         return pod_list.items[0].status.phase.lower()
