@@ -2,8 +2,11 @@ import json
 import re
 import ssl
 import urllib3
-from kubernetes import client, config
+from kubernetes import client, config, dynamic
 from robot.api import logger
+from string import digits, ascii_lowercase
+from random import choices
+from backoff import on_predicate, constant
 
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -84,6 +87,59 @@ class KubeLibrary(object):
         self.reload_config(kube_config=kube_config, context=context, api_url=api_url, bearer_token=bearer_token,
                            ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
+    @property
+    def api_client(self):
+        return self.api_client
+
+    @property
+    def dynamic_client(self):
+      return self.dynamic_client
+
+    @staticmethod
+    def get_names_from_resource_list(resource_list):
+        return {item.metadata.name for item in resource_list.items}
+
+    @staticmethod
+    def generate_random_name(size):
+        return "".join(choices(ascii_lowercase + digits, k=size))
+
+    @staticmethod
+    def get_from_k8s_client(attr_name, *args, **kwargs):
+        attr = getattr(client, attr_name, None)
+        assert callable(attr), f"kubernetes.client does not contain {attr_name}!"
+        return attr(*args, **kwargs)
+
+    def get(self, api_version, kind, **kwargs):
+        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        return resource.get(**kwargs)
+
+    def create(self, api_version, kind, **kwargs):
+        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource.create(**kwargs)
+
+    def delete(self, api_version, kind, **kwargs):
+        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource.delete(**kwargs)
+
+    def patch(self, api_version, kind, **kwargs):
+        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource.patch(**kwargs)
+
+    def replace(self, api_version, kind, **kwargs):
+        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource.replace(**kwargs)
+
+    def watch(self, api_version, kind, **kwargs):
+        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        yield resource.watch(**kwargs)
+
+    @on_predicate(constant, lambda x: x not in ("succeeded", "failed", "unknown"), interval=5, max_time=60)
+    def wait_pod_completion(self, label_selector="", namespace=None):
+        namespace = self.resolve_namespace(namespace)
+        pod_list = self.get(kind="Pod", api_version="v1", namespace=namespace, label_selector=label_selector)
+        assert len(pod_list.items) > 0, f"Found no pods in {namespace} with label selector {label_selector}!"
+        return pod_list.items[0].status.phase.lower()
+
     def reload_config(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None, incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
            This can be used to connect to a different cluster during the same test.
@@ -132,6 +188,7 @@ class KubeLibrary(object):
         self._add_api('custom_object', client.CustomObjectsApi)
         self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
         self._add_api('autoscalingv1', client.AutoscalingV1Api)
+        self.dynamic_client = dynamic.DynamicClient(self.api_client)
 
     def _add_api(self, reference, class_name):
         self.__dict__[reference] = class_name(self.api_client)
