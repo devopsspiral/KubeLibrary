@@ -6,7 +6,6 @@ import unittest
 from KubeLibrary import KubeLibrary, BearerTokenWithPrefixException
 from kubernetes.config.config_exception import ConfigException
 from urllib3_mock import Responses
-import json
 from types import GeneratorType
 
 
@@ -291,7 +290,9 @@ class TestKubeLibrary(unittest.TestCase):
     def test_KubeLibrary_dynamic_client_init(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
-        responses.add("GET", "/api/v1", status=200, body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}', content_type="application/json")
+        responses.add("GET", "/api/v1", status=200,
+                      body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}',
+                      content_type="application/json")
         kl = KubeLibrary(kube_config='test/resources/k3d')
         resource = kl.get_dynamic_resource("v1", "Pod")
         self.assertTrue(hasattr(resource, "get"))
@@ -305,8 +306,12 @@ class TestKubeLibrary(unittest.TestCase):
     def test_KubeLibrary_dynamic_client_get(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
-        responses.add("GET", "/api/v1", status=200, body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}', content_type="application/json")
-        responses.add("GET", "/api/v1/mock/Mock", status=200, body='{"api_version": "v1", "kind": "Pod", "name": "Mock", "msg": "My Mock Pod"}', content_type="application/json")
+        responses.add("GET", "/api/v1", status=200,
+                      body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}',
+                      content_type="application/json")
+        responses.add("GET", "/api/v1/mock/Mock", status=200,
+                      body='{"api_version": "v1", "kind": "Pod", "name": "Mock", "msg": "My Mock Pod"}',
+                      content_type="application/json")
         kl = KubeLibrary(kube_config='test/resources/k3d')
         pod = kl.get("v1", "Pod", name="Mock")
         self.assertEqual(pod.msg, "My Mock Pod")
@@ -318,8 +323,10 @@ class TestKubeLibrary(unittest.TestCase):
             return (200, None, None)
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
-        responses.add("GET", "/api/v1", status=200, body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}', content_type="application/json")
-        responses.add_callback("PATCH", "/api/v1/mock/Mock", callback= mock_callback)
+        responses.add("GET", "/api/v1", status=200,
+                      body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}',
+                      content_type="application/json")
+        responses.add_callback("PATCH", "/api/v1/mock/Mock", callback=mock_callback)
         kl = KubeLibrary(kube_config='test/resources/k3d')
         kl.patch("v1", "Pod", name="Mock", body={"msg": "Mock"})
 
@@ -330,8 +337,10 @@ class TestKubeLibrary(unittest.TestCase):
             return (200, None, None)
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
-        responses.add("GET", "/api/v1", status=200, body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}', content_type="application/json")
-        responses.add_callback("PUT", "/api/v1/mock/Mock", callback= mock_callback)
+        responses.add("GET", "/api/v1", status=200,
+                      body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}',
+                      content_type="application/json")
+        responses.add_callback("PUT", "/api/v1/mock/Mock", callback=mock_callback)
         kl = KubeLibrary(kube_config='test/resources/k3d')
         kl.replace("v1", "Pod", name="Mock", body={"msg": "Mock"})
 
@@ -339,7 +348,9 @@ class TestKubeLibrary(unittest.TestCase):
     def test_KubeLibrary_dynamic_client_create(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
-        responses.add("GET", "/api/v1", status=200, body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}', content_type="application/json")
+        responses.add("GET", "/api/v1", status=200,
+                      body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}',
+                      content_type="application/json")
         responses.add("POST", "/api/v1/mock", status=200)
         kl = KubeLibrary(kube_config='test/resources/k3d')
         kl.create("v1", "Pod", name="Mock")
@@ -348,17 +359,21 @@ class TestKubeLibrary(unittest.TestCase):
     def test_KubeLibrary_dynamic_client_watch(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
-        responses.add("GET", "/api/v1", status=200, body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}', content_type="application/json")
+        responses.add("GET", "/api/v1", status=200,
+                      body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}',
+                      content_type="application/json")
         responses.add("GET", "/api/v1/mock/Mock", status=200)
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        events = kl.watch("v1", "Pod", namespace="default", name="my-zookeeper-0", timeout=5)
+        events = kl.watch("v1", "Pod", name="Mock")
         self.assertIsInstance(events, GeneratorType)
 
     @responses.activate
     def test_KubeLibrary_dynamic_client_delete(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
-        responses.add("GET", "/api/v1", status=200, body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}', content_type="application/json")
+        responses.add("GET", "/api/v1", status=200,
+                      body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}',
+                      content_type="application/json")
         responses.add("DELETE", "/api/v1/mock/Mock", status=200)
         kl = KubeLibrary(kube_config='test/resources/k3d')
         kl.delete("v1", "Pod", name="Mock")
@@ -366,8 +381,10 @@ class TestKubeLibrary(unittest.TestCase):
     def test_get_names_from_resource_list(self):
         class MockName:
             name = "Mock"
+
         class MockMetadata:
             metadata = MockName()
+
         class MockResourceList:
             items = [MockMetadata()]
 
@@ -647,6 +664,3 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         cron_job_details = kl.get_cron_job_details_in_namespace('hello', 'default')
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
-
-if __name__ == "__main__":
-    unittest.main()
