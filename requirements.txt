@@ -1,6 +1,7 @@
 kubernetes
 robotframework>=3.2.2
 backoff
+urllib3-mock
 # for development
 mock
 flake8
