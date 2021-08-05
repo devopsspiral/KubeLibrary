@@ -102,9 +102,9 @@ class KubeLibrary(object):
         return attr(*args, **kwargs)
 
     def get_dynamic_resource(self, api_version, kind):
-      if not self.dynamic_client:
-          self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=client.Configuration().get_default_copy()))
-      return self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        if not self.dynamic_client:
+            self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=client.Configuration().get_default_copy()))
+        return self.dynamic_client.resources.get(api_version=api_version, kind=kind)
 
     def get(self, api_version, kind, **kwargs):
         resource = self.get_dynamic_resource(api_version, kind)
