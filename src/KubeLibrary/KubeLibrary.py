@@ -101,28 +101,33 @@ class KubeLibrary(object):
         assert callable(attr), f"kubernetes.client does not contain {attr_name}!"
         return attr(*args, **kwargs)
 
+    def get_dynamic_resource(self, api_version, kind):
+      if not self.dynamic_client:
+          self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=client.Configuration().get_default_copy()))
+      return self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+
     def get(self, api_version, kind, **kwargs):
-        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource = self.get_dynamic_resource(api_version, kind)
         return resource.get(**kwargs)
 
     def create(self, api_version, kind, **kwargs):
-        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource = self.get_dynamic_resource(api_version, kind)
         resource.create(**kwargs)
 
     def delete(self, api_version, kind, **kwargs):
-        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource = self.get_dynamic_resource(api_version, kind)
         resource.delete(**kwargs)
 
     def patch(self, api_version, kind, **kwargs):
-        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource = self.get_dynamic_resource(api_version, kind)
         resource.patch(**kwargs)
 
     def replace(self, api_version, kind, **kwargs):
-        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource = self.get_dynamic_resource(api_version, kind)
         resource.replace(**kwargs)
 
     def watch(self, api_version, kind, **kwargs):
-        resource = self.dynamic_client.resources.get(api_version=api_version, kind=kind)
+        resource = self.get_dynamic_resource(api_version, kind)
         yield resource.watch(**kwargs)
 
     @on_predicate(constant, lambda x: x not in ("succeeded", "failed", "unknown"), interval=5, max_time=60)
@@ -150,13 +155,11 @@ class KubeLibrary(object):
           Default True. Can be set to False for self-signed certificates.
         """
         self.api_client = None
+        self.dynamic_client = None
         self.cert_validation = cert_validation
         if incluster:
             try:
                 config.load_incluster_config()
-                conf = client.Configuration().get_default_copy()
-                conf.verify_ssl = cert_validation
-                self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=conf))
             except config.config_exception.ConfigException as e:
                 logger.error('Are you sure tests are executed from within k8s cluster?')
                 raise e
@@ -169,11 +172,9 @@ class KubeLibrary(object):
             configuration.host = api_url
             configuration.ssl_ca_cert = ca_cert
             self.api_client = client.ApiClient(configuration)
-            self.dynamic_client = dynamic.DynamicClient(self.api_client)
         else:
             try:
                 config.load_kube_config(kube_config, context)
-                self.dynamic_client = dynamic.DynamicClient(config.new_client_from_config(config_file=kube_config, context=context))
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
         self._add_api('v1', client.CoreV1Api)
