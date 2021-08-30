@@ -88,22 +88,16 @@ class KubeLibrary(object):
                            ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
     @staticmethod
-    def get_names_from_resource_list(resource_list):
-        return {item.metadata.name for item in resource_list.items}
-
-    @staticmethod
-    def generate_random_name(size):
+    def generate_alphanumeric_str(size):
         return "".join(choices(ascii_lowercase + digits, k=size))
 
     @staticmethod
-    def get_from_k8s_client(attr_name, *args, **kwargs):
+    def evaluate_callable_from_k8s_client(attr_name, *args, **kwargs):
         attr = getattr(client, attr_name, None)
         assert callable(attr), f"kubernetes.client does not contain {attr_name}!"
         return attr(*args, **kwargs)
 
     def get_dynamic_resource(self, api_version, kind):
-        if not self.dynamic_client:
-            self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=client.Configuration().get_default_copy()))
         return self.dynamic_client.resources.get(api_version=api_version, kind=kind)
 
     def get(self, api_version, kind, **kwargs):
@@ -125,10 +119,6 @@ class KubeLibrary(object):
     def replace(self, api_version, kind, **kwargs):
         resource = self.get_dynamic_resource(api_version, kind)
         resource.replace(**kwargs)
-
-    def watch(self, api_version, kind, **kwargs):
-        resource = self.get_dynamic_resource(api_version, kind)
-        yield resource.watch(**kwargs)
 
     @on_predicate(constant, lambda x: x not in ("succeeded", "failed", "unknown"), interval=5, max_time=60)
     def wait_pod_completion(self, namespace, label_selector="", **kwargs):
@@ -155,7 +145,6 @@ class KubeLibrary(object):
           Default True. Can be set to False for self-signed certificates.
         """
         self.api_client = None
-        self.dynamic_client = None
         self.cert_validation = cert_validation
         if incluster:
             try:
@@ -177,6 +166,7 @@ class KubeLibrary(object):
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
+        self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=client.Configuration().get_default_copy()))
         self._add_api('v1', client.CoreV1Api)
         self._add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
         self._add_api('batchv1', client.BatchV1Api)

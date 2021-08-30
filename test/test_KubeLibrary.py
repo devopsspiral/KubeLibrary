@@ -6,7 +6,6 @@ import unittest
 from KubeLibrary import KubeLibrary, BearerTokenWithPrefixException
 from kubernetes.config.config_exception import ConfigException
 from urllib3_mock import Responses
-from types import GeneratorType
 
 
 class AttributeDict(object):
@@ -250,39 +249,58 @@ class TestKubeLibrary(unittest.TestCase):
     apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
             'custom_object', 'rbac_authv1_api', 'autoscalingv1')
 
+    @responses.activate
     def test_KubeLibrary_inits_from_kubeconfig(self):
+        responses.add("GET", "/version", status=200)
+        responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         KubeLibrary(kube_config='test/resources/k3d')
 
+    @responses.activate
     def test_KubeLibrary_inits_with_context(self):
+        responses.add("GET", "/version", status=200)
+        responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         KubeLibrary(kube_config='test/resources/multiple_context', context='k3d-k3d-cluster2')
 
+    @responses.activate
     def test_KubeLibrary_fails_for_wrong_context(self):
+        responses.add("GET", "/version", status=200)
+        responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         kl = KubeLibrary(kube_config='test/resources/multiple_context')
         self.assertRaises(ConfigException, kl.reload_config, kube_config='test/resources/multiple_context', context='k3d-k3d-cluster2-wrong')
 
+    @responses.activate
     def test_inits_all_api_clients(self):
+        responses.add("GET", "/version", status=200)
         kl = KubeLibrary(kube_config='test/resources/k3d')
         for api in TestKubeLibrary.apis:
             self.assertIsNotNone(getattr(kl, api))
 
+    @responses.activate
     def test_KubeLibrary_inits_without_cert_validation(self):
+        responses.add("GET", "/version", status=200)
         kl = KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
         for api in TestKubeLibrary.apis:
             target = getattr(kl, api)
             self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
 
+    @responses.activate
     def test_KubeLibrary_inits_with_bearer_token(self):
+        responses.add("GET", "/version", status=200)
         kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token)
         for api in TestKubeLibrary.apis:
             target = getattr(kl, api)
             self.assertEqual(kl.api_client.configuration.api_key, target.api_client.configuration.api_key)
         self.assertEqual(kl.api_client.configuration.ssl_ca_cert, None)
 
+    @responses.activate
     def test_inits_with_bearer_token_raises_BearerTokenWithPrefixException(self):
+        responses.add("GET", "/version", status=200)
         kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token)
         self.assertRaises(BearerTokenWithPrefixException, kl.reload_config, api_url=k8s_api_url, bearer_token='Bearer prefix should fail')
 
+    @responses.activate
     def test_KubeLibrary_inits_with_bearer_token_with_ca_crt(self):
+        responses.add("GET", "/version", status=200)
         kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token, ca_cert=ca_cert)
         self.assertEqual(kl.api_client.configuration.ssl_ca_cert, ca_cert)
 
@@ -356,18 +374,6 @@ class TestKubeLibrary(unittest.TestCase):
         kl.create("v1", "Pod", name="Mock")
 
     @responses.activate
-    def test_KubeLibrary_dynamic_client_watch(self):
-        responses.add("GET", "/version", status=200)
-        responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
-        responses.add("GET", "/api/v1", status=200,
-                      body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}',
-                      content_type="application/json")
-        responses.add("GET", "/api/v1/mock/Mock", status=200)
-        kl = KubeLibrary(kube_config='test/resources/k3d')
-        events = kl.watch("v1", "Pod", name="Mock")
-        self.assertIsInstance(events, GeneratorType)
-
-    @responses.activate
     def test_KubeLibrary_dynamic_client_delete(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
@@ -378,28 +384,15 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         kl.delete("v1", "Pod", name="Mock")
 
-    def test_get_names_from_resource_list(self):
-        class MockName:
-            name = "Mock"
-
-        class MockMetadata:
-            metadata = MockName()
-
-        class MockResourceList:
-            items = [MockMetadata()]
-
-        names = KubeLibrary.get_names_from_resource_list(MockResourceList())
-        self.assertSetEqual({"Mock"}, names)
-
-    def test_generate_random_name(self):
-        name = KubeLibrary.generate_random_name(10)
+    def test_generate_alphanumeric_str(self):
+        name = KubeLibrary.generate_alphanumeric_str(10)
         self.assertEqual(10, len(name))
 
-    def test_get_from_k8s_client(self):
-        configmap = KubeLibrary.get_from_k8s_client(
+    def test_evaluate_callable_from_k8s_client(self):
+        configmap = KubeLibrary.evaluate_callable_from_k8s_client(
             attr_name="V1ConfigMap",
             data={"msg": "Mock"}, api_version="v1", kind="ConfigMap",
-            metadata=KubeLibrary.get_from_k8s_client(attr_name="V1ObjectMeta", name="Mock")
+            metadata=KubeLibrary.evaluate_callable_from_k8s_client(attr_name="V1ObjectMeta", name="Mock")
         )
         self.assertIsNotNone(configmap)
         self.assertEqual(configmap.metadata.name, "Mock")

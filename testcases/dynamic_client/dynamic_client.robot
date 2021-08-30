@@ -10,14 +10,14 @@ Dynamic client test case example 2
     [Tags]     dynamic-client
     ${conf}=     read conf     testcases/dynamic_client/resources/pod.yaml
     create pod     ${conf}
-    sleep     15 seconds
+    sleep     5 seconds
     ${pods}=     get specific pod      default      app=myapp
     ${metadata}=     Get From Dictionary    ${conf}      metadata
     ${patched_labels}=     Create Dictionary      app=myapp       tested=true
     ${patched_metadata}=     Set To Dictionary     ${metadata}      labels      ${patched_labels}
     ${patched_pod}=      Set To Dictionary     ${conf}      metadata      ${patched_metadata}
     patch pod    ${patched_pod}
-    sleep     15 seconds
+    sleep     5 seconds
     ${pods}=     get specific pod      default      tested=true
     Should Not Be Empty      ${pods.items}
     ${pods}=     get specific pod    default     tested=false
