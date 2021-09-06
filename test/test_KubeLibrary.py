@@ -259,19 +259,16 @@ class TestKubeLibrary(unittest.TestCase):
     @responses.activate
     def test_KubeLibrary_inits_from_kubeconfig(self):
         responses.add("GET", "/version", status=200)
-        responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         KubeLibrary(kube_config='test/resources/k3d')
 
     @responses.activate
     def test_KubeLibrary_inits_with_context(self):
         responses.add("GET", "/version", status=200)
-        responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         KubeLibrary(kube_config='test/resources/multiple_context', context='k3d-k3d-cluster2')
 
     @responses.activate
     def test_KubeLibrary_fails_for_wrong_context(self):
         responses.add("GET", "/version", status=200)
-        responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         kl = KubeLibrary(kube_config='test/resources/multiple_context')
         self.assertRaises(ConfigException, kl.reload_config, kube_config='test/resources/multiple_context', context='k3d-k3d-cluster2-wrong')
 
@@ -281,6 +278,7 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         for api in TestKubeLibrary.apis:
             self.assertIsNotNone(getattr(kl, api))
+        self.assertIsNotNone(kl.dynamic_client)
 
     @responses.activate
     def test_KubeLibrary_inits_without_cert_validation(self):
@@ -289,6 +287,10 @@ class TestKubeLibrary(unittest.TestCase):
         for api in TestKubeLibrary.apis:
             target = getattr(kl, api)
             self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
+        self.assertIsNotNone(kl.dynamic_client)
+        self.assertEqual(kl.dynamic_client.configuration.verify_ssl, kl.cert_validation)
+        self.assertEqual(kl.dynamic_client.client.configuration.verify_ssl, kl.cert_validation)
+        self.assertEqual(kl.dynamic_client.client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
 
     @responses.activate
     def test_KubeLibrary_inits_with_bearer_token(self):
@@ -298,6 +300,11 @@ class TestKubeLibrary(unittest.TestCase):
             target = getattr(kl, api)
             self.assertEqual(kl.api_client.configuration.api_key, target.api_client.configuration.api_key)
         self.assertEqual(kl.api_client.configuration.ssl_ca_cert, None)
+        self.assertIsNotNone(kl.dynamic_client)
+        self.assertIsNone(kl.dynamic_client.configuration.ssl_ca_cert)
+        self.assertEqual(kl.dynamic_client.configuration.api_key, kl.api_client.configuration.api_key)
+        self.assertIsNone(kl.dynamic_client.client.configuration.ssl_ca_cert)
+        self.assertEqual(kl.dynamic_client.client.configuration.api_key, kl.api_client.configuration.api_key)
 
     @responses.activate
     def test_inits_with_bearer_token_raises_BearerTokenWithPrefixException(self):
@@ -310,6 +317,8 @@ class TestKubeLibrary(unittest.TestCase):
         responses.add("GET", "/version", status=200)
         kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token, ca_cert=ca_cert)
         self.assertEqual(kl.api_client.configuration.ssl_ca_cert, ca_cert)
+        self.assertEqual(kl.dynamic_client.configuration.ssl_ca_cert, ca_cert)
+        self.assertEqual(kl.dynamic_client.client.configuration.ssl_ca_cert, ca_cert)
 
     @responses.activate
     def test_KubeLibrary_dynamic_client_init(self):

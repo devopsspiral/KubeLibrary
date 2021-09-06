@@ -146,9 +146,13 @@ class KubeLibrary(object):
         """
         self.api_client = None
         self.cert_validation = cert_validation
+        self.dynamic_client = None
         if incluster:
             try:
                 config.load_incluster_config()
+                configuration = client.Configuration().get_default_copy()
+                configuration.verify_ssl = cert_validation
+                self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=configuration))
             except config.config_exception.ConfigException as e:
                 logger.error('Are you sure tests are executed from within k8s cluster?')
                 raise e
@@ -161,12 +165,18 @@ class KubeLibrary(object):
             configuration.host = api_url
             configuration.ssl_ca_cert = ca_cert
             self.api_client = client.ApiClient(configuration)
+            configuration.verify_ssl = cert_validation
+            self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=configuration))
         else:
             try:
                 config.load_kube_config(kube_config, context)
+                c = config.new_client_from_config(config_file=kube_config, context=context)
+                c.configuration.verify_ssl = cert_validation
+                c.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE if not cert_validation else ssl.CERT_REQUIRED
+                self.dynamic_client = dynamic.DynamicClient(c)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
-        self.dynamic_client = dynamic.DynamicClient(client.ApiClient(configuration=client.Configuration().get_default_copy()))
+
         self._add_api('v1', client.CoreV1Api)
         self._add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
         self._add_api('batchv1', client.BatchV1Api)

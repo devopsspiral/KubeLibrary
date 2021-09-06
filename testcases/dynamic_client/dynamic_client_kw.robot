@@ -18,12 +18,15 @@ discover resources
     ${cronjobs}=        get resource names    CronJob    batch/v1beta1    ${namespace}
     ${secrets}=         get resource names    Secret    v1    ${namespace}
     ${configmaps}=      get resource names    ConfigMap    v1    ${namespace}
-    ${found}=           BuiltIn.evaluate    set(${deployments}) | set(${statefulsets}) | set(${cronjobs}) | set(${secrets}) | set(${configmaps})
+    ${found}=           BuiltIn.evaluate    ${deployments} + ${statefulsets} + ${cronjobs} + ${secrets} + ${configmaps}
     [return]    ${found}
 get resource names
     [Arguments]     ${kind}    ${api_version}    ${namespace}
     ${resource_list}=     KubeLibrary.get    kind=${kind}     api_version=${api_version}     namespace=${namespace}
-    ${names}=             KubeLibrary.get names from resource list    ${resource_list}
+    @{names}=     Create List
+    FOR     ${resource}     IN     @{resource_list.items}
+        Append To List     ${names}    ${resource.metadata.name}
+    END
     [return]    ${names}
 create pod
     [Arguments]     ${conf}
