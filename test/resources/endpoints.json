@@ -1,0 +1,41 @@
+[
+{
+    "apiVersion": "v1",
+    "kind": "Endpoints",
+    "metadata": {
+        "creationTimestamp": "2021-04-08T14:59:12Z",
+        "managedFields": [
+            {
+                "apiVersion": "v1",
+                "fieldsType": "FieldsV1",
+                "fieldsV1": {
+                    "f:subsets": {}
+                },
+                "manager": "kubectl",
+                "operation": "Update",
+                "time": "2021-04-08T14:59:12Z"
+            }
+        ],
+        "name": "my-service",
+        "namespace": "default",
+        "resourceVersion": "1278",
+        "selfLink": "/api/v1/namespaces/default/endpoints/my-service",
+        "uid": "05b4c49e-0d93-4c66-b46b-0454d23721b8"
+    },
+    "subsets": [
+        {
+            "addresses": [
+                {
+                    "ip": "192.0.2.42"
+                }
+            ],
+            "ports": [
+                {
+                    "port": 9376,
+                    "protocol": "TCP"
+                }
+            ]
+        }
+    ]
+}
+]

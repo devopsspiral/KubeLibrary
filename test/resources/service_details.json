@@ -1,0 +1,67 @@
+{
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+        "creationTimestamp": "2021-04-22T10:24:37Z",
+        "labels": {
+            "Test": "mytest"
+        },
+        "managedFields": [
+            {
+                "apiVersion": "v1",
+                "fieldsType": "FieldsV1",
+                "fieldsV1": {
+                    "f:metadata": {
+                        "f:labels": {
+                            ".": {},
+                            "f:Test": {}
+                        }
+                    },
+                    "f:spec": {
+                        "f:ports": {
+                            ".": {},
+                            "k:{\"port\":80,\"protocol\":\"TCP\"}": {
+                                ".": {},
+                                "f:port": {},
+                                "f:protocol": {},
+                                "f:targetPort": {}
+                            }
+                        },
+                        "f:selector": {
+                            ".": {},
+                            "f:app": {}
+                        },
+                        "f:sessionAffinity": {},
+                        "f:type": {}
+                    }
+                },
+                "manager": "kubectl",
+                "operation": "Update",
+                "time": "2021-04-22T10:24:37Z"
+            }
+        ],
+        "name": "my-service2",
+        "namespace": "default",
+        "resourceVersion": "909",
+        "selfLink": "/api/v1/namespaces/default/services/my-service2",
+        "uid": "6fd4d12c-8b5f-4a0b-b153-96489ab3c0be"
+    },
+    "spec": {
+        "clusterIP": "10.97.158.206",
+        "ports": [
+            {
+                "port": 80,
+                "protocol": "TCP",
+                "targetPort": 9376
+            }
+        ],
+        "selector": {
+            "app": "MyApp"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+    },
+    "status": {
+        "loadBalancer": {}
+    }
+}

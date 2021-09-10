@@ -9,6 +9,15 @@ from robot.api import logger
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
+class BearerTokenWithPrefixException(Exception):
+
+    ROBOT_SUPPRESS_NAME = True
+
+    def __init__(self):
+        super().__init__("Unnecessary 'Bearer ' prefix in token")
+    pass
+
+
 class KubeLibrary(object):
     """KubeLibrary is a Robot Framework test library for Kubernetes.
 
@@ -31,41 +40,69 @@ class KubeLibrary(object):
     | ***** Settings *****
     | Library           KubeLibrary          context=k3d-k3d-cluster2
 
+    = Bearer token authentication =
+
+    It is possible to authenticate using bearer token by passing API url, bearer token and optionally CA certificate.
+
+    | ***** Settings *****
+    | Library           KubeLibrary          api_url=%{K8S_API_URL}    bearer_token=%{K8S_TOKEN}    ca_cert=%{K8S_CA_CRT}
+
     = In cluster execution =
 
     If tests are supposed to be executed from within cluster, KubeLibrary can be configured to use standard
-    token authentication. Just set incluster parameter to True. If True then kubeconfigs are not used,
-    even if provided.
+    token authentication. Just set incluster parameter to True.
+
+    = Auth methods precedence =
+
+    If enabled, auth methods takes precedence in following order:
+    1. Incluster
+    2. Bearer Token
+    3. Kubeconfig
 
     | ***** Settings *****
     | Library           KubeLibrary          None    True
 
     """
-    def __init__(self, kube_config=None, context=None, incluster=False, cert_validation=True):
+    def __init__(self, kube_config=None, context=None, api_url=None, bearer_token=None,
+                 ca_cert=None, incluster=False, cert_validation=True):
         """KubeLibrary can be configured with several optional arguments.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
         - ``context``:
           Active context. If None current_context from kubeconfig is used.
+        - ``api_url``:
+          K8s API url, used for bearer token authenticaiton.
+        - ``bearer_token``:
+          Bearer token, used for bearer token authenticaiton. Do not include 'Bearer ' prefix.
+        - ``ca_cert``:
+          Optional CA certificate file path, used for bearer token authenticaiton.
         - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
-        self.reload_config(kube_config=kube_config, context=context, incluster=incluster, cert_validation=cert_validation)
+        self.reload_config(kube_config=kube_config, context=context, api_url=api_url, bearer_token=bearer_token,
+                           ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
-    def reload_config(self, kube_config=None, context=None, incluster=False, cert_validation=True):
+    def reload_config(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None, incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
            This can be used to connect to a different cluster during the same test.
         - ``kube_config``:
           Path pointing to kubeconfig of target Kubernetes cluster.
         - ``context``:
           Active context. If None current_context from kubeconfig is used.
-        - ``incluster``:
+        - ``api_url``:
+          K8s API url, used for bearer token authenticaiton.
+        - ``bearer_token``:
+          Bearer token, used for bearer token authenticaiton. Do not include 'Bearer ' prefix.
+        - ``ca_cert``:
+          Optional CA certificate file path, used for bearer token authenticaiton.
+        - ``incuster``:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
         """
+        self.api_client = None
         self.cert_validation = cert_validation
         if incluster:
             try:
@@ -73,6 +110,15 @@ class KubeLibrary(object):
             except config.config_exception.ConfigException as e:
                 logger.error('Are you sure tests are executed from within k8s cluster?')
                 raise e
+        elif api_url and bearer_token:
+            if bearer_token.startswith('Bearer '):
+                raise BearerTokenWithPrefixException
+            configuration = client.Configuration()
+            configuration.api_key["authorization"] = bearer_token
+            configuration.api_key_prefix['authorization'] = 'Bearer'
+            configuration.host = api_url
+            configuration.ssl_ca_cert = ca_cert
+            self.api_client = client.ApiClient(configuration)
         else:
             try:
                 config.load_kube_config(kube_config, context)
@@ -85,9 +131,10 @@ class KubeLibrary(object):
         self._add_api('batchv1_beta1', client.BatchV1beta1Api)
         self._add_api('custom_object', client.CustomObjectsApi)
         self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
+        self._add_api('autoscalingv1', client.AutoscalingV1Api)
 
     def _add_api(self, reference, class_name):
-        self.__dict__[reference] = class_name()
+        self.__dict__[reference] = class_name(self.api_client)
         if not self.cert_validation:
             self.__dict__[reference].api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
@@ -244,6 +291,23 @@ class KubeLibrary(object):
         deployments = [item for item in ret.items if r.match(item.metadata.name)]
         return deployments
 
+    def get_replicasets_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """Gets replicasets matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of  replicasets.
+
+        - ``name_pattern``:
+          replicaset name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_replica_set(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        replicasets = [item for item in ret.items if r.match(item.metadata.name)]
+        return replicasets
+
     def get_jobs_in_namespace(self, name_pattern, namespace, label_selector=""):
         """Gets jobs matching pattern in given namespace.
 
@@ -287,6 +351,22 @@ class KubeLibrary(object):
           List of k8s objects
         """
         return [obj.metadata.name for obj in objects]
+
+    def filter_deployments_names(self, deployments):
+        """Filter deployment  names for list of deployments .
+        Returns list of strings.
+        - ``deployments``:
+          List of deployments objects
+        """
+        return [d.metadata.name for d in deployments]
+
+    def filter_replicasets_names(self, replicasets):
+        """Filter replicaset  names for list of replicasets .
+        Returns list of strings.
+        - ``replicasets``:
+          List of replicasets objects
+        """
+        return [d.metadata.name for d in replicasets]
 
     def filter_pods_names(self, pods):
         """*DEPRECATED* Will be removed in v1.0.0. Use filter_names.
@@ -487,6 +567,34 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.v1.read_namespaced_service(name, namespace)
+        return ret
+
+    def get_hpas_in_namespace(self, namespace, label_selector=""):
+        """Gets Horizontal Pod Autoscalers in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.autoscalingv1.list_namespaced_horizontal_pod_autoscaler(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def get_hpa_details_in_namespace(self, name, namespace):
+        """Gets Horizontal Pod Autoscaler details in given namespace.
+
+        Returns Horizontal Pod Autoscaler object representation. Can be accessed using
+
+        | Should Be Equal As integers    | ${hpa_details.spec.target_cpu_utilization_percentage}    | 50 |
+
+        - ``name``:
+          Name of Horizontal Pod Autoscaler
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.autoscalingv1.read_namespaced_horizontal_pod_autoscaler(name, namespace)
         return ret
 
     def get_endpoints_in_namespace(self, name, namespace):
@@ -769,3 +877,33 @@ class KubeLibrary(object):
         https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
         """
         return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)
+
+    def create_cron_job_in_namespace(self, namespace, body):
+        """Creates cron_job in a namespace
+        Returns created cron_job
+        - ``body``:
+          Cron_job object.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.create_namespaced_cron_job(namespace=namespace, body=body)
+        return ret
+
+    def delete_cron_job_in_namespace(self, name, namespace):
+        """Deletes cron_job in a namespace
+        Returns V1 status
+        - ``name``:
+          Cron Job name
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.delete_namespaced_cron_job(name=name, namespace=namespace)
+        return ret
+
+    def filter_endpoints_names(self, endpoints):
+        """Filter endpoints names for list of endpoints.
+        Returns list of strings.
+        - ``endpoints``:
+        List of endpoint objects
+        """
+        return [endpoints.metadata.name for endpoints in endpoints.items]

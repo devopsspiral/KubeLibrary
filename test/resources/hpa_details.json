@@ -1,0 +1,34 @@
+{
+	"apiVersion": "autoscaling/v1",
+	"kind": "HorizontalPodAutoscaler",
+	"metadata": {
+		"annotations": {
+			"autoscaling.alpha.kubernetes.io/conditions": "[{\"type\":\"AbleToScale\",\"status\":\"True\",\"lastTransitionTime\":\"2021-05-31T20:25:56Z\",\"reason\":\"SucceededGetScale\",\"message\":\"the HPA controller was able to get the target's current scale\"},{\"type\":\"ScalingActive\",\"status\":\"False\",\"lastTransitionTime\":\"2021-05-31T20:25:56Z\",\"reason\":\"FailedGetResourceMetric\",\"message\":\"the HPA was unable to compute the replica count: missing request for cpu\"}]",
+			"meta.helm.sh/release-name": "kubelib-test",
+			"meta.helm.sh/release-namespace": "kubelib-tests"
+		},
+		"creationTimestamp": "2021-05-31T20:25:39Z",
+		"labels": {
+			"app.kubernetes.io/managed-by": "Helm"
+		},
+		"name": "kubelib-test-test-objects-chart",
+		"namespace": "kubelib-tests",
+		"resourceVersion": "280454922",
+		"selfLink": "/apis/autoscaling/v1/namespaces/kubelib-tests/horizontalpodautoscalers/kubelib-test-test-objects-chart",
+		"uid": "283300de-6de9-434d-bc8a-f7caeae65dcc"
+	},
+	"spec": {
+		"maxReplicas": 5,
+		"minReplicas": 1,
+		"scaleTargetRef": {
+			"apiVersion": "apps/v1",
+			"kind": "Deployment",
+			"name": "kubelib-test-test-objects-chart"
+		},
+		"targetCPUUtilizationPercentage": 50
+	},
+	"status": {
+		"currentReplicas": 1,
+		"desiredReplicas": 0
+	}
+}

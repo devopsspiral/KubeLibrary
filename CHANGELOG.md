@@ -5,11 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+### Added
+- Keyword for getting Horizontal Pod Autoscalers [#80](https://github.com/devopsspiral/KubeLibrary/pull/80 )by [@Nilsty](https://github.com/Nilsty)
 - Keyword for list cluster role and cluster role binding [#58](https://github.com/devopsspiral/KubeLibrary/pull/58) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Keyword for getiing role and rolebinding [#56](https://github.com/devopsspiral/KubeLibrary/pull/56) by [@satish-nubolab](https://github.com/satish-nubolab)
-
-### Added
-
+- Bearer token authentication [#39](https://github.com/devopsspiral/KubeLibrary/pull/39) by [@m-wcislo](https://github.com/m-wcislo)
+- Keyoword for create and delete a cronjob [#71](https://github.com/devopsspiral/KubeLibrary/pull/71) by [@satish-nubolab](https://github.com/satish-nubolab)
+- Keywords for get replicaset in a namespace [#82](https://github.com/devopsspiral/KubeLibrary/pull/92) by [@hello2ray](https://github.com/hello2ray)
 ## [0.4.0] - 2021-03-12
 ### Added
 - Kubeconfig context support [#36](https://github.com/devopsspiral/KubeLibrary/pull/36) by [@m-wcislo](https://github.com/m-wcislo)
@@ -25,6 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Fix for cert validation disabling not being possible for all api clients [#61](https://github.com/devopsspiral/KubeLibrary/pull/61) by [@m-wcislo](https://github.com/m-wcislo)
 
+### Fixed
+- cert_validation=False was not affecting all used APIs
 ## [0.3.0] - 2021-02-01
 
 ### Added

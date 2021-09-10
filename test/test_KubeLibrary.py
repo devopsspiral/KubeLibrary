@@ -3,7 +3,7 @@ import mock
 import re
 import ssl
 import unittest
-from KubeLibrary import KubeLibrary
+from KubeLibrary import KubeLibrary, BearerTokenWithPrefixException
 from kubernetes.config.config_exception import ConfigException
 
 
@@ -39,11 +39,97 @@ class AttributeDict(object):
         return getattr(self, key)
 
 
+def mock_read_daemonset_details_in_namespace(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/daemonset_details.json') as json_file:
+            daemonset_details_content = json.load(json_file)
+            read_daemonset_details = AttributeDict({'items': daemonset_details_content})
+            return read_daemonset_details
+
+
+def mock_read_service_details_in_namespace(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/service_details.json') as json_file:
+            service_details_content = json.load(json_file)
+            read_service_details = AttributeDict({'items': service_details_content})
+            return read_service_details
+
+
+def mock_read_hpa_details_in_namespace(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/hpa_details.json') as json_file:
+            hpa_details_content = json.load(json_file)
+            read_hpa_details = AttributeDict({'items': hpa_details_content})
+            return read_hpa_details
+
+
+def mock_read_ingress_details_in_namespace(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/ingress_details.json') as json_file:
+            ingress_details_content = json.load(json_file)
+            read_ingress_details = AttributeDict({'items': ingress_details_content})
+            return read_ingress_details
+
+
+def mock_read_cron_job_details_in_namespace(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/cronjob_details.json') as json_file:
+            cron_job_details_content = json.load(json_file)
+            read_cron_job_details = AttributeDict({'items': cron_job_details_content})
+            return read_cron_job_details
+
+
+def mock_list_namespaced_daemonsets(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/daemonset.json') as json_file:
+            daemonsets_content = json.load(json_file)
+            list_of_daemonsets = AttributeDict({'items': daemonsets_content})
+            return list_of_daemonsets
+
+
+def mock_list_namespaced_cronjobs(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/cronjob.json') as json_file:
+            cronjobs_content = json.load(json_file)
+            list_of_cronjobs = AttributeDict({'items': cronjobs_content})
+            return list_of_cronjobs
+
+
+def mock_list_namespaced_ingresses(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/ingress.json') as json_file:
+            ingresses_content = json.load(json_file)
+            list_ingresses = AttributeDict({'items': ingresses_content})
+            return list_ingresses
+
+
+def mock_read_namespaced_endpoints(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/endpoints.json') as json_file:
+            endpoints_content = json.load(json_file)
+            read_endpoints = AttributeDict({'items': endpoints_content})
+            return read_endpoints
+
+
 def mock_list_namespaced_config_map(namespace, watch=False, label_selector=""):
     with open('test/resources/configmap.json') as json_file:
         configmap_content = json.load(json_file)
         configmap = AttributeDict({'items': configmap_content})
         return configmap
+
+
+def mock_list_namespaced_deployments(namespace, watch=False, label_selector=""):
+    with open('test/resources/deployment.json') as json_file:
+        deployments_content = json.load(json_file)
+        deployments = AttributeDict({'items': deployments_content})
+        return deployments
+
+
+def mock_list_namespaced_replicasets(namespace, watch=False, label_selector=""):
+    with open('test/resources/replicaset.json') as json_file:
+        replicasets_content = json.load(json_file)
+        replicasets = AttributeDict({'items': replicasets_content})
+        return replicasets
 
 
 def mock_list_pvc(namespace, watch=False, label_selector=""):
@@ -67,6 +153,14 @@ def mock_list_namespaced_services(namespace, watch=False, label_selector=""):
             services_content = json.load(json_file)
             list_services = AttributeDict({'items': services_content})
             return list_services
+
+
+def mock_list_namespaced_hpas(namespace, watch=False, label_selector=""):
+    if namespace == 'default':
+        with open('test/resources/hpa.json') as json_file:
+            hpas_content = json.load(json_file)
+            list_hpas = AttributeDict({'items': hpas_content})
+            return list_hpas
 
 
 def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
@@ -138,10 +232,26 @@ def mock_list_namespaced_role_bindings(namespace, watch=False):
             return list_of_role_bind
 
 
+bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05RaWdSUFoyN004TmlGT1pSX28ifQ.' \
+               'eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1' \
+               'lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15c2EtdG' \
+               '9rZW4taDRzNzUiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoibXlzY' \
+               'SIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjY5MTk5ZmUyLTIzNWIt' \
+               'NGY3MC04MjEwLTkzZTk2YmM5ZmEwOCIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpkZWZhdWx0Om15c2EifQ.' \
+               'V8VIYZ0B2y2h9p-2LTZ19klSuZ37HUWi-8F1yjfFTq83R1Dmax6DoDr5gWbVL4A054q5k1L2U12d50gox0V_kVsRTb3' \
+               'KQnRSGCz1YgCqOVNLqnnsyu3kcmDaUDrFlJ4PuZ7R4DfvGCdK-BU9pj2MhcQT-tyfbGR-dwwkjwXTCPRZVW-CUm4qwY' \
+               'bCGTpGbNXPXbEKtseXIxMkRg70Kav3M-YB1LYHQRx_T2IqKAmyhXlbMc8boqoEiSi6TRbMjZ9Yz-nkc82e6kAdc1O2F' \
+               '4kFw-14kg2mX7Hu-02vob_LZmfR08UGu6VTkcfVK5VqZVg2oVBI4swZghQl8_fOtlplOg'
+
+ca_cert = '/path/to/certificate.crt'
+
+k8s_api_url = 'https://0.0.0.0:38041'
+
+
 class TestKubeLibrary(unittest.TestCase):
 
     apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
-            'custom_object', 'rbac_authv1_api')
+            'custom_object', 'rbac_authv1_api', 'autoscalingv1')
 
     def test_KubeLibrary_inits_from_kubeconfig(self):
         KubeLibrary(kube_config='test/resources/k3d')
@@ -163,6 +273,21 @@ class TestKubeLibrary(unittest.TestCase):
         for api in TestKubeLibrary.apis:
             target = getattr(kl, api)
             self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
+
+    def test_KubeLibrary_inits_with_bearer_token(self):
+        kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token)
+        for api in TestKubeLibrary.apis:
+            target = getattr(kl, api)
+            self.assertEqual(kl.api_client.configuration.api_key, target.api_client.configuration.api_key)
+        self.assertEqual(kl.api_client.configuration.ssl_ca_cert, None)
+
+    def test_inits_with_bearer_token_raises_BearerTokenWithPrefixException(self):
+        kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token)
+        self.assertRaises(BearerTokenWithPrefixException, kl.reload_config, api_url=k8s_api_url, bearer_token='Bearer prefix should fail')
+
+    def test_KubeLibrary_inits_with_bearer_token_with_ca_crt(self):
+        kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token, ca_cert=ca_cert)
+        self.assertEqual(kl.api_client.configuration.ssl_ca_cert, ca_cert)
 
     def test_filter_pods_names(self):
         pods_items = mock_list_namespaced_pod('default')
@@ -342,12 +467,19 @@ class TestKubeLibrary(unittest.TestCase):
         role_bindings = kl.get_role_bindings_in_namespace('default')
         self.assertEqual(['read-pods'], [item for item in role_bindings])
 
-    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
-    def test_get_configmaps_in_namespace(self, mock_lnp):
-        mock_lnp.side_effect = mock_list_namespaced_config_map
+    @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_deployment')
+    def test_get_deployments_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_deployments
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        configmaps = kl.get_configmaps_in_namespace('.*', 'default')
-        self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
+        deployments = kl.get_deployments_in_namespace('.*', 'default')
+        self.assertEqual(['nginx-deployment'], kl.filter_deployments_names(deployments))
+
+    @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_replica_set')
+    def test_get_replicasets_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_replicasets
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        replicasets = kl.get_replicasets_in_namespace('.*', 'test-auto')
+        self.assertEqual(['nginx-proxy'], kl.filter_replicasets_names(replicasets))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim')
     def test_get_pvc_in_namespace(self, mock_lnp):
@@ -362,3 +494,80 @@ class TestKubeLibrary(unittest.TestCase):
         print(ret)
         ret = kl.get_service_details_in_namespace('grafana', 'default')
         print(ret)
+
+    @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_daemon_set')
+    def test_get_daemonsets_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_daemonsets
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        daemonsets = kl.get_daemonsets_in_namespace('default')
+        self.assertEqual(['fluentd-elasticsearch'], [item for item in daemonsets])
+
+    @mock.patch('kubernetes.client.ExtensionsV1beta1Api.list_namespaced_ingress')
+    def test_get_ingresses_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_ingresses
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        ingresses = kl.get_ingresses_in_namespace('default')
+        self.assertEqual(['minimal-ingress'], [item for item in ingresses])
+
+    @mock.patch('kubernetes.client.BatchV1beta1Api.list_namespaced_cron_job')
+    def test_get_cronjobs_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_cronjobs
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        cronjobs = kl.get_cron_jobs_in_namespace('default')
+        self.assertEqual(['hello'], [item for item in cronjobs])
+
+    @mock.patch('kubernetes.client.CoreV1Api.read_namespaced_endpoints')
+    def test_get_endpoints_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_read_namespaced_endpoints
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        endpoints = kl.get_endpoints_in_namespace('.*', 'default')
+        self.assertEqual(['my-service'], kl.filter_endpoints_names(endpoints))
+
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
+    def test_get_configmaps_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_config_map
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        configmaps = kl.get_configmaps_in_namespace('.*', 'default')
+        self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
+
+    @mock.patch('kubernetes.client.AutoscalingV1Api.list_namespaced_horizontal_pod_autoscaler')
+    def test_get_hpas_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_hpas
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        hpas = kl.get_hpas_in_namespace('default')
+        self.assertEqual(['kubelib-test-test-objects-chart'], [item for item in hpas])
+
+    @mock.patch('kubernetes.client.AutoscalingV1Api.read_namespaced_horizontal_pod_autoscaler')
+    def test_get_hpa_details_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_read_hpa_details_in_namespace
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        hpa_details = kl.get_hpa_details_in_namespace('kubelib-test-test-objects-chart', 'default')
+        self.assertEqual('kubelib-test-test-objects-chart', hpa_details.items.spec.scaleTargetRef.name)
+
+    @mock.patch('kubernetes.client.AppsV1Api.read_namespaced_daemon_set')
+    def test_get_daemonset_details_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_read_daemonset_details_in_namespace
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        daemonset_details = kl.get_daemonset_details_in_namespace('fluentd-elasticsearch', 'default')
+        self.assertEqual('mytestlabel', daemonset_details.items.metadata.labels.TestLabel)
+
+    @mock.patch('kubernetes.client.CoreV1Api.read_namespaced_service')
+    def test_get_service_details_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_read_service_details_in_namespace
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        service_details = kl.get_service_details_in_namespace('minimal-ingress', 'default')
+        self.assertEqual('mytest', service_details.items.metadata.labels.Test)
+
+    @mock.patch('kubernetes.client.ExtensionsV1beta1Api.read_namespaced_ingress')
+    def test_get_ingress_details_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_read_ingress_details_in_namespace
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        ingress_details = kl.get_ingress_details_in_namespace('max-ingress', 'default')
+        self.assertEqual('mytestlabel', ingress_details.items.metadata.labels.TestLabel)
+
+    @mock.patch('kubernetes.client.BatchV1beta1Api.read_namespaced_cron_job')
+    def test_get_cron_job_details_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_read_cron_job_details_in_namespace
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        cron_job_details = kl.get_cron_job_details_in_namespace('hello', 'default')
+        self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
