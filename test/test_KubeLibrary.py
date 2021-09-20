@@ -254,7 +254,7 @@ responses = Responses('requests.packages.urllib3')
 class TestKubeLibrary(unittest.TestCase):
 
     apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
-            'custom_object', 'rbac_authv1_api', 'autoscalingv1')
+            'custom_object', 'rbac_authv1_api', 'autoscalingv1', 'dynamic')
 
     @responses.activate
     def test_KubeLibrary_inits_from_kubeconfig(self):
@@ -282,7 +282,6 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         for api in TestKubeLibrary.apis:
             self.assertIsNotNone(getattr(kl, api))
-        self.assertIsNotNone(kl.dynamic_client)
 
     @responses.activate
     def test_KubeLibrary_inits_without_cert_validation(self):
@@ -292,10 +291,6 @@ class TestKubeLibrary(unittest.TestCase):
         for api in TestKubeLibrary.apis:
             target = getattr(kl, api)
             self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
-        self.assertIsNotNone(kl.dynamic_client)
-        self.assertEqual(kl.dynamic_client.configuration.verify_ssl, kl.cert_validation)
-        self.assertEqual(kl.dynamic_client.client.configuration.verify_ssl, kl.cert_validation)
-        self.assertEqual(kl.dynamic_client.client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
 
     @responses.activate
     def test_KubeLibrary_inits_with_bearer_token(self):
@@ -306,11 +301,6 @@ class TestKubeLibrary(unittest.TestCase):
             target = getattr(kl, api)
             self.assertEqual(kl.api_client.configuration.api_key, target.api_client.configuration.api_key)
         self.assertEqual(kl.api_client.configuration.ssl_ca_cert, None)
-        self.assertIsNotNone(kl.dynamic_client)
-        self.assertIsNone(kl.dynamic_client.configuration.ssl_ca_cert)
-        self.assertEqual(kl.dynamic_client.configuration.api_key, kl.api_client.configuration.api_key)
-        self.assertIsNone(kl.dynamic_client.client.configuration.ssl_ca_cert)
-        self.assertEqual(kl.dynamic_client.client.configuration.api_key, kl.api_client.configuration.api_key)
 
     @responses.activate
     def test_inits_with_bearer_token_raises_BearerTokenWithPrefixException(self):
@@ -325,11 +315,11 @@ class TestKubeLibrary(unittest.TestCase):
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token, ca_cert=ca_cert)
         self.assertEqual(kl.api_client.configuration.ssl_ca_cert, ca_cert)
-        self.assertEqual(kl.dynamic_client.configuration.ssl_ca_cert, ca_cert)
-        self.assertEqual(kl.dynamic_client.client.configuration.ssl_ca_cert, ca_cert)
+        self.assertEqual(kl.dynamic.configuration.ssl_ca_cert, ca_cert)
+        self.assertEqual(kl.dynamic.client.configuration.ssl_ca_cert, ca_cert)
 
     @responses.activate
-    def test_KubeLibrary_dynamic_client_init(self):
+    def test_KubeLibrary_dynamic_init(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         responses.add("GET", "/api/v1", status=200,
@@ -345,7 +335,7 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertTrue(hasattr(resource, "replace"))
 
     @responses.activate
-    def test_KubeLibrary_dynamic_client_get(self):
+    def test_KubeLibrary_dynamic_get(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         responses.add("GET", "/api/v1", status=200,
@@ -359,7 +349,7 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(pod.msg, "My Mock Pod")
 
     @responses.activate
-    def test_KubeLibrary_dynamic_client_patch(self):
+    def test_KubeLibrary_dynamic_patch(self):
         def mock_callback(request):
             self.assertEqual(request.body, '{"msg": "Mock"}')
             return (200, None, None)
@@ -373,7 +363,7 @@ class TestKubeLibrary(unittest.TestCase):
         kl.patch("v1", "Pod", name="Mock", body={"msg": "Mock"})
 
     @responses.activate
-    def test_KubeLibrary_dynamic_client_replace(self):
+    def test_KubeLibrary_dynamic_replace(self):
         def mock_callback(request):
             self.assertEqual(request.body, '{"msg": "Mock"}')
             return (200, None, None)
@@ -387,7 +377,7 @@ class TestKubeLibrary(unittest.TestCase):
         kl.replace("v1", "Pod", name="Mock", body={"msg": "Mock"})
 
     @responses.activate
-    def test_KubeLibrary_dynamic_client_create(self):
+    def test_KubeLibrary_dynamic_create(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         responses.add("GET", "/api/v1", status=200,
@@ -398,7 +388,7 @@ class TestKubeLibrary(unittest.TestCase):
         kl.create("v1", "Pod", name="Mock")
 
     @responses.activate
-    def test_KubeLibrary_dynamic_client_delete(self):
+    def test_KubeLibrary_dynamic_delete(self):
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         responses.add("GET", "/api/v1", status=200,
