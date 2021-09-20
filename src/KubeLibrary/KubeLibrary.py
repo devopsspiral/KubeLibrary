@@ -152,7 +152,6 @@ class KubeLibrary(object):
         """
         self.api_client = None
         self.cert_validation = cert_validation
-        self.dynamic = None
         if incluster:
             try:
                 config.load_incluster_config()
