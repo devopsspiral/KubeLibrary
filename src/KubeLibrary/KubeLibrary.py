@@ -884,3 +884,25 @@ class KubeLibrary(object):
         List of endpoint objects
         """
         return [endpoints.metadata.name for endpoints in endpoints.items]
+
+    def create_ingress_in_namespace(self, namespace, body):
+        """Creates Ingress in a namespace
+        Returns created ingress
+        - ``body``:
+          Ingress object.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.extensionsv1beta1.create_namespaced_ingress(namespace=namespace, body=body)
+        return ret
+
+    def delete_ingress_in_namespace(self, name, namespace):
+        """Deletes Ingress in a namespace
+        Returns V1 status
+        - ``name``:
+          Ingress name
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.extensionsv1beta1.delete_namespaced_ingress(name=name, namespace=namespace)
+        return ret
