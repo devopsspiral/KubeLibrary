@@ -6,7 +6,6 @@ from kubernetes import client, config, dynamic
 from robot.api import logger
 from string import digits, ascii_lowercase
 from random import choices
-from backoff import on_predicate, constant
 
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -95,42 +94,120 @@ class KubeLibrary(object):
 
     @staticmethod
     def generate_alphanumeric_str(size):
+        """Generates a random alphanumeric string with given size.
+
+        Returns a string.
+
+        - ``size``:
+          Desired size of the output string
+        """
         return "".join(choices(ascii_lowercase + digits, k=size))
 
     @staticmethod
     def evaluate_callable_from_k8s_client(attr_name, *args, **kwargs):
+        """Evaluates a callable from kubernetes client.
+
+        Returns the output of the client callable.
+
+        - ``attr_name``:
+          Callable name
+        - ``*args``:
+          Positional arguments for argument forwarding
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
         attr = getattr(client, attr_name, None)
         assert callable(attr), f"kubernetes.client does not contain {attr_name}!"
         return attr(*args, **kwargs)
 
     def get_dynamic_resource(self, api_version, kind):
+        """Returns a dynamic resource based on the provided api version and kind.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        """
         return self.dynamic.resources.get(api_version=api_version, kind=kind)
 
     def get(self, api_version, kind, **kwargs):
+        """Retrieves resource instances based on the provided parameters.
+
+        Can be optionally given a ``namespace``, ``name``, ``label_selector``, ``body`` and ``field_selector``.
+
+        Returns a resource list.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
         resource = self.get_dynamic_resource(api_version, kind)
         return resource.get(**kwargs)
 
     def create(self, api_version, kind, **kwargs):
+        """Creates resource instances based on the provided configuration.
+
+        If the resource is namespaced (ie, not cluster-level), then one of ``namespace``, ``label_selector``, or ``field_selector`` is required.
+        If the resource is cluster-level, then one of ``name``, ``label_selector``, or ``field_selector`` is required.
+        Can be optionally given a kubernetes manifest (``body``) which respects the above considerations.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
         resource = self.get_dynamic_resource(api_version, kind)
         resource.create(**kwargs)
 
     def delete(self, api_version, kind, **kwargs):
+        """Deletes resource instances based on the provided configuration.
+
+        Can be optionally given a ``namespace``, ``name``, ``label_selector``, ``body`` and ``field_selector``.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
         resource = self.get_dynamic_resource(api_version, kind)
         resource.delete(**kwargs)
 
     def patch(self, api_version, kind, **kwargs):
+        """Patches resource instances based on the provided parameters.
+
+        Can be optionally given a ``namespace``, ``name``, ``label_selector``, ``body`` and ``field_selector``.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
         resource = self.get_dynamic_resource(api_version, kind)
         resource.patch(**kwargs)
 
     def replace(self, api_version, kind, **kwargs):
+        """Replaces resource instances based on the provided parameters.
+
+        Can be optionally given a ``namespace``, ``name``, ``label_selector``, ``body`` and ``field_selector``.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
         resource = self.get_dynamic_resource(api_version, kind)
         resource.replace(**kwargs)
-
-    @on_predicate(constant, lambda x: x not in ("succeeded", "failed", "unknown"), interval=5, max_time=60)
-    def wait_pod_completion(self, namespace, label_selector="", **kwargs):
-        pod_list = self.get(kind="Pod", api_version="v1", namespace=namespace, label_selector=label_selector, **kwargs)
-        assert len(pod_list.items) > 0, f"Found no pods in {namespace} with label selector {label_selector}!"
-        return pod_list.items[0].status.phase.lower()
 
     def reload_config(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None, incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
