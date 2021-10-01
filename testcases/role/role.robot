@@ -5,6 +5,7 @@ Resource          ./role_kw.robot
 Role test case example
     [Tags]    others    prerelease
     List all roles in namespace  default
+    List all role bindings in namespace  default
 
 Working on Role
     [Tags]    other    prerelease

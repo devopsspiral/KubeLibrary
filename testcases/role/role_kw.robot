@@ -18,6 +18,12 @@ List all roles in namespace
         Set Global Variable    ${role_name}    ${role_details.metadata.name}
       	Set Global Variable    ${role}    ${role_details}
     END    
+
+List all role bindings in namespace
+    [Arguments]  ${namespace}
+    @{namespace_role_bindings}=  Get Role Bindings In Namespace    ${namespace}
+    Length Should Be  ${namespace_role_bindings}  1
+    Log  \nRole_binding in namespace ${namespace_role_bindings}:  console=True
     
 Edit obtained role
     [Arguments]     ${role_name}    
