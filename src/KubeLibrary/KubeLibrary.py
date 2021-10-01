@@ -884,3 +884,35 @@ class KubeLibrary(object):
         List of endpoint objects
         """
         return [endpoints.metadata.name for endpoints in endpoints.items]
+
+    def get_role_details_in_namespace(self, name, namespace):
+        """Gets role details in given namespace.
+        Returns Role object representation.
+          Name of role.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.read_namespaced_role(name, namespace)
+        return ret
+
+    def create_role_in_namespace(self, namespace, body):
+        """Creates role in a namespace
+        Returns created role
+        - ``body``:
+          Role object.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.create_namespaced_role(namespace=namespace, body=body)
+        return ret
+
+    def delete_role_in_namespace(self, name, namespace):
+        """Deletes role in a namespace
+        Returns V1 status
+        - ``name``:
+          Role name
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.delete_namespaced_role(name=name, namespace=namespace)
+        return ret
