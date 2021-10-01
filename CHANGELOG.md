@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Keyword for CustomObjectsApi [#54](https://github.com/devopsspiral/KubeLibrary/pull/54) by [@mika-b](https://github.com/mika-b)
 - Example tests for Ambassador CRDs [#63](https://github.com/devopsspiral/KubeLibrary/pull/63) by [@Nilsty](https://github.com/Nilsty)
 - Example tests for Ambassador CRDs [#63](https://github.com/devopsspiral/KubeLibrary/pull/63) by [@Nilsty](https://github.com/Nilsty)
-- Keyword for edit ,create and delete ingress [#52]((https://github.com/devopsspiral/KubeLibrary/pull/94) by [@satish-nubolab](https://github.com/satish-nubolab)
+- Keyword for edit ,create and delete ingress [#95]((https://github.com/devopsspiral/KubeLibrary/pull/94) by [@satish-nubolab](https://github.com/satish-nubolab)
 
 ### Fixed
 - Fix for cert validation disabling not being possible for all api clients [#61](https://github.com/devopsspiral/KubeLibrary/pull/61) by [@m-wcislo](https://github.com/m-wcislo)
