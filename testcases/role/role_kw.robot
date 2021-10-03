@@ -10,7 +10,7 @@ Library           KubeLibrary
 List all roles in namespace
     [Arguments]  ${namespace}
     @{namespace_roles}=  Get Roles In Namespace    ${namespace}
-    Length Should Be  ${namespace_roles}  1
+    Length Should Be  ${namespace_roles}  2
     Log  \nRoles in namespace ${namespace_roles}:  console=True
     
 List all role bindings in namespace
