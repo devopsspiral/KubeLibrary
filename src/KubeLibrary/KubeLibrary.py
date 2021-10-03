@@ -730,7 +730,7 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.v1.list_namespaced_service(namespace, watch=False, label_selector=label_selector)
-        return [item for item in ret.items]
+        return [item.metadata.name for item in ret.items]
 
     def read_namespaced_service(self, name, namespace):
         """Gets service details in given namespace.
@@ -1054,7 +1054,7 @@ class KubeLibrary(object):
         """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_ingress.
 
         Gets ingress details in given namespace.
-        
+
         Returns Ingress object representation.
           Name of ingress.
         - ``namespace``:
@@ -1379,7 +1379,7 @@ class KubeLibrary(object):
         """*DEPRECATED* Will be removed in v1.0.0. Use create_namespaced_cron_job.
 
         Creates cron_job in a namespace
-        
+
         Returns created cron_job
         - ``body``:
           Cron_job object.
@@ -1391,7 +1391,7 @@ class KubeLibrary(object):
 
     def delete_namespaced_cron_job(self, name, namespace):
         """Deletes cron_job in a namespace
-        
+
         Returns V1 status
         - ``name``:
           Cron Job name
@@ -1405,7 +1405,7 @@ class KubeLibrary(object):
         """*DEPRECATED* Will be removed in v1.0.0. Use delete_namespaced_cron_job.
 
         Deletes cron_job in a namespace
-        
+
         Returns V1 status
         - ``name``:
           Cron Job name
