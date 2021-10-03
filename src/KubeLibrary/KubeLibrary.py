@@ -719,7 +719,7 @@ class KubeLibrary(object):
 
     def get_services_in_namespace(self, namespace, label_selector=""):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_service.
-        
+
         Gets services in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -749,7 +749,7 @@ class KubeLibrary(object):
 
     def get_service_details_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_service.
-        
+
         Gets service details in given namespace.
 
         Returns Service object representation. Can be accessed using
@@ -779,7 +779,7 @@ class KubeLibrary(object):
 
     def get_hpas_in_namespace(self, namespace, label_selector=""):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_horizontal_pod_autoscaler.
-        
+
         Gets Horizontal Pod Autoscalers in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -792,7 +792,7 @@ class KubeLibrary(object):
         ret = self.autoscalingv1.list_namespaced_horizontal_pod_autoscaler(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
-    def list_namespaced_horizontal_pod_autoscaler(self, name, namespace):
+    def read_namespaced_horizontal_pod_autoscaler(self, name, namespace):
         """Gets Horizontal Pod Autoscaler details in given namespace.
 
         Returns Horizontal Pod Autoscaler object representation. Can be accessed using
@@ -809,7 +809,7 @@ class KubeLibrary(object):
 
     def get_hpa_details_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_horizontal_pod_autoscaler.
-        
+
         Gets Horizontal Pod Autoscaler details in given namespace.
 
         Returns Horizontal Pod Autoscaler object representation. Can be accessed using
@@ -841,7 +841,7 @@ class KubeLibrary(object):
 
     def get_endpoints_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_endpoints.
-        
+
         Gets endpoint details in given namespace.
 
         Returns Endpoint object representation. Can be accessed using
@@ -871,7 +871,7 @@ class KubeLibrary(object):
 
     def get_pvc_in_namespace(self, namespace, label_selector=""):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_persistent_volume_claim.
-        
+
         Gets pvcs in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -901,7 +901,7 @@ class KubeLibrary(object):
 
     def get_pvc_capacity(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_persistent_volume_claim.
-        
+
         Gets PVC details in given namespace.
 
         Returns PVC object representation. Can be accessed using
@@ -941,7 +941,7 @@ class KubeLibrary(object):
 
     def create_service_account_in_namespace(self, namespace, body):
         """*DEPRECATED* Will be removed in v1.0.0. Use create_namespaced_service_account.
-        
+
         Creates service account in a namespace
 
         Returns created service account
@@ -970,7 +970,7 @@ class KubeLibrary(object):
 
     def delete_service_account_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use delete_namespaced_service_account.
-        
+
         Deletes service account in a namespace
 
         Returns V1status
@@ -1041,7 +1041,7 @@ class KubeLibrary(object):
 
     def read_namespaced_ingress(self, name, namespace):
         """Gets ingress details in given namespace.
-        
+
         Returns Ingress object representation.
           Name of ingress.
         - ``namespace``:
@@ -1052,7 +1052,7 @@ class KubeLibrary(object):
 
     def get_ingress_details_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_ingress.
-        
+
         Gets ingress details in given namespace.
         
         Returns Ingress object representation.
@@ -1078,7 +1078,7 @@ class KubeLibrary(object):
 
     def get_cron_jobs_in_namespace(self, namespace, label_selector=""):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_cron_job.
-        
+
         Gets cron jobs in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -1106,7 +1106,7 @@ class KubeLibrary(object):
 
     def get_cron_job_details_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_cron_job.
-        
+
         Gets cron job details in given namespace.
 
         Returns Cron job object representation.
@@ -1134,7 +1134,7 @@ class KubeLibrary(object):
 
     def get_daemonsets_in_namespace(self, namespace, label_selector=""):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_daemon_set.
-        
+
         Gets a list of available daemonsets.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -1162,7 +1162,7 @@ class KubeLibrary(object):
 
     def get_daemonset_details_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_daemon_set.
-        
+
         Gets deamonset details in given namespace.
 
         Returns daemonset object representation.
@@ -1185,7 +1185,7 @@ class KubeLibrary(object):
 
     def get_cluster_roles(self):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_cluster_role.
-        
+
         Gets a list of cluster_roles.
 
         Returns list of cluster_roles.
@@ -1203,7 +1203,7 @@ class KubeLibrary(object):
 
     def get_cluster_role_bindings(self):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_cluster_role_binding.
-        
+
         Gets a list of cluster_role_bindings.
 
         Returns list of cluster_role_bindings.
@@ -1224,7 +1224,7 @@ class KubeLibrary(object):
 
     def get_roles_in_namespace(self, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_role.
-        
+
         Gets roles in given namespace.
 
         Returns list of roles.
@@ -1248,7 +1248,7 @@ class KubeLibrary(object):
 
     def get_role_bindings_in_namespace(self, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_role_binding.
-        
+
         Gets role_bindings in given namespace.
 
         Returns list of role_bindings.
@@ -1279,7 +1279,7 @@ class KubeLibrary(object):
 
     def list_cluster_custom_objects(self, group, version, plural):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_cluster_custom_object.
-        
+
         Lists cluster level custom objects.
 
         Returns an object.
@@ -1341,7 +1341,7 @@ class KubeLibrary(object):
 
     def get_custom_object_in_namespace(self, group, version, namespace, plural, name):
         """*DEPRECATED* Will be removed in v1.0.0. Use get_namespaced_custom_object.
-        
+
         Get custom object in namespace.
 
         Returns an object.
@@ -1365,7 +1365,7 @@ class KubeLibrary(object):
 
     def create_namespaced_cron_job(self, namespace, body):
         """Creates cron_job in a namespace
-        
+
         Returns created cron_job
         - ``body``:
           Cron_job object.
@@ -1377,7 +1377,7 @@ class KubeLibrary(object):
 
     def create_cron_job_in_namespace(self, namespace, body):
         """*DEPRECATED* Will be removed in v1.0.0. Use create_namespaced_cron_job.
-        
+
         Creates cron_job in a namespace
         
         Returns created cron_job
@@ -1403,7 +1403,7 @@ class KubeLibrary(object):
 
     def delete_cron_job_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use delete_namespaced_cron_job.
-        
+
         Deletes cron_job in a namespace
         
         Returns V1 status
