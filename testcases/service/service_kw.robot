@@ -13,7 +13,9 @@ Library           KubeLibrary
 List services by label
     [Arguments]  ${namespace}  ${label}
     @{namespace_services}=  Get Services In Namespace    ${namespace}  ${label}
+    Log  \nServices in namespace ${namespace}:  console=True
     FOR  ${service}  IN  @{namespace_services}
+        Log  ${service.metadata.name}  console=True
         ${sevice_details}=  Get Service Details In Namespace  ${service}  ${namespace}
         ${label_key}=  Fetch From Left    ${label}    =
         ${label_value}=  Fetch From Right    ${label}    =
