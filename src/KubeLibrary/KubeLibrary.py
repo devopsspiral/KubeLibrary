@@ -157,7 +157,7 @@ class KubeLibrary(object):
                                            _return_http_data_only=False)
         return resp
 
-    def list_namespaces(self, label_selector=""):
+    def list_namespace(self, label_selector=""):
         """Lists available namespaces.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -168,14 +168,14 @@ class KubeLibrary(object):
         return ret.items
 
     def get_namespaces(self, label_selector=""):
-        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaces.
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespace.
         Gets a list of available namespaces.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
         Returns list of namespaces names.
         """
-        return self.filter_names(self.list_namespaces(label_selector=label_selector))
+        return self.filter_names(self.list_namespace(label_selector=label_selector))
 
     def get_healthy_nodes_count(self, label_selector=""):
         """Counts node with KubeletReady and status True.
@@ -193,7 +193,8 @@ class KubeLibrary(object):
         return len(healthy_nods)
 
     def get_pod_names_in_namespace(self, name_pattern, namespace, label_selector=""):
-        """Gets pod name matching pattern in given namespace.
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_pod_by_pattern.
+        Gets pod name matching pattern in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
@@ -208,8 +209,8 @@ class KubeLibrary(object):
         r = re.compile(name_pattern + '.*')
         return [item.metadata.name for item in ret.items if r.match(item.metadata.name)]
 
-    def get_pods_in_namespace(self, name_pattern, namespace, label_selector=""):
-        """Gets pods matching pattern in given namespace.
+    def list_namespaced_pod_by_pattern(self, name_pattern, namespace, label_selector=""):
+        """List pods matching pattern in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
@@ -225,7 +226,25 @@ class KubeLibrary(object):
         pods = [item for item in ret.items if r.match(item.metadata.name)]
         return pods
 
-    def get_pod_logs(self, name, namespace, container):
+    def get_pods_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_pod_by_pattern.
+        Gets pods matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of pods.
+
+        - ``name_pattern``:
+          Pod name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_pod(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        pods = [item for item in ret.items if r.match(item.metadata.name)]
+        return pods
+
+    def read_namespaced_pod_log(self, name, namespace, container):
         """Gets container logs of given pod in given namespace.
 
         Returns logs.
@@ -240,8 +259,24 @@ class KubeLibrary(object):
         pod_logs = self.v1.read_namespaced_pod_log(name=name, namespace=namespace, container=container, follow=False)
         return pod_logs
 
-    def get_configmaps_in_namespace(self, name_pattern, namespace, label_selector=""):
-        """Gets configmaps matching pattern in given namespace.
+    def get_pod_logs(self, name, namespace, container):
+        """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_pod_log.
+        Gets container logs of given pod in given namespace.
+
+        Returns logs.
+
+        - ``name``:
+          Pod name to check
+        - ``namespace``:
+          Namespace to check
+        - ``container``:
+          Container to check
+        """
+        pod_logs = self.v1.read_namespaced_pod_log(name=name, namespace=namespace, container=container, follow=False)
+        return pod_logs
+
+    def list_namespaced_config_map_by_pattern(self, name_pattern, namespace, label_selector=""):
+        """Lists configmaps matching pattern in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
@@ -257,8 +292,26 @@ class KubeLibrary(object):
         configmaps = [item for item in ret.items if r.match(item.metadata.name)]
         return configmaps
 
-    def get_service_accounts_in_namespace(self, name_pattern, namespace, label_selector=""):
-        """Gets service accounts matching pattern in given namespace.
+    def get_configmaps_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_config_map_by_pattern.
+        Gets configmaps matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of configmaps.
+
+        - ``name_pattern``:
+          configmap name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_config_map(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        configmaps = [item for item in ret.items if r.match(item.metadata.name)]
+        return configmaps
+
+    def list_namespaced_service_account_by_pattern(self, name_pattern, namespace, label_selector=""):
+        """Lists service accounts matching pattern in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
@@ -274,7 +327,25 @@ class KubeLibrary(object):
         service_accounts = [item for item in ret.items if r.match(item.metadata.name)]
         return service_accounts
 
-    def get_deployments_in_namespace(self, name_pattern, namespace, label_selector=""):
+    def get_service_accounts_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_service_account_by_pattern.
+        Gets service accounts matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of service accounts.
+
+        - ``name_pattern``:
+          Service Account name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_service_account(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        service_accounts = [item for item in ret.items if r.match(item.metadata.name)]
+        return service_accounts
+
+    def list_namespaced_deployment_by_pattern(self, name_pattern, namespace, label_selector=""):
         """Gets deployments matching pattern in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -291,8 +362,26 @@ class KubeLibrary(object):
         deployments = [item for item in ret.items if r.match(item.metadata.name)]
         return deployments
 
-    def get_replicasets_in_namespace(self, name_pattern, namespace, label_selector=""):
-        """Gets replicasets matching pattern in given namespace.
+    def get_deployments_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_deployment_by_pattern.
+        Gets deployments matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of deployments.
+
+        - ``name_pattern``:
+          deployment name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_deployment(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        deployments = [item for item in ret.items if r.match(item.metadata.name)]
+        return deployments
+
+    def list_namespaced_replica_set_by_pattern(self, name_pattern, namespace, label_selector=""):
+        """Lists replicasets matching pattern in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
@@ -308,7 +397,25 @@ class KubeLibrary(object):
         replicasets = [item for item in ret.items if r.match(item.metadata.name)]
         return replicasets
 
-    def get_jobs_in_namespace(self, name_pattern, namespace, label_selector=""):
+    def get_replicasets_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_replica_set_by_pattern.
+        Gets replicasets matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of  replicasets.
+
+        - ``name_pattern``:
+          replicaset name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_replica_set(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        replicasets = [item for item in ret.items if r.match(item.metadata.name)]
+        return replicasets
+
+    def list_namespaced_job_by_pattern(self, name_pattern, namespace, label_selector=""):
         """Gets jobs matching pattern in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -325,8 +432,44 @@ class KubeLibrary(object):
         jobs = [item for item in ret.items if r.match(item.metadata.name)]
         return jobs
 
+    def get_jobs_in_namespace(self, name_pattern, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_job_by_pattern.
+        Gets jobs matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of jobs.
+
+        - ``name_pattern``:
+          job name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1.list_namespaced_job(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        jobs = [item for item in ret.items if r.match(item.metadata.name)]
+        return jobs
+
+    def list_namespaced_secret_by_pattern(self, name_pattern, namespace, label_selector=""):
+        """Lists secrets matching pattern in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of secrets.
+
+        - ``name_pattern``:
+          secret name pattern to check
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_secret(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        secrets = [item for item in ret.items if r.match(item.metadata.name)]
+        return secrets
+
     def get_secrets_in_namespace(self, name_pattern, namespace, label_selector=""):
-        """Gets secrets matching pattern in given namespace.
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_secret_by_pattern.
+        Gets secrets matching pattern in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
@@ -343,7 +486,8 @@ class KubeLibrary(object):
         return secrets
 
     def filter_names(self, objects):
-        """Filter .metadata.name for list of k8s objects.
+        """*DEPRECATED* Will be removed in v1.0.0. See examples in TBD.
+        Filter .metadata.name for list of k8s objects.
 
         Returns list of strings.
 
@@ -353,23 +497,23 @@ class KubeLibrary(object):
         return [obj.metadata.name for obj in objects]
 
     def filter_deployments_names(self, deployments):
-        """Filter deployment  names for list of deployments .
+        """*DEPRECATED* Will be removed in v1.0.0. See examples in TBD.
         Returns list of strings.
         - ``deployments``:
           List of deployments objects
         """
-        return [d.metadata.name for d in deployments]
+        return self.filter_names(deployments)
 
     def filter_replicasets_names(self, replicasets):
-        """Filter replicaset  names for list of replicasets .
+        """*DEPRECATED* Will be removed in v1.0.0. See examples in TBD.
         Returns list of strings.
         - ``replicasets``:
           List of replicasets objects
         """
-        return [d.metadata.name for d in replicasets]
+        return self.filter_names(replicasets)
 
     def filter_pods_names(self, pods):
-        """*DEPRECATED* Will be removed in v1.0.0. Use filter_names.
+        """*DEPRECATED* Will be removed in v1.0.0. See examples in TBD.
         Filter pod names for list of pods.
 
         Returns list of strings.
@@ -380,7 +524,7 @@ class KubeLibrary(object):
         return self.filter_names(pods)
 
     def filter_service_accounts_names(self, service_accounts):
-        """*DEPRECATED* Will be removed in v1.0.0. Use filter_names.
+        """*DEPRECATED* Will be removed in v1.0.0. See examples in TBD.
         Filter service accounts names for list of service accounts.
 
         Returns list of strings.
@@ -391,13 +535,21 @@ class KubeLibrary(object):
         return self.filter_names(service_accounts)
 
     def filter_configmap_names(self, configmaps):
-        """*DEPRECATED* Will be removed in v1.0.0. Use filter_names.
+        """*DEPRECATED* Will be removed in v1.0.0. See examples in TBD.
         Filter configmap  names for list of configmaps.
         Returns list of strings.
         - ``configmaps``:
           List of configmap objects
         """
         return self.filter_names(configmaps)
+
+    def filter_endpoints_names(self, endpoints):
+        """Filter endpoints names for list of endpoints.
+        Returns list of strings.
+        - ``endpoints``:
+        List of endpoint objects
+        """
+        return self.filter_names(endpoints)
 
     def filter_pods_containers_by_name(self, pods, name_pattern):
         """Filters pods containers by name for given list of pods.
@@ -451,8 +603,19 @@ class KubeLibrary(object):
                     container_statuses.append(container_status)
         return container_statuses
 
+    def read_namespaced_pod_status(self, name, namespace):
+        """Reads pod status in given namespace.
+
+        - ``name``:
+          Name of pod.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.read_namespaced_pod_status(name, namespace)
+        return ret.status
+
     def get_pod_status_in_namespace(self, name, namespace):
-        """Gets pod status in given namespace.
+        """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_pod_status.
 
         - ``name``:
           Name of pod.
@@ -541,7 +704,7 @@ class KubeLibrary(object):
             logger.error(f'Failed parsing Container Env Var JSON:{env_vars_json}')
             return False
 
-    def get_services_in_namespace(self, namespace, label_selector=""):
+    def list_namespaced_service(self, namespace, label_selector=""):
         """Gets services in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -554,7 +717,22 @@ class KubeLibrary(object):
         ret = self.v1.list_namespaced_service(namespace, watch=False, label_selector=label_selector)
         return [item for item in ret.items]
 
-    def get_service_details_in_namespace(self, name, namespace):
+    def get_services_in_namespace(self, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_service.
+        
+        Gets services in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_service(namespace, watch=False, label_selector=label_selector)
+        return [item for item in ret.items]
+
+    def read_namespaced_service(self, name, namespace):
         """Gets service details in given namespace.
 
         Returns Service object representation. Can be accessed using
@@ -569,8 +747,40 @@ class KubeLibrary(object):
         ret = self.v1.read_namespaced_service(name, namespace)
         return ret
 
-    def get_hpas_in_namespace(self, namespace, label_selector=""):
+    def get_service_details_in_namespace(self, name, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_service.
+        
+        Gets service details in given namespace.
+
+        Returns Service object representation. Can be accessed using
+
+        | Should Be Equal As integers    | ${service_details.spec.ports[0].port}    | 8080 |
+
+        - ``name``:
+          Name of service.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.read_namespaced_service(name, namespace)
+        return ret
+
+    def list_namespaced_horizontal_pod_autoscaler(self, namespace, label_selector=""):
         """Gets Horizontal Pod Autoscalers in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.autoscalingv1.list_namespaced_horizontal_pod_autoscaler(namespace, watch=False, label_selector=label_selector)
+        return [item for item in ret.items]
+
+    def get_hpas_in_namespace(self, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_horizontal_pod_autoscaler.
+        
+        Gets Horizontal Pod Autoscalers in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
@@ -582,8 +792,25 @@ class KubeLibrary(object):
         ret = self.autoscalingv1.list_namespaced_horizontal_pod_autoscaler(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
-    def get_hpa_details_in_namespace(self, name, namespace):
+    def list_namespaced_horizontal_pod_autoscaler(self, name, namespace):
         """Gets Horizontal Pod Autoscaler details in given namespace.
+
+        Returns Horizontal Pod Autoscaler object representation. Can be accessed using
+
+        | Should Be Equal As integers    | ${hpa_details.spec.target_cpu_utilization_percentage}    | 50 |
+
+        - ``name``:
+          Name of Horizontal Pod Autoscaler
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.autoscalingv1.read_namespaced_horizontal_pod_autoscaler(name, namespace)
+        return [item for item in ret.items]
+
+    def get_hpa_details_in_namespace(self, name, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_horizontal_pod_autoscaler.
+        
+        Gets Horizontal Pod Autoscaler details in given namespace.
 
         Returns Horizontal Pod Autoscaler object representation. Can be accessed using
 
@@ -597,8 +824,25 @@ class KubeLibrary(object):
         ret = self.autoscalingv1.read_namespaced_horizontal_pod_autoscaler(name, namespace)
         return ret
 
-    def get_endpoints_in_namespace(self, name, namespace):
+    def read_namespaced_endpoints(self, name, namespace):
         """Gets endpoint details in given namespace.
+
+        Returns Endpoint object representation. Can be accessed using
+
+        | Should Match    | ${endpoint_details.subsets[0].addresses[0].target_ref.name}    | pod-name-123456 |
+
+        - ``name``:
+          Name of endpoint.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.read_namespaced_endpoints(name, namespace)
+        return [item for item in ret.items]
+
+    def get_endpoints_in_namespace(self, name, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_endpoints.
+        
+        Gets endpoint details in given namespace.
 
         Returns Endpoint object representation. Can be accessed using
 
@@ -612,8 +856,23 @@ class KubeLibrary(object):
         ret = self.v1.read_namespaced_endpoints(name, namespace)
         return ret
 
-    def get_pvc_in_namespace(self, namespace, label_selector=""):
+    def list_namespaced_persistent_volume_claim(self, namespace, label_selector=""):
         """Gets pvcs in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.list_namespaced_persistent_volume_claim(namespace, watch=False, label_selector=label_selector)
+        return [item for item in ret.items]
+
+    def get_pvc_in_namespace(self, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_persistent_volume_claim.
+        
+        Gets pvcs in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
@@ -625,8 +884,25 @@ class KubeLibrary(object):
         ret = self.v1.list_namespaced_persistent_volume_claim(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
-    def get_pvc_capacity(self, name, namespace):
+    def read_namespaced_persistent_volume_claim(self, name, namespace):
         """Gets PVC details in given namespace.
+
+        Returns PVC object representation. Can be accessed using
+
+        | Should Be Equal As strings    | ${pvc.status.capacity.storage}    | 1Gi |
+
+        - ``name``:
+          Name of PVC.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.read_namespaced_persistent_volume_claim(name, namespace)
+        return ret
+
+    def get_pvc_capacity(self, name, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_persistent_volume_claim.
+        
+        Gets PVC details in given namespace.
 
         Returns PVC object representation. Can be accessed using
 
@@ -650,7 +926,7 @@ class KubeLibrary(object):
         ret = self.v1.list_node(watch=False, label_selector=label_selector)
         return [item.status.node_info.kubelet_version for item in ret.items]
 
-    def create_service_account_in_namespace(self, namespace, body):
+    def create_namespaced_service_account(self, namespace, body):
         """Creates service account in a namespace
 
         Returns created service account
@@ -663,8 +939,39 @@ class KubeLibrary(object):
         ret = self.v1.create_namespaced_service_account(namespace=namespace, body=body)
         return ret
 
-    def delete_service_account_in_namespace(self, name, namespace):
+    def create_service_account_in_namespace(self, namespace, body):
+        """*DEPRECATED* Will be removed in v1.0.0. Use create_namespaced_service_account.
+        
+        Creates service account in a namespace
+
+        Returns created service account
+
+        - ``body``:
+          Service Account object.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.create_namespaced_service_account(namespace=namespace, body=body)
+        return ret
+
+    def delete_namespaced_service_account(self, name, namespace):
         """Deletes service account in a namespace
+
+        Returns V1status
+
+
+        - ``name``:
+          Service Account name
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.v1.delete_namespaced_service_account(name=name, namespace=namespace)
+        return ret
+
+    def delete_service_account_in_namespace(self, name, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use delete_namespaced_service_account.
+        
+        Deletes service account in a namespace
 
         Returns V1status
 
@@ -708,8 +1015,22 @@ class KubeLibrary(object):
                                            _return_http_data_only=False)
         return resp
 
-    def get_ingresses_in_namespace(self, namespace, label_selector=""):
+    def list_namespaced_ingress(self, namespace, label_selector=""):
         """Gets ingresses in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+        Returns list of strings.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.extensionsv1beta1.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
+        return [item for item in ret.items]
+
+    def get_ingresses_in_namespace(self, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_ingress.
+
+        Gets ingresses in given namespace.
+
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
         Returns list of strings.
         - ``namespace``:
@@ -718,8 +1039,9 @@ class KubeLibrary(object):
         ret = self.extensionsv1beta1.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
-    def get_ingress_details_in_namespace(self, name, namespace):
+    def read_namespaced_ingress(self, name, namespace):
         """Gets ingress details in given namespace.
+        
         Returns Ingress object representation.
           Name of ingress.
         - ``namespace``:
@@ -728,8 +1050,36 @@ class KubeLibrary(object):
         ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
         return ret
 
-    def get_cron_jobs_in_namespace(self, namespace, label_selector=""):
+    def get_ingress_details_in_namespace(self, name, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_ingress.
+        
+        Gets ingress details in given namespace.
+        
+        Returns Ingress object representation.
+          Name of ingress.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
+        return ret
+
+    def list_namespaced_cron_job(self, namespace, label_selector=""):
         """Gets cron jobs in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
+        return [item for item in ret.items]
+
+    def get_cron_jobs_in_namespace(self, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_cron_job.
+        
+        Gets cron jobs in given namespace.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
 
@@ -741,7 +1091,7 @@ class KubeLibrary(object):
         ret = self.batchv1_beta1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
-    def get_cron_job_details_in_namespace(self, name, namespace):
+    def read_namespaced_cron_job(self, name, namespace):
         """Gets cron job details in given namespace.
 
         Returns Cron job object representation.
@@ -754,7 +1104,22 @@ class KubeLibrary(object):
         ret = self.batchv1_beta1.read_namespaced_cron_job(name, namespace)
         return ret
 
-    def get_daemonsets_in_namespace(self, namespace, label_selector=""):
+    def get_cron_job_details_in_namespace(self, name, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_cron_job.
+        
+        Gets cron job details in given namespace.
+
+        Returns Cron job object representation.
+
+        - ``name``:
+          Name of cron job.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.read_namespaced_cron_job(name, namespace)
+        return ret
+
+    def list_namespaced_daemon_set(self, namespace, label_selector=""):
         """Gets a list of available daemonsets.
 
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
@@ -767,7 +1132,22 @@ class KubeLibrary(object):
         ret = self.appsv1.list_namespaced_daemon_set(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
-    def get_daemonset_details_in_namespace(self, name, namespace):
+    def get_daemonsets_in_namespace(self, namespace, label_selector=""):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_daemon_set.
+        
+        Gets a list of available daemonsets.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+        Returns list of deaemonsets.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.list_namespaced_daemon_set(namespace, watch=False, label_selector=label_selector)
+        return [item.metadata.name for item in ret.items]
+
+    def read_namespaced_daemon_set(self, name, namespace):
         """Gets deamonset details in given namespace.
 
         Returns daemonset object representation.
@@ -780,24 +1160,72 @@ class KubeLibrary(object):
         ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
         return ret
 
-    def get_cluster_roles(self):
+    def get_daemonset_details_in_namespace(self, name, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_daemon_set.
+        
+        Gets deamonset details in given namespace.
+
+        Returns daemonset object representation.
+
+        - ``name``:
+          Name of the daemonset
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.appsv1.read_namespaced_daemon_set(name, namespace)
+        return ret
+
+    def list_cluster_role(self):
         """Gets a list of cluster_roles.
+
+        Returns list of cluster_roles.
+        """
+        ret = self.rbac_authv1_api.list_cluster_role(watch=False)
+        return [item for item in ret.items]
+
+    def get_cluster_roles(self):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_cluster_role.
+        
+        Gets a list of cluster_roles.
 
         Returns list of cluster_roles.
         """
         ret = self.rbac_authv1_api.list_cluster_role(watch=False)
         return [item.metadata.name for item in ret.items]
 
-    def get_cluster_role_bindings(self):
+    def list_cluster_role_binding(self):
         """Gets a list of cluster_role_bindings.
+
+        Returns list of cluster_role_bindings.
+        """
+        ret = self.rbac_authv1_api.list_cluster_role_binding(watch=False)
+        return [item for item in ret.items]
+
+    def get_cluster_role_bindings(self):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_cluster_role_binding.
+        
+        Gets a list of cluster_role_bindings.
 
         Returns list of cluster_role_bindings.
         """
         ret = self.rbac_authv1_api.list_cluster_role_binding(watch=False)
         return [item.metadata.name for item in ret.items]
 
-    def get_roles_in_namespace(self, namespace):
+    def list_namespaced_role(self, namespace):
         """Gets roles in given namespace.
+
+        Returns list of roles.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.list_namespaced_role(namespace, watch=False)
+        return [item for item in ret.items]
+
+    def get_roles_in_namespace(self, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_role.
+        
+        Gets roles in given namespace.
 
         Returns list of roles.
 
@@ -807,8 +1235,21 @@ class KubeLibrary(object):
         ret = self.rbac_authv1_api.list_namespaced_role(namespace, watch=False)
         return [item.metadata.name for item in ret.items]
 
-    def get_role_bindings_in_namespace(self, namespace):
+    def list_namespaced_role_binding(self, namespace):
         """Gets role_bindings in given namespace.
+
+        Returns list of role_bindings.
+
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.rbac_authv1_api.list_namespaced_role_binding(namespace, watch=False)
+        return [item for item in ret.items]
+
+    def get_role_bindings_in_namespace(self, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_role_binding.
+        
+        Gets role_bindings in given namespace.
 
         Returns list of role_bindings.
 
@@ -818,8 +1259,28 @@ class KubeLibrary(object):
         ret = self.rbac_authv1_api.list_namespaced_role_binding(namespace, watch=False)
         return [item.metadata.name for item in ret.items]
 
-    def list_cluster_custom_objects(self, group, version, plural):
+    def list_cluster_custom_object(self, group, version, plural):
         """Lists cluster level custom objects.
+
+        Returns an object.
+
+        - ``group``:
+          API Group, e.g. 'k8s.cni.cncf.io'
+        - ``version``:
+          API version, e.g. 'v1'
+        - ``plural``:
+          e.g. 'network-attachment-definitions'
+
+        As in ``GET /apis/{group}/{version}/{plural}``
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_object.list_cluster_custom_object(group, version, plural)
+
+    def list_cluster_custom_objects(self, group, version, plural):
+        """*DEPRECATED* Will be removed in v1.0.0. Use list_cluster_custom_object.
+        
+        Lists cluster level custom objects.
 
         Returns an object.
 
@@ -856,7 +1317,7 @@ class KubeLibrary(object):
         """
         return self.custom_object.get_cluster_custom_object(group, version, plural, name)
 
-    def get_custom_object_in_namespace(self, group, version, namespace, plural, name):
+    def get_namespaced_custom_object(self, group, version, namespace, plural, name):
         """Get custom object in namespace.
 
         Returns an object.
@@ -878,8 +1339,33 @@ class KubeLibrary(object):
         """
         return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)
 
-    def create_cron_job_in_namespace(self, namespace, body):
+    def get_custom_object_in_namespace(self, group, version, namespace, plural, name):
+        """*DEPRECATED* Will be removed in v1.0.0. Use get_namespaced_custom_object.
+        
+        Get custom object in namespace.
+
+        Returns an object.
+
+        - ``group``:
+          API Group, e.g. 'k8s.cni.cncf.io'
+        - ``version``:
+          API version, e.g. 'v1'
+        - ``namespace``:
+          Namespace, e.g. 'default'
+        - ``plural``:
+          e.g. 'network-attachment-definitions'
+        - ``name``:
+          e.g. 'my-network'
+
+        As in ``GET /apis/{group}/{version}/namespaces/{namespace}/{plural}/{name}``
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)
+
+    def create_namespaced_cron_job(self, namespace, body):
         """Creates cron_job in a namespace
+        
         Returns created cron_job
         - ``body``:
           Cron_job object.
@@ -889,8 +1375,23 @@ class KubeLibrary(object):
         ret = self.batchv1_beta1.create_namespaced_cron_job(namespace=namespace, body=body)
         return ret
 
-    def delete_cron_job_in_namespace(self, name, namespace):
+    def create_cron_job_in_namespace(self, namespace, body):
+        """*DEPRECATED* Will be removed in v1.0.0. Use create_namespaced_cron_job.
+        
+        Creates cron_job in a namespace
+        
+        Returns created cron_job
+        - ``body``:
+          Cron_job object.
+        - ``namespace``:
+          Namespace to check
+        """
+        ret = self.batchv1_beta1.create_namespaced_cron_job(namespace=namespace, body=body)
+        return ret
+
+    def delete_namespaced_cron_job(self, name, namespace):
         """Deletes cron_job in a namespace
+        
         Returns V1 status
         - ``name``:
           Cron Job name
@@ -900,10 +1401,16 @@ class KubeLibrary(object):
         ret = self.batchv1_beta1.delete_namespaced_cron_job(name=name, namespace=namespace)
         return ret
 
-    def filter_endpoints_names(self, endpoints):
-        """Filter endpoints names for list of endpoints.
-        Returns list of strings.
-        - ``endpoints``:
-        List of endpoint objects
+    def delete_cron_job_in_namespace(self, name, namespace):
+        """*DEPRECATED* Will be removed in v1.0.0. Use delete_namespaced_cron_job.
+        
+        Deletes cron_job in a namespace
+        
+        Returns V1 status
+        - ``name``:
+          Cron Job name
+        - ``namespace``:
+          Namespace to check
         """
-        return [endpoints.metadata.name for endpoints in endpoints.items]
+        ret = self.batchv1_beta1.delete_namespaced_cron_job(name=name, namespace=namespace)
+        return ret

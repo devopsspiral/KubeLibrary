@@ -171,6 +171,14 @@ def mock_list_namespaced_pod(namespace, watch=False, label_selector=""):
             return list_of_pods
 
 
+def mock_read_namespaced_pod_status(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/pod_status.json') as json_file:
+            pod_content = json.load(json_file)
+            pod_status = AttributeDict({'status': pod_content['status']})
+            return pod_status
+
+
 def mock_list_cluster_role_bindings(watch=False):
     with open('test/resources/cluster_role_bind.json') as json_file:
         cluster_role_bindings_content = json.load(json_file)
@@ -330,6 +338,13 @@ class TestKubeLibrary(unittest.TestCase):
         pods = kl.get_pods_in_namespace('octopus.*', 'default')
         self.assertEqual(0, kl.filter_pods_containers_statuses_by_name(pods, '.*')[0].restart_count)
 
+    @mock.patch('kubernetes.client.CoreV1Api.read_namespaced_pod_status')
+    def test_get_pod_status_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_read_namespaced_pod_status
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        pod_status = kl.read_namespaced_pod_status('grafana-6769d4b669-fhspj', 'default')
+        self.assertEqual('Running', pod_status['phase'])
+
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_pod')
     def test_filter_containers_resources(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_pod
@@ -381,24 +396,25 @@ class TestKubeLibrary(unittest.TestCase):
         env_vars = '{"badlyformatted:}'
         self.assertFalse(kl.assert_container_has_env_vars(container, env_vars))
 
-    @unittest.skip("Will overwrite test/resources/pods.json")
-    def test_gather_pods_obejcts_to_pods_json(self):
-        kl = KubeLibrary(kube_config='test/resources/k3d')
-        ret = kl.v1.list_namespaced_pod('default', watch=False)
-        pods_str = str(ret.items).replace("'", '"') \
+    @unittest.skip("Will overwrite *.json")
+    def test_gather_pods_obejcts_to_json(self):
+        kl = KubeLibrary(kube_config='~/.kube/k3d')
+        ret = kl.v1.read_namespaced_pod_status('grafana-6769d4b669-fhspj', 'default')
+        pods_str = str(ret).replace("'", '"') \
                                  .replace('None', 'null') \
                                  .replace('True', 'true') \
                                  .replace('False', 'false')
         # serialize datetime into fixed timestamp
         pods = re.sub(r'datetime(.+?)\)\)', '1592598289', pods_str)
-        with open('test/resources/pods.json', 'w') as outfile:
+        print(pods)
+        with open('test/resources/pod_status.json', 'w') as outfile:
             json.dump(json.loads(pods), outfile, indent=4)
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespace')
     def test_list_namespaces(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaces
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        namespaces = kl.list_namespaces()
+        namespaces = kl.list_namespace()
         self.assertTrue(len(namespaces) > 0)
         self.assertEqual(['default', 'kubelib-test-test-objects-chart'], kl.filter_names(namespaces))
 
@@ -488,12 +504,12 @@ class TestKubeLibrary(unittest.TestCase):
         pvcs = kl.get_pvc_in_namespace('default')
         self.assertEqual(['myclaim'], [item for item in pvcs])
 
-    def test_service_getting(self):
-        kl = KubeLibrary(kube_config='~/.kube/k3d')
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_service')
+    def test_service_getting(self, mock_service):
+        mock_service.side_effect = mock_list_namespaced_services
+        kl = KubeLibrary(kube_config='test/resources/k3d')
         ret = kl.get_services_in_namespace('default')
-        print(ret)
-        ret = kl.get_service_details_in_namespace('grafana', 'default')
-        print(ret)
+        self.assertEqual('test-service', ret[0].metadata.name)
 
     @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_daemon_set')
     def test_get_daemonsets_in_namespace(self, mock_lnp):
@@ -520,7 +536,7 @@ class TestKubeLibrary(unittest.TestCase):
     def test_get_endpoints_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_read_namespaced_endpoints
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        endpoints = kl.get_endpoints_in_namespace('.*', 'default')
+        endpoints = kl.read_namespaced_endpoints('.*', 'default')
         self.assertEqual(['my-service'], kl.filter_endpoints_names(endpoints))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
