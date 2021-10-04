@@ -3,11 +3,11 @@ Resource          ./dynamic_client_kw.robot
 
 *** Test Cases ***
 Dynamic client test case example
-    [Tags]    dynamic-client     prerelease
+    [Tags]    dynamic-client    other
     ${resources}=    discover resources    default
     Log To Console     ${resources}
 Dynamic client test case example 2
-    [Tags]     dynamic-client    prerelease
+    [Tags]     dynamic-client    other
     ${conf}=     read conf     testcases/dynamic_client/resources/pod.yaml
     create pod     ${conf}
     sleep     5 seconds
@@ -25,7 +25,7 @@ Dynamic client test case example 2
     [Teardown]      delete pod     default     myapp-pod
 
 Dynamic client test case example 3
-    [Tags]     dynamic-client    prerelease
+    [Tags]     dynamic-client    other
     ${conf}=     read conf     testcases/dynamic_client/resources/svc.yaml
     create svc     ${conf}
     sleep    5 seconds
