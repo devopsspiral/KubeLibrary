@@ -401,9 +401,9 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='~/.kube/k3d')
         ret = kl.v1.read_namespaced_pod_status('grafana-6769d4b669-fhspj', 'default')
         pods_str = str(ret).replace("'", '"') \
-                                 .replace('None', 'null') \
-                                 .replace('True', 'true') \
-                                 .replace('False', 'false')
+                           .replace('None', 'null') \
+                           .replace('True', 'true') \
+                           .replace('False', 'false')
         # serialize datetime into fixed timestamp
         pods = re.sub(r'datetime(.+?)\)\)', '1592598289', pods_str)
         print(pods)
@@ -508,7 +508,8 @@ class TestKubeLibrary(unittest.TestCase):
     def test_service_getting(self, mock_service):
         mock_service.side_effect = mock_list_namespaced_services
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        ret = kl.get_services_in_namespace('default')
+        ret = kl.list_namespaced_service('default')
+        print(ret[0].metadata.name)
         self.assertEqual('test-service', ret[0].metadata.name)
 
     @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_daemon_set')
