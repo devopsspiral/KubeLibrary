@@ -1,5 +1,6 @@
 kubernetes
 robotframework>=3.2.2
+urllib3-mock>=0.3.3
 # for development
 mock
 flake8

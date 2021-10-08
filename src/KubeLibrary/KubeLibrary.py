@@ -2,8 +2,10 @@ import json
 import re
 import ssl
 import urllib3
-from kubernetes import client, config
+from kubernetes import client, config, dynamic
 from robot.api import logger
+from string import digits, ascii_lowercase
+from random import choices
 
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -16,6 +18,12 @@ class BearerTokenWithPrefixException(Exception):
     def __init__(self):
         super().__init__("Unnecessary 'Bearer ' prefix in token")
     pass
+
+
+class DynamicClient(dynamic.DynamicClient):
+    @property
+    def api_client(self):
+        return self.client
 
 
 class KubeLibrary(object):
@@ -84,6 +92,123 @@ class KubeLibrary(object):
         self.reload_config(kube_config=kube_config, context=context, api_url=api_url, bearer_token=bearer_token,
                            ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
+    @staticmethod
+    def generate_alphanumeric_str(size):
+        """Generates a random alphanumeric string with given size.
+
+        Returns a string.
+
+        - ``size``:
+          Desired size of the output string
+        """
+        return "".join(choices(ascii_lowercase + digits, k=size))
+
+    @staticmethod
+    def evaluate_callable_from_k8s_client(attr_name, *args, **kwargs):
+        """Evaluates a callable from kubernetes client.
+
+        Returns the output of the client callable.
+
+        - ``attr_name``:
+          Callable name
+        - ``*args``:
+          Positional arguments for argument forwarding
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
+        attr = getattr(client, attr_name, None)
+        assert callable(attr), f"kubernetes.client does not contain {attr_name}!"
+        return attr(*args, **kwargs)
+
+    def get_dynamic_resource(self, api_version, kind):
+        """Returns a dynamic resource based on the provided api version and kind.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        """
+        return self.dynamic.resources.get(api_version=api_version, kind=kind)
+
+    def get(self, api_version, kind, **kwargs):
+        """Retrieves resource instances based on the provided parameters.
+
+        Can be optionally given a ``namespace``, ``name``, ``label_selector``, ``body`` and ``field_selector``.
+
+        Returns a resource list.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
+        resource = self.get_dynamic_resource(api_version, kind)
+        return resource.get(**kwargs)
+
+    def create(self, api_version, kind, **kwargs):
+        """Creates resource instances based on the provided configuration.
+
+        If the resource is namespaced (ie, not cluster-level), then one of ``namespace``, ``label_selector``, or ``field_selector`` is required.
+        If the resource is cluster-level, then one of ``name``, ``label_selector``, or ``field_selector`` is required.
+        Can be optionally given a kubernetes manifest (``body``) which respects the above considerations.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
+        resource = self.get_dynamic_resource(api_version, kind)
+        resource.create(**kwargs)
+
+    def delete(self, api_version, kind, **kwargs):
+        """Deletes resource instances based on the provided configuration.
+
+        Can be optionally given a ``namespace``, ``name``, ``label_selector``, ``body`` and ``field_selector``.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
+        resource = self.get_dynamic_resource(api_version, kind)
+        resource.delete(**kwargs)
+
+    def patch(self, api_version, kind, **kwargs):
+        """Patches resource instances based on the provided parameters.
+
+        Can be optionally given a ``namespace``, ``name``, ``label_selector``, ``body`` and ``field_selector``.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
+        resource = self.get_dynamic_resource(api_version, kind)
+        resource.patch(**kwargs)
+
+    def replace(self, api_version, kind, **kwargs):
+        """Replaces resource instances based on the provided parameters.
+
+        Can be optionally given a ``namespace``, ``name``, ``label_selector``, ``body`` and ``field_selector``.
+
+        - ``api_version``:
+          Api version of the desired kubernetes resource
+        - ``kind``:
+          Kind of the desired kubernetes resource
+        - ``**kwargs``:
+          Keyword arguments for argument forwarding
+        """
+        resource = self.get_dynamic_resource(api_version, kind)
+        resource.replace(**kwargs)
+
     def reload_config(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None, incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
            This can be used to connect to a different cluster during the same test.
@@ -124,6 +249,9 @@ class KubeLibrary(object):
                 config.load_kube_config(kube_config, context)
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
+
+        if not self.api_client:
+            self.api_client = client.ApiClient(configuration=client.Configuration().get_default_copy())
         self._add_api('v1', client.CoreV1Api)
         self._add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
         self._add_api('batchv1', client.BatchV1Api)
@@ -132,6 +260,7 @@ class KubeLibrary(object):
         self._add_api('custom_object', client.CustomObjectsApi)
         self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
         self._add_api('autoscalingv1', client.AutoscalingV1Api)
+        self._add_api('dynamic', DynamicClient)
 
     def _add_api(self, reference, class_name):
         self.__dict__[reference] = class_name(self.api_client)
