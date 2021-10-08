@@ -548,7 +548,7 @@ class KubeLibrary(object):
         - ``endpoints``:
         List of endpoint objects
         """
-        return self.filter_names(endpoints)
+        return self.filter_names(endpoints.items)
 
     def filter_pods_containers_by_name(self, pods, name_pattern):
         """Filters pods containers by name for given list of pods.
