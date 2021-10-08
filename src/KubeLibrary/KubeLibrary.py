@@ -486,8 +486,7 @@ class KubeLibrary(object):
         return secrets
 
     def filter_names(self, objects):
-        """*DEPRECATED* Will be removed in v1.0.0. See examples in TBD.
-        Filter .metadata.name for list of k8s objects.
+        """Filter .metadata.name for list of k8s objects.
 
         Returns list of strings.
 
@@ -805,7 +804,7 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.autoscalingv1.read_namespaced_horizontal_pod_autoscaler(name, namespace)
-        return [item for item in ret.items]
+        return ret
 
     def get_hpa_details_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_horizontal_pod_autoscaler.
@@ -1130,7 +1129,7 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.appsv1.list_namespaced_daemon_set(namespace, watch=False, label_selector=label_selector)
-        return [item.metadata.name for item in ret.items]
+        return [item for item in ret.items]
 
     def get_daemonsets_in_namespace(self, namespace, label_selector=""):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_daemon_set.

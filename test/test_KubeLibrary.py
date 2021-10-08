@@ -297,37 +297,36 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(api_url=k8s_api_url, bearer_token=bearer_token, ca_cert=ca_cert)
         self.assertEqual(kl.api_client.configuration.ssl_ca_cert, ca_cert)
 
-    def test_filter_pods_names(self):
-        pods_items = mock_list_namespaced_pod('default')
-        kl = KubeLibrary(kube_config='test/resources/k3d')
-        self.assertEqual(['octopus-0', 'grafana-5d9895c6c4-sfsn8'], kl.filter_pods_names(pods_items.items))
-
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_pod')
-    def test_get_all_pods_in_namespace(self, mock_lnp):
+    def test_list_namespaced_pod_by_pattern(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_pod
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        pods = kl.get_pods_in_namespace('.*', 'default')
-        self.assertEqual(['octopus-0', 'grafana-5d9895c6c4-sfsn8'], kl.filter_pods_names(pods))
+        pods = kl.list_namespaced_pod_by_pattern('.*', 'default')
+        pods2 = kl.get_pods_in_namespace('.*', 'default')
+        pods3 = kl.get_pod_names_in_namespace('.*', 'default')
+        self.assertEqual(kl.filter_names(pods), pods3)
+        self.assertEqual(kl.filter_names(pods), kl.filter_pods_names(pods2))
+        self.assertEqual(['octopus-0', 'grafana-5d9895c6c4-sfsn8'], kl.filter_names(pods))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_pod')
     def test_get_matching_pods_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_pod
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        pods = kl.get_pods_in_namespace('graf.*', 'default')
-        self.assertEqual(['grafana-5d9895c6c4-sfsn8'], kl.filter_pods_names(pods))
+        pods = kl.list_namespaced_pod_by_pattern('graf.*', 'default')
+        self.assertEqual(['grafana-5d9895c6c4-sfsn8'], kl.filter_names(pods))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_pod')
     def test_filter_pods_containers_by_name(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_pod
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        pods = kl.get_pods_in_namespace('octopus.*', 'default')
+        pods = kl.list_namespaced_pod_by_pattern('octopus.*', 'default')
         self.assertEqual('manager', kl.filter_pods_containers_by_name(pods, '.*')[0].name)
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_pod')
     def test_filter_containers_images(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_pod
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        pods = kl.get_pods_in_namespace('octopus.*', 'default')
+        pods = kl.list_namespaced_pod_by_pattern('octopus.*', 'default')
         containers = kl.filter_pods_containers_by_name(pods, '.*')
         self.assertEqual(['eu.gcr.io/kyma-project/incubator/develop/octopus:dc5dc284'], kl.filter_containers_images(containers))
 
@@ -335,11 +334,11 @@ class TestKubeLibrary(unittest.TestCase):
     def test_filter_pods_containers_statuses_by_name(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_pod
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        pods = kl.get_pods_in_namespace('octopus.*', 'default')
+        pods = kl.list_namespaced_pod_by_pattern('octopus.*', 'default')
         self.assertEqual(0, kl.filter_pods_containers_statuses_by_name(pods, '.*')[0].restart_count)
 
     @mock.patch('kubernetes.client.CoreV1Api.read_namespaced_pod_status')
-    def test_get_pod_status_in_namespace(self, mock_lnp):
+    def test_read_namespaced_pod_status(self, mock_lnp):
         mock_lnp.side_effect = mock_read_namespaced_pod_status
         kl = KubeLibrary(kube_config='test/resources/k3d')
         pod_status = kl.read_namespaced_pod_status('grafana-6769d4b669-fhspj', 'default')
@@ -349,7 +348,7 @@ class TestKubeLibrary(unittest.TestCase):
     def test_filter_containers_resources(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_pod
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        pods = kl.get_pods_in_namespace('octopus.*', 'default')
+        pods = kl.list_namespaced_pod_by_pattern('octopus.*', 'default')
         containers = kl.filter_pods_containers_by_name(pods, '.*')
         self.assertEqual('100m', kl.filter_containers_resources(containers)[0].limits.cpu)
 
@@ -411,27 +410,23 @@ class TestKubeLibrary(unittest.TestCase):
             json.dump(json.loads(pods), outfile, indent=4)
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespace')
-    def test_list_namespaces(self, mock_lnp):
+    def test_list_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaces
         kl = KubeLibrary(kube_config='test/resources/k3d')
         namespaces = kl.list_namespace()
+        namespaces2 = kl.get_namespaces()
+        self.assertEqual(kl.filter_names(namespaces), namespaces2)
         self.assertTrue(len(namespaces) > 0)
         self.assertEqual(['default', 'kubelib-test-test-objects-chart'], kl.filter_names(namespaces))
 
-    @mock.patch('kubernetes.client.CoreV1Api.list_namespace')
-    def test_get_namespaces(self, mock_lnp):
-        mock_lnp.side_effect = mock_list_namespaces
-        kl = KubeLibrary(kube_config='test/resources/k3d')
-        namespaces = kl.get_namespaces()
-        self.assertTrue(len(namespaces) > 0)
-        self.assertEqual(['default', 'kubelib-test-test-objects-chart'], namespaces)
-
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_service_account')
-    def test_get_service_accounts_in_namespace(self, mock_lnp):
+    def test_list_namespaced_service_account_by_pattern(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_service_accounts
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        sa = kl.get_service_accounts_in_namespace('.*', 'default')
-        self.assertEqual(['default', 'kubelib-test-test-objects-chart'], kl.filter_service_accounts_names(sa))
+        sa = kl.list_namespaced_service_account_by_pattern('.*', 'default')
+        sa2 = kl.get_service_accounts_in_namespace('.*', 'default')
+        self.assertEqual(kl.filter_names(sa), kl.filter_service_accounts_names(sa2))
+        self.assertEqual(['default', 'kubelib-test-test-objects-chart'], kl.filter_names(sa))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_node')
     def test_get_kubelet_version(self, mock_lnp):
@@ -442,149 +437,188 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(['v1.20.0+k3s2'], kl_version)
 
     @mock.patch('kubernetes.client.BatchV1Api.list_namespaced_job')
-    def test_get_jobs_in_namespace(self, mock_lnp):
+    def test_list_namespaced_job_by_pattern(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_jobs
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        jobs = kl.get_jobs_in_namespace('.*', 'default')
-        self.assertEqual(['octopus-0', 'octopus-1', 'octopus-2', 'octopus-3'], [item.metadata.name for item in jobs])
+        jobs = kl.list_namespaced_job_by_pattern('.*', 'default')
+        jobs2 = kl.get_jobs_in_namespace('.*', 'default')
+        self.assertEqual(kl.filter_names(jobs), kl.filter_names(jobs2))
+        self.assertEqual(['octopus-0', 'octopus-1', 'octopus-2', 'octopus-3'], kl.filter_names(jobs))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_secret')
-    def test_get_secrets_in_namespace(self, mock_lnp):
+    def test_list_namespaced_secret_by_pattern(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_secrets
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        secrets = kl.get_secrets_in_namespace('.*', 'default')
-        self.assertEqual(['grafana'], [item.metadata.name for item in secrets])
+        secrets = kl.list_namespaced_secret_by_pattern('.*', 'default')
+        secrets2 = kl.get_secrets_in_namespace('.*', 'default')
+        self.assertEqual(kl.filter_names(secrets), kl.filter_names(secrets2))
+        self.assertEqual(['grafana'], kl.filter_names(secrets))
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_cluster_role')
-    def test_get_cluster_roles_in_namespace(self, mock_lnp):
+    def test_list_cluster_role(self, mock_lnp):
         mock_lnp.side_effect = mock_list_cluster_roles
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        cluster_roles = kl.get_cluster_roles()
-        self.assertEqual(['secret-reader'], [item for item in cluster_roles])
+        cluster_roles = kl.list_cluster_role()
+        cluster_roles2 = kl.get_cluster_roles()
+        self.assertEqual(kl.filter_names(cluster_roles), cluster_roles2)
+        self.assertEqual(['secret-reader'], kl.filter_names(cluster_roles))
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_cluster_role_binding')
-    def test_get_cluster_role_bindings_in_namespace(self, mock_lnp):
+    def test_list_cluster_role_binding(self, mock_lnp):
         mock_lnp.side_effect = mock_list_cluster_role_bindings
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        cluster_role_bindings = kl.get_cluster_role_bindings()
-        self.assertEqual(['read-secrets-global'], [item for item in cluster_role_bindings])
+        cluster_role_bindings = kl.list_cluster_role_binding()
+        cluster_role_bindings2 = kl.get_cluster_role_bindings()
+        self.assertEqual(kl.filter_names(cluster_role_bindings), cluster_role_bindings2)
+        self.assertEqual(['read-secrets-global'], kl.filter_names(cluster_role_bindings))
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role')
-    def test_get_roles_in_namespace(self, mock_lnp):
+    def test_list_namespaced_role(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_roles
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        roles = kl.get_roles_in_namespace('default')
-        self.assertEqual(['pod-reader'], [item for item in roles])
+        roles = kl.list_namespaced_role('default')
+        roles2 = kl.get_roles_in_namespace('default')
+        self.assertEqual(kl.filter_names(roles), roles2)
+        self.assertEqual(['pod-reader'], kl.filter_names(roles))
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_namespaced_role_binding')
-    def test_get_role_bindings_in_namespace(self, mock_lnp):
+    def test_list_namespaced_role_binding(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_role_bindings
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        role_bindings = kl.get_role_bindings_in_namespace('default')
-        self.assertEqual(['read-pods'], [item for item in role_bindings])
+        role_bindings = kl.list_namespaced_role_binding('default')
+        role_bindings2 = kl.get_role_bindings_in_namespace('default')
+        self.assertEqual(kl.filter_names(role_bindings), role_bindings2)
+        self.assertEqual(['read-pods'], kl.filter_names(role_bindings))
 
     @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_deployment')
-    def test_get_deployments_in_namespace(self, mock_lnp):
+    def test_list_namespaced_deployment_by_pattern(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_deployments
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        deployments = kl.get_deployments_in_namespace('.*', 'default')
-        self.assertEqual(['nginx-deployment'], kl.filter_deployments_names(deployments))
+        deployments = kl.list_namespaced_deployment_by_pattern('.*', 'default')
+        deployments2 = kl.get_deployments_in_namespace('.*', 'default')
+        self.assertEqual(kl.filter_names(deployments), kl.filter_deployments_names(deployments2))
+        self.assertEqual(['nginx-deployment'], kl.filter_names(deployments))
 
     @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_replica_set')
-    def test_get_replicasets_in_namespace(self, mock_lnp):
+    def test_list_namespaced_replica_set_by_pattern(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_replicasets
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        replicasets = kl.get_replicasets_in_namespace('.*', 'test-auto')
-        self.assertEqual(['nginx-proxy'], kl.filter_replicasets_names(replicasets))
+        replicasets = kl.list_namespaced_replica_set_by_pattern('.*', 'test-auto')
+        replicasets2 = kl.get_replicasets_in_namespace('.*', 'test-auto')
+        self.assertEqual(kl.filter_names(replicasets), kl.filter_replicasets_names(replicasets2))
+        self.assertEqual(['nginx-proxy'], kl.filter_names(replicasets))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim')
-    def test_get_pvc_in_namespace(self, mock_lnp):
+    def test_list_namespaced_persistent_volume_claim(self, mock_lnp):
         mock_lnp.side_effect = mock_list_pvc
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        pvcs = kl.get_pvc_in_namespace('default')
-        self.assertEqual(['myclaim'], [item for item in pvcs])
+        pvcs = kl.list_namespaced_persistent_volume_claim('default')
+        pvcs2 = kl.get_pvc_in_namespace('default')
+        self.assertEqual(kl.filter_names(pvcs), pvcs2)
+        self.assertEqual(['myclaim'], kl.filter_names(pvcs))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_service')
-    def test_service_getting(self, mock_service):
+    def test_list_namespaced_service(self, mock_service):
         mock_service.side_effect = mock_list_namespaced_services
         kl = KubeLibrary(kube_config='test/resources/k3d')
         ret = kl.list_namespaced_service('default')
-        print(ret[0].metadata.name)
         self.assertEqual('test-service', ret[0].metadata.name)
 
     @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_daemon_set')
-    def test_get_daemonsets_in_namespace(self, mock_lnp):
+    def test_list_namespaced_daemon_set(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_daemonsets
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        daemonsets = kl.get_daemonsets_in_namespace('default')
-        self.assertEqual(['fluentd-elasticsearch'], [item for item in daemonsets])
+        daemonsets = kl.list_namespaced_daemon_set('default')
+        daemonsets2 = kl.get_daemonsets_in_namespace('default')
+        self.assertEqual(kl.filter_names(daemonsets), daemonsets2)
+        self.assertEqual(['fluentd-elasticsearch'], kl.filter_names(daemonsets))
 
     @mock.patch('kubernetes.client.ExtensionsV1beta1Api.list_namespaced_ingress')
-    def test_get_ingresses_in_namespace(self, mock_lnp):
+    def test_list_namespaced_ingress(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_ingresses
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        ingresses = kl.get_ingresses_in_namespace('default')
-        self.assertEqual(['minimal-ingress'], [item for item in ingresses])
+        ingresses = kl.list_namespaced_ingress('default')
+        ingresses2 = kl.get_ingresses_in_namespace('default')
+        self.assertEqual(kl.filter_names(ingresses), ingresses2)
+        self.assertEqual(['minimal-ingress'], kl.filter_names(ingresses))
 
     @mock.patch('kubernetes.client.BatchV1beta1Api.list_namespaced_cron_job')
-    def test_get_cronjobs_in_namespace(self, mock_lnp):
+    def test_list_namespaced_cron_job(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_cronjobs
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        cronjobs = kl.get_cron_jobs_in_namespace('default')
-        self.assertEqual(['hello'], [item for item in cronjobs])
+        cronjobs = kl.list_namespaced_cron_job('default')
+        cronjobs2 = kl.get_cron_jobs_in_namespace('default')
+        self.assertEqual(kl.filter_names(cronjobs), cronjobs2)
+        self.assertEqual(['hello'], kl.filter_names(cronjobs))
 
     @mock.patch('kubernetes.client.CoreV1Api.read_namespaced_endpoints')
-    def test_get_endpoints_in_namespace(self, mock_lnp):
+    def test_read_namespaced_endpoints(self, mock_lnp):
         mock_lnp.side_effect = mock_read_namespaced_endpoints
         kl = KubeLibrary(kube_config='test/resources/k3d')
         endpoints = kl.read_namespaced_endpoints('.*', 'default')
-        self.assertEqual(['my-service'], kl.filter_endpoints_names(endpoints))
+        endpoints2 = kl.get_endpoints_in_namespace('.*', 'default')
+        self.assertEqual(kl.filter_names(endpoints), kl.filter_endpoints_names(endpoints))
+        self.assertEqual(['my-service'], kl.filter_names(endpoints))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
     def test_get_configmaps_in_namespace(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_config_map
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        configmaps = kl.get_configmaps_in_namespace('.*', 'default')
-        self.assertEqual(['game-demo'], kl.filter_configmap_names(configmaps))
+        configmaps = kl.list_namespaced_config_map_by_pattern('.*', 'default')
+        configmaps2 = kl.get_configmaps_in_namespace('.*', 'default')
+        self.assertEqual(kl.filter_names(configmaps), kl.filter_configmap_names(configmaps))
+        self.assertEqual(['game-demo'], kl.filter_names(configmaps))
 
     @mock.patch('kubernetes.client.AutoscalingV1Api.list_namespaced_horizontal_pod_autoscaler')
-    def test_get_hpas_in_namespace(self, mock_lnp):
+    def test_list_namespaced_horizontal_pod_autoscaler(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_hpas
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        hpas = kl.get_hpas_in_namespace('default')
-        self.assertEqual(['kubelib-test-test-objects-chart'], [item for item in hpas])
+        hpas = kl.list_namespaced_horizontal_pod_autoscaler('default')
+        hpas2 = kl.get_hpas_in_namespace('default')
+        self.assertEqual(kl.filter_names(hpas), hpas2)
+        self.assertEqual(['kubelib-test-test-objects-chart'], kl.filter_names(hpas))
 
     @mock.patch('kubernetes.client.AutoscalingV1Api.read_namespaced_horizontal_pod_autoscaler')
-    def test_get_hpa_details_in_namespace(self, mock_lnp):
+    def test_read_namespaced_horizontal_pod_autoscaler(self, mock_lnp):
         mock_lnp.side_effect = mock_read_hpa_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        hpa_details = kl.get_hpa_details_in_namespace('kubelib-test-test-objects-chart', 'default')
+        hpa_details = kl.read_namespaced_horizontal_pod_autoscaler('kubelib-test-test-objects-chart', 'default')
+        hpa_details2 = kl.get_hpa_details_in_namespace('kubelib-test-test-objects-chart', 'default')
+        self.assertEqual(hpa_details.items.spec.scaleTargetRef.name, hpa_details2.items.spec.scaleTargetRef.name)
         self.assertEqual('kubelib-test-test-objects-chart', hpa_details.items.spec.scaleTargetRef.name)
 
     @mock.patch('kubernetes.client.AppsV1Api.read_namespaced_daemon_set')
-    def test_get_daemonset_details_in_namespace(self, mock_lnp):
+    def test_read_namespaced_daemon_set(self, mock_lnp):
         mock_lnp.side_effect = mock_read_daemonset_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        daemonset_details = kl.get_daemonset_details_in_namespace('fluentd-elasticsearch', 'default')
+        daemonset_details = kl.read_namespaced_daemon_set('fluentd-elasticsearch', 'default')
+        daemonset_details2 = kl.get_daemonset_details_in_namespace('fluentd-elasticsearch', 'default')
+        self.assertEqual(daemonset_details.items.metadata.labels.TestLabel, daemonset_details2.items.metadata.labels.TestLabel)
         self.assertEqual('mytestlabel', daemonset_details.items.metadata.labels.TestLabel)
 
     @mock.patch('kubernetes.client.CoreV1Api.read_namespaced_service')
-    def test_get_service_details_in_namespace(self, mock_lnp):
+    def test_read_namespaced_service(self, mock_lnp):
         mock_lnp.side_effect = mock_read_service_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        service_details = kl.get_service_details_in_namespace('minimal-ingress', 'default')
+        service_details = kl.read_namespaced_service('minimal-ingress', 'default')
+        service_details2 = kl.get_service_details_in_namespace('minimal-ingress', 'default')
+        self.assertEqual(service_details.items.metadata.labels.Test, service_details2.items.metadata.labels.Test)
         self.assertEqual('mytest', service_details.items.metadata.labels.Test)
 
     @mock.patch('kubernetes.client.ExtensionsV1beta1Api.read_namespaced_ingress')
-    def test_get_ingress_details_in_namespace(self, mock_lnp):
+    def test_read_namespaced_ingress(self, mock_lnp):
         mock_lnp.side_effect = mock_read_ingress_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
         ingress_details = kl.get_ingress_details_in_namespace('max-ingress', 'default')
+        ingress_details2 = kl.get_ingress_details_in_namespace('max-ingress', 'default')
+        self.assertEqual(ingress_details.items.metadata.labels.TestLabel, ingress_details2.items.metadata.labels.TestLabel)
         self.assertEqual('mytestlabel', ingress_details.items.metadata.labels.TestLabel)
 
     @mock.patch('kubernetes.client.BatchV1beta1Api.read_namespaced_cron_job')
-    def test_get_cron_job_details_in_namespace(self, mock_lnp):
+    def test_read_namespaced_cron_job(self, mock_lnp):
         mock_lnp.side_effect = mock_read_cron_job_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        cron_job_details = kl.get_cron_job_details_in_namespace('hello', 'default')
+        cron_job_details = kl.read_namespaced_cron_job('hello', 'default')
+        cron_job_details2 = kl.get_cron_job_details_in_namespace('hello', 'default')
+        self.assertEqual(cron_job_details.items.metadata.labels.TestLabel, cron_job_details2.items.metadata.labels.TestLabel)
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
