@@ -16,7 +16,7 @@ List services by label
     Log  \nServices in namespace ${namespace}:  console=True
     FOR  ${service}  IN  @{namespace_services}
         Log  ${service.metadata.name}  console=True
-        ${sevice_details}=  Read Namespaced Service  ${service}  ${namespace}
+        ${sevice_details}=  Read Namespaced Service  ${service.metadata.name}  ${namespace}
         ${label_key}=  Fetch From Left    ${label}    =
         ${label_value}=  Fetch From Right    ${label}    =
         Dictionary Should Contain Item    ${sevice_details.metadata.labels}    ${label_key}  ${label_value}
