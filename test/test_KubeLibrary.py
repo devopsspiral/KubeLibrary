@@ -557,7 +557,7 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         endpoints = kl.read_namespaced_endpoints('.*', 'default')
         endpoints2 = kl.get_endpoints_in_namespace('.*', 'default')
-        self.assertEqual(kl.filter_names(endpoints), kl.filter_endpoints_names(endpoints))
+        self.assertEqual(kl.filter_names(endpoints), kl.filter_endpoints_names(endpoints2))
         self.assertEqual(['my-service'], kl.filter_names(endpoints))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
@@ -566,7 +566,7 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         configmaps = kl.list_namespaced_config_map_by_pattern('.*', 'default')
         configmaps2 = kl.get_configmaps_in_namespace('.*', 'default')
-        self.assertEqual(kl.filter_names(configmaps), kl.filter_configmap_names(configmaps))
+        self.assertEqual(kl.filter_names(configmaps), kl.filter_configmap_names(configmaps2))
         self.assertEqual(['game-demo'], kl.filter_names(configmaps))
 
     @mock.patch('kubernetes.client.AutoscalingV1Api.list_namespaced_horizontal_pod_autoscaler')
