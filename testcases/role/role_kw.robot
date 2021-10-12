@@ -9,12 +9,12 @@ Library           KubeLibrary
 *** Keywords ***
 List all roles in namespace
     [Arguments]  ${namespace}
-    @{namespace_roles}=  Get Roles In Namespace    ${namespace}
+    @{namespace_roles}=  List Namespaced Role    ${namespace}
     Length Should Be  ${namespace_roles}  1
     Log  \nRoles in namespace ${namespace_roles}:  console=True
     
 List all role bindings in namespace
     [Arguments]  ${namespace}
-    @{namespace_role_bindings}=  Get Role Bindings In Namespace    ${namespace}
+    @{namespace_role_bindings}=  List Namespaced Role Binding    ${namespace}
     Length Should Be  ${namespace_role_bindings}  1
     Log  \nRole_binding in namespace ${namespace_role_bindings}:  console=True

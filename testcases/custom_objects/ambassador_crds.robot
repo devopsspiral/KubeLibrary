@@ -11,7 +11,7 @@ Documentation  These are example test cases to check custom resource definitions
 
 *** Test Cases ***
 Get details for all ambassador mappings
-    ${listed_mappings}=  List Cluster Custom Objects   getambassador.io   v2   mappings
+    ${listed_mappings}=  List Cluster Custom Object   getambassador.io   v2   mappings
     FOR  ${mapping}  IN  @{listed_mappings['items']}
         Log  Mapping name: ${mapping}[metadata][name]  console=True
         Log  Mapping namespace: ${mapping}[metadata][namespace]  console=True
@@ -23,7 +23,7 @@ Get details for all ambassador mappings
     END
 
 Get details for all ambassador hosts
-    ${listed_hosts}=  List Cluster Custom Objects   getambassador.io   v2   hosts
+    ${listed_hosts}=  List Cluster Custom Object   getambassador.io   v2   hosts
     FOR  ${host}  IN  @{listed_hosts['items']}
         Log  Host name: ${host}[metadata][name]  console=True
         Log  Host namespace: ${host}[metadata][namespace]  console=True

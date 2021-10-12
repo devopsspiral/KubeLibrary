@@ -12,11 +12,11 @@ Library           KubeLibrary
 *** Keywords ***
 List all cron jobs in namespace
     [Arguments]  ${namespace}
-    @{namespace_cron_jobs}=  Get Cron Jobs In Namespace    ${namespace}
+    @{namespace_cron_jobs}=  List Namespaced Cron Job    ${namespace}
     Log  \nCron Jobs in namespace ${namespace}:  console=True
     Length Should Be  ${namespace_cron_jobs}  1
     FOR  ${cron_job}  IN  @{namespace_cron_jobs}
-        ${cronjob_details}=  Get Cron Job Details In Namespace  ${cron_job}  ${namespace}
+        ${cronjob_details}=  Read Namespaced Cron Job  ${cron_job}  ${namespace}
         Log  ${cronjob_details.metadata.name}  console=True
         Set Global Variable    ${cron_job_name}    ${cronjob_details.metadata.name}
 	Set Global Variable    ${cron_job}    ${cronjob_details}
@@ -24,11 +24,11 @@ List all cron jobs in namespace
 
 List cron jobs with label
     [Arguments]  ${cron_job_name}  ${namespace}  ${label}
-    @{namespace_cron_jobs}=  Get Cron Jobs In Namespace    ${namespace}  ${label}
+    @{namespace_cron_jobs}=  List Namespaced Cron Job    ${namespace}  ${label}
     Log  \nList labels in cron job ${cron_job_name}:  console=True
     Length Should Be  ${namespace_cron_jobs}  1
     FOR  ${cron_job}  IN  @{namespace_cron_jobs}
-        ${cron_job_details}=  Get Cron Job Details In Namespace  ${cron_job}  ${namespace}
+        ${cron_job_details}=  Read Namespaced Cron Job  ${cron_job}  ${namespace}
         ${label_key}=  Fetch From Left    ${label}    =
         ${label_value}=  Fetch From Right    ${label}    =
         Log  Labels in ${cron_job_details.metadata.labels}  console=True
@@ -45,11 +45,11 @@ Edit obtained cron job
 Create new cron job in namespace
     [Arguments]  ${namespace}
     Log  \nCreate new cron job in namespace ${namespace}  console=True
-    ${new_cj}=    Create Cron Job In Namespace  ${namespace}  ${new_cron_job}
+    ${new_cj}=    Create Namespaced Cron Job  ${namespace}  ${new_cron_job}
     Log  ${new_cj}  console=True
 
 Delete created cron job in namespace
     [Arguments]  ${cron_job_name}    ${namespace}
     Log  \nDeletee cron job in namespace ${namespace}  console=True
-    ${status}=    Delete Cron Job In Namespace  ${cron_job_name}    ${namespace}
+    ${status}=    Delete Namespaced Cron Job  ${cron_job_name}    ${namespace}
     Log  ${status}

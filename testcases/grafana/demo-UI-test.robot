@@ -37,7 +37,7 @@ Successful Login to Grafana
 
 *** Keywords ***
 Check Grafana Deployment
-    @{namespace_deployments}=  Get Deployments In Namespace    grafana  default
+    @{namespace_deployments}=  List Namespaced Deployment By Pattern    grafana  default
     Length Should Be  ${namespace_deployments}  1
     FOR  ${deployment}  IN  @{namespace_deployments}
         Should be Equal   ${deployment.metadata.name}  grafana
@@ -67,11 +67,11 @@ Check Grafana service
     ...  msg=Expected service type does not match.
 
 Check Grafana secrets
-    @{namespace_secrets}=  Get Secrets In Namespace    grafana  default
+    @{namespace_secrets}=  List Namespaced Secret By Pattern    grafana  default
     Length Should Be  ${namespace_secrets}  3
 
 Check Grafana serviceaccounts
-    @{namespace_service_accounts}=  Get Service Accounts In Namespace    grafana  default
+    @{namespace_service_accounts}=  List Namespaced Service Account By Pattern    grafana  default
     Length Should Be  ${namespace_service_accounts}  2
     FOR  ${service_account}  IN  @{namespace_service_accounts}
         Dictionary Should Contain Item    ${service_account.metadata.labels}    app.kubernetes.io/name  grafana
@@ -83,7 +83,7 @@ Get URL and port from service
     Set Global Variable  ${PORT}  ${sevice_details.spec.ports[0].port}
 
 Read grafana secrets
-    @{namespace_secrets}=  Get Secrets In Namespace    ^grafana$  default
+    @{namespace_secrets}=  List Namespaced Secret By Pattern    ^grafana$  default
     Length Should Be  ${namespace_secrets}  1
     ${GRAFANA_USER}=  Evaluate  base64.b64decode($namespace_secrets[0].data["admin-user"])  modules=base64
     Set Global Variable  ${GRAFANA_USER}  ${GRAFANA_USER}

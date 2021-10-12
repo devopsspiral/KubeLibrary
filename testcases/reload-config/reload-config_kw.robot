@@ -16,7 +16,7 @@ Connected to cluster-1
 
 Cluster has namespace
     [Arguments]  ${namespace}
-    @{namespaces_list}=  Get Namespaces
+    @{namespaces_list}=  List Namespace
     Should Contain    ${namespaces_list}    ${namespace}
 
 Connected to cluster-2 
@@ -29,6 +29,6 @@ Connected to cluster-1 using bearer token
 
 Cluster has no namespace
     [Arguments]  ${namespace}
-    @{namespaces_list}=  Get Namespaces
+    @{namespaces_list}=  List Namespace
     Should Not Contain    ${namespaces_list}    ${namespace}
 

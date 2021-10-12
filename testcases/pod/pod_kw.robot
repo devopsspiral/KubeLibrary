@@ -15,7 +15,7 @@ waited for pods matching "${name_pattern}" in namespace "${namespace}" to be run
     Wait Until Keyword Succeeds    ${KLIB_POD_TIMEOUT}    ${KLIB_POD_RETRY_INTERVAL}   pod "${name_pattern}" status in namespace "${namespace}" is running
 
 pod "${name_pattern}" status in namespace "${namespace}" is running 
-    @{namespace_pods}=    get_pod_names_in_namespace  ${name_pattern}    ${namespace}
+    @{namespace_pods}=    list_namespaced_pod_by_pattern  ${name_pattern}    ${namespace}
     ${num_of_pods}=    Get Length    ${namespace_pods}
     Should Be True    ${num_of_pods} >= 1    No pods matching "${name_pattern}" found
     FOR    ${pod}    IN    @{namespace_pods}
@@ -100,7 +100,7 @@ pods containers have env variables "${container_env_vars}"
 
 logs of pod can be retrived
     Set Test Variable    ${POD_NAME}    ${namespace_pods[0].metadata.name}
-    ${pod_logs}=  Get Pod Logs  ${POD_NAME}  ${KLIB_POD_NAMESPACE}  busybox
+    ${pod_logs}=  Read namespaced pod log  ${POD_NAME}  ${KLIB_POD_NAMESPACE}  busybox
     Log  ${pod_logs}  console=True
     Set Test Variable    ${POD_LOGS}    ${pod_logs}
 
