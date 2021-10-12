@@ -42,3 +42,10 @@ Delete created role in namespace
     Log  \nDelete role in namespace ${namespace}  console=True    
     ${status}=    Delete Role In Namespace  ${role_name}    ${namespace}    
     Log  ${status}
+
+List all roles in all namespaces
+    @{roles}=  Get Role For All Namespaces
+    Log  \nroles in all namespaces:  console=True
+    FOR  ${role}  IN  @{roles}
+        Log  ${role}  console=True
+    END	

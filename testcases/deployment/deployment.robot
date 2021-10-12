@@ -7,3 +7,7 @@ Deployment test case example
     List all deployments in namespace  default
     Show Grafana Deployment
     Assert Replica Status
+
+Lsit All Deployment
+    [Tags]    grafana
+    List all deployments in all namespaces

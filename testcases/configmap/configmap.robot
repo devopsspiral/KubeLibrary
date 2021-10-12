@@ -10,3 +10,7 @@ Configmap test case example
 Configmap by label
     [Tags]    grafana    
     List all configmaps in namespace  default  app=grafana
+
+Lsit All Configmap
+    [Tags]    grafana
+    List all configmaps in all namespaces

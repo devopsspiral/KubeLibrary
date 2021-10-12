@@ -21,4 +21,9 @@ List services by label
         ...  msg=Expected labels do not match.
     END
 
-
+List all services in all namespaces
+    @{services}=  Get Service For All Namespaces
+    Log  \nservices in all namespaces:  console=True
+    FOR  ${service}  IN  @{services}
+        Log  ${service}  console=True
+    END	

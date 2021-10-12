@@ -22,3 +22,10 @@ List ingresses by label
         ...  msg=Expected labels do not match.
         Log  Ingress Host Url: ${ingress_details.spec.rules[0].host}  console=True
     END
+
+List all ingresses in all namespaces
+    @{ingresses}=  Get Ingress For All Namespaces
+    Log  \ningresses in all namespaces:  console=True
+    FOR  ${ingress}  IN  @{ingresses}
+        Log  ${ingress}  console=True
+    END	

@@ -38,3 +38,10 @@ List daemonsets filtered by label
         Log  \n\tNumber Ready : ${daemonset_details.status.number_ready} :  console=True
         Should be equal   ${daemonset_details.status.desired_number_scheduled}    ${daemonset_details.status.number_ready}
     END
+
+List all daemon sets in all namespaces
+    @{daemon_sets}=  Get Daemon Set For All Namespaces
+    Log  \ndaemon sets in all namespaces:  console=True
+    FOR  ${daemon_set}  IN  @{daemon_sets}
+        Log  ${daemon_set}  console=True
+    END

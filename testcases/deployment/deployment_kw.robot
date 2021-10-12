@@ -33,4 +33,9 @@ Assert Replica Status
 
 
 
-
+List all deployments in all namespaces
+    @{deployments}=  Get Deployment For All Namespaces
+    Log  \ndeployments in all namespaces:  console=True
+    FOR  ${deployment}  IN  @{deployments}
+        Log  ${deployment}  console=True
+    END

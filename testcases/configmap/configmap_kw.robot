@@ -31,4 +31,9 @@ Log key value pairs
         Log  ${key} = ${value}  console=True
     END
 
-
+List all configmaps in all namespaces
+    @{configmaps}=  Get Configmap For All Namespaces
+    Log  \nConfigmaps in all namespaces:  console=True
+    FOR  ${configmap}  IN  @{configmaps}
+        Log  ${configmap}  console=True
+    END
