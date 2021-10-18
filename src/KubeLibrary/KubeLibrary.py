@@ -1052,84 +1052,84 @@ class KubeLibrary(object):
         """
         ret = self.v1.list_config_map_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_ingress_for_all_namespaces(self, label_selector=""):
         """Gets a list of available ingresses in all namespaces.
         Returns list of ingresses.
         """
         ret = self.extensionsv1beta1.list_ingress_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_role_for_all_namespaces(self, label_selector=""):
         """Gets a list of available roles in all namespaces.
         Returns list of roles.
         """
         ret = self.rbac_authv1_api.list_role_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_role_binding_for_all_namespaces(self, label_selector=""):
         """Gets a list of available role_bindings in all namespaces.
         Returns list of role_bindings.
         """
         ret = self.rbac_authv1_api.list_role_binding_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_pvc_for_all_namespaces(self, label_selector=""):
         """Gets a list of available pvcs in all namespaces.
         Returns list of pvcs.
         """
         ret = self.v1.list_pvc_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_secret_for_all_namespaces(self, label_selector=""):
         """Gets a list of available secretes in all namespaces.
         Returns list of secrets.
         """
         ret = self.v1.list_secret_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_service_for_all_namespaces(self, label_selector=""):
         """Gets a list of available services in all namespaces.
         Returns list of services.
         """
         ret = self.v1.list_service_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_service_account_for_all_namespaces(self, label_selector=""):
         """Gets a list of available service_accounts in all namespaces.
         Returns list of service_accounts.
         """
         ret = self.v1.list_service_account_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_cron_job_for_all_namespaces(self, label_selector=""):
         """Gets a list of available cron_jobs in all namespaces.
         Returns list of cron_jobs.
         """
         ret = self.batchv1_beta1.list_cron_job_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_replica_set_for_all_namespaces(self, label_selector=""):
         """Gets a list of available replica_sets in all namespaces.
         Returns list of replica_sets.
         """
         ret = self.appsv1.list_replica_set_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_daemon_set_for_all_namespaces(self, label_selector=""):
         """Gets a list of available daemon_sets in all namespaces.
         Returns list of daemon_sets.
         """
         ret = self.v1.list_daemon_set_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_deployment_for_all_namespaces(self, label_selector=""):
         """Gets a list of available deployments in all namespaces.
         Returns list of deployments.
         """
         ret = self.appsv1.list_config_map_for_all_namespaces()
         return [item.metadata.name for item in ret.items]
-		
+
     def get_pod_for_all_namespaces(self, label_selector=""):
         """Gets a list of available pods in all namespaces.
         Returns list of pods.
