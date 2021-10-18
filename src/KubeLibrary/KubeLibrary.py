@@ -1061,7 +1061,7 @@ class KubeLibrary(object):
         return [item.metadata.name for item in ret.items]
 		
     def get_role_for_all_namespaces(self, label_selector=""):
-         """Gets a list of available roles in all namespaces.
+        """Gets a list of available roles in all namespaces.
         Returns list of roles.
         """
         ret = self.rbac_authv1_api.list_role_for_all_namespaces()
