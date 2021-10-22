@@ -106,10 +106,3 @@ logs of pod can be retrived
 
 logs contain expected string
     Should Contain    ${POD_LOGS}    I am
-
-List all pods in all namespaces
-    @{pods}=  Get Pod For All Namespaces
-    Log  \npods in all namespaces:  console=True
-    FOR  ${pod}  IN  @{pods}
-        Log  ${pod}  console=True
-    END
