@@ -53,10 +53,3 @@ Delete created cron job in namespace
     Log  \nDeletee cron job in namespace ${namespace}  console=True
     ${status}=    Delete Cron Job In Namespace  ${cron_job_name}    ${namespace}
     Log  ${status}
-
-List all cron_jobs in all namespaces
-    @{cron_jobs}=  Get Cron Job For All Namespaces
-    Log  \ncron jobs in all namespaces:  console=True
-    FOR  ${cron_job}  IN  @{cron_jobs}
-        Log  ${cron_job}  console=True
-    END
