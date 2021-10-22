@@ -26,10 +26,3 @@ Read grafana secrets
     Set Suite Variable  ${GRAFANA_PASSWORD}  ${namespace_secrets[0].data["admin-password"]}
     ${GRAFANA_PASSWORD}=  Evaluate  base64.b64decode($GRAFANA_PASSWORD)  modules=base64
     Log  Grafana password: ${GRAFANA_PASSWORD}  console=True
-
-List all secrets in all namespaces
-    @{secrets}=  Get Secret For All Namespaces
-    Log  \nsecrets in all namespaces:  console=True
-    FOR  ${secret}  IN  @{secrets}
-        Log  ${secret}  console=True
-    END		
