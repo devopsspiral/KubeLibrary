@@ -30,12 +30,3 @@ Show Grafana Deployment
 Assert Replica Status
     Should be Equal  ${DEPLOYMENT.status.available_replicas}  ${DEPLOYMENT.status.replicas}
     ...  msg=Available replica count (${DEPLOYMENT.status.available_replicas}) doesn't match current replica count (${DEPLOYMENT.status.replicas})
-
-
-
-List all deployments in all namespaces
-    @{deployments}=  Get Deployment For All Namespaces
-    Log  \ndeployments in all namespaces:  console=True
-    FOR  ${deployment}  IN  @{deployments}
-        Log  ${deployment}  console=True
-    END
