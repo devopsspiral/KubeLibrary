@@ -13,7 +13,3 @@ Working on Service Accounts
     Edit obtained service account    test-sa
     Create new service account in namespace    kubelib-tests
     Delete created service account in namespace    test-sa    kubelib-tests
-
-Lsit All service_account
-    [Tags]    others
-    List all service_accounts in all namespaces
