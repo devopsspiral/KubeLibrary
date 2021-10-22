@@ -20,10 +20,3 @@ List services by label
         Dictionary Should Contain Item    ${sevice_details.metadata.labels}    ${label_key}  ${label_value}
         ...  msg=Expected labels do not match.
     END
-
-List all services in all namespaces
-    @{services}=  Get Service For All Namespaces
-    Log  \nservices in all namespaces:  console=True
-    FOR  ${service}  IN  @{services}
-        Log  ${service}  console=True
-    END	
