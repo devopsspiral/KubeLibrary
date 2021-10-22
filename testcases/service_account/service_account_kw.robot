@@ -44,10 +44,3 @@ Delete created service account in namespace
     [Arguments]  ${service_account_name}    ${namespace}
     ${status}=    Delete Service Account In Namespace  ${service_account_name}    ${namespace}
     Log  ${status}
-
-List all service_accounts in all namespaces
-    @{service_accounts}=  Get service_account For All Namespaces
-    Log  \nservice_accounts in all namespaces:  console=True
-    FOR  ${service_account}  IN  @{service_accounts}
-        Log  ${service_account}  console=True
-    END	
