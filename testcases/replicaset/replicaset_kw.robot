@@ -16,10 +16,3 @@ List all replicasets in namespace
     FOR  ${replicaset}  IN  @{namespace_replicasets}
         Log To Console   ${replicaset.metadata.name}  console=True
     END
-
-List all replica sets in all namespaces
-    @{replica_sets}=  Get Replica Set For All Namespaces
-    Log  \nreplica sets in all namespaces:  console=True
-    FOR  ${replica_set}  IN  @{replica_sets}
-        Log  ${replica_set}  console=True
-    END
