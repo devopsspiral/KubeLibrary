@@ -13,7 +13,3 @@ Working on Role
     Edit obtained role    mini-role
     Create new role in namespace    default    
     Delete created role in namespace    mini-role    default
-
-Lsit All Role
-    [Tags]    grafana
-    List all roles in all namespaces
