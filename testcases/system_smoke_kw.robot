@@ -27,7 +27,7 @@ getting all pods names in "${namespace}"
 all pods in "${namespace}" are running or succeeded
     FOR    ${name}    IN    @{namespace_pods_names}
          ${status}=    read_namespaced_pod_status    ${name}    ${namespace}
-         Should Be True     '${status}'=='Running' or '${status}'=='Succeeded'
+         Should Be True     '${status.phase}'=='Running' or '${status.phase}'=='Succeeded'
     END
 
 accessing "${pattern}" excluding "${exclude}" container images version in "${namespace}"
