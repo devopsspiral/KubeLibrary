@@ -17,7 +17,8 @@ Connected to cluster-1
 Cluster has namespace
     [Arguments]  ${namespace}
     @{namespaces_list}=  List Namespace
-    Should Contain    ${namespaces_list}    ${namespace}
+    @{namespaces_name_list}=    Filter Names    ${namespaces_list}
+    Should Contain    ${namespaces_name_list}    ${namespace}
 
 Connected to cluster-2 
     Reload Config  kube_config=${KUBE_CONFIG2}  incluster=False  cert_validation=False
@@ -30,5 +31,6 @@ Connected to cluster-1 using bearer token
 Cluster has no namespace
     [Arguments]  ${namespace}
     @{namespaces_list}=  List Namespace
-    Should Not Contain    ${namespaces_list}    ${namespace}
+    @{namespaces_name_list}=    Filter Names    ${namespaces_list}
+    Should Not Contain    ${namespaces_name_list}    ${namespace}
 
