@@ -16,7 +16,7 @@ List all cron jobs in namespace
     Log  \nCron Jobs in namespace ${namespace}:  console=True
     Length Should Be  ${namespace_cron_jobs}  1
     FOR  ${cron_job}  IN  @{namespace_cron_jobs}
-        ${cronjob_details}=  Read Namespaced Cron Job  ${cron_job}  ${namespace}
+        ${cronjob_details}=  Read Namespaced Cron Job  ${cron_job.metadata.name}  ${namespace}
         Log  ${cronjob_details.metadata.name}  console=True
         Set Global Variable    ${cron_job_name}    ${cronjob_details.metadata.name}
 	Set Global Variable    ${cron_job}    ${cronjob_details}
@@ -28,7 +28,7 @@ List cron jobs with label
     Log  \nList labels in cron job ${cron_job_name}:  console=True
     Length Should Be  ${namespace_cron_jobs}  1
     FOR  ${cron_job}  IN  @{namespace_cron_jobs}
-        ${cron_job_details}=  Read Namespaced Cron Job  ${cron_job}  ${namespace}
+        ${cron_job_details}=  Read Namespaced Cron Job  ${cron_job.metadata.name}  ${namespace}
         ${label_key}=  Fetch From Left    ${label}    =
         ${label_value}=  Fetch From Right    ${label}    =
         Log  Labels in ${cron_job_details.metadata.labels}  console=True

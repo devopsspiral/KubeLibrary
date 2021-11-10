@@ -32,7 +32,7 @@ List daemonsets filtered by label
 	Length Should Be  ${namespace_daemonsets}  1
     Log  \nDaemonsets with label ${label} ${namespace_daemonsets}:  console=True
     FOR  ${daemonset}  IN  @{namespace_daemonsets}
-        ${daemonset_details}=  Read Namespaced Daemon Set  ${daemonset}  ${namespace}
+        ${daemonset_details}=  Read Namespaced Daemon Set  ${daemonset.metadata.name}  ${namespace}
         Log  \nDaemonset - ${daemonset}:  console=True
         Log  \n\tDesired Number Scheduled : ${daemonset_details.status.desired_number_scheduled}   console=True
         Log  \n\tNumber Ready : ${daemonset_details.status.number_ready} :  console=True

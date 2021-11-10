@@ -15,7 +15,7 @@ List ingresses by label
     @{namespace_ingresses}=  List Namespaced Ingress    ${namespace}  ${label}
     Length Should Be  ${namespace_ingresses}  1
     FOR  ${ingress}  IN  @{namespace_ingresses}
-        ${ingress_details}=  Read Namespaced Ingress  ${ingress}  ${namespace}
+        ${ingress_details}=  Read Namespaced Ingress  ${ingress.metadata.name}  ${namespace}
         ${label_key}=  Fetch From Left    ${label}    =
         ${label_value}=  Fetch From Right    ${label}    =
         Dictionary Should Contain Item    ${ingress_details.metadata.labels}    ${label_key}  ${label_value}
