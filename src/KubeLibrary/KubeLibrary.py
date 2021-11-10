@@ -836,7 +836,7 @@ class KubeLibrary(object):
           Namespace to check
         """
         ret = self.v1.read_namespaced_endpoints(name, namespace)
-        return [item for item in ret.items]
+        return ret
 
     def get_endpoints_in_namespace(self, name, namespace):
         """*DEPRECATED* Will be removed in v1.0.0. Use read_namespaced_endpoints.

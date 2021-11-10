@@ -60,11 +60,12 @@ Kubernetes version is correct
 
 getting pvcs in "${namespace}"
     @{namespace_pvcs}=    list_namespaced_persistent_volume_claim    ${namespace}
-    Log    ${namespace_pvcs}
-    Set Test Variable    ${namespace_pvcs}
+    @{namespace_pvc_names}=    Filter Names    ${namespace_pvcs}
+    Log    ${namespace_pvc_names}
+    Set Test Variable    ${namespace_pvc_names}
 
 "${service}" has "${number}" pvcs
-    ${count}=    Get Match Count    ${namespace_pvcs}    ${service}
+    ${count}=    Get Match Count    ${namespace_pvc_names}    ${service}
     Should Be True    ${number} == ${count}
 
 getting pvc size for "${volume}" in "${namespace}"
