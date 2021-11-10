@@ -726,7 +726,7 @@ class TestKubeLibrary(unittest.TestCase):
                 ],
                 "name": name
               },
-              "rules": [
+            "rules": [
                 {
                     "apiGroups": [
                         ""
