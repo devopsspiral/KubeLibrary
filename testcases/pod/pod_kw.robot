@@ -19,7 +19,7 @@ pod "${name_pattern}" status in namespace "${namespace}" is running
     ${num_of_pods}=    Get Length    ${namespace_pods}
     Should Be True    ${num_of_pods} >= 1    No pods matching "${name_pattern}" found
     FOR    ${pod}    IN    @{namespace_pods}
-        ${status}=    get_pod_status_in_namespace    ${pod}    ${namespace}
+        ${status}=    get_pod_status_in_namespace    ${pod.metadata.name}    ${namespace}
         Should Be True     '${status}'=='Running'
     END
 
