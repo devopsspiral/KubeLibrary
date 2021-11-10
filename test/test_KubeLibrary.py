@@ -708,41 +708,39 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         name = 'pod-reader'
         role_manifest = {
-        "apiVersion":"rbac.authorization.k8s.io/v1",
-        "kind":"Role",
-        "metadata":{
-        "creationTimestamp":"2021-03-10T04:54:29Z",
-        "managedFields":[
-            {
-                "apiVersion":"rbac.authorization.k8s.io/v1",
-                "fieldsType":"FieldsV1",
-                "fieldsV1":{
-                    "f:rules":{
-                        
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "Role",
+            "metadata": {
+                "creationTimestamp": "2021-03-10T04:54:29Z",
+                "managedFields": [
+                    {
+                        "apiVersion": "rbac.authorization.k8s.io/v1",
+                        "fieldsType": "FieldsV1",
+                        "fieldsV1": {
+                            "f:rules": {}
+                        },
+                        "manager": "kubectl",
+                        "operation": "Update",
+                        "time": "2021-03-10T04:54:29Z"
                     }
-                },
-                "manager":"kubectl",
-                "operation":"Update",
-                "time":"2021-03-10T04:54:29Z"
-            }
-        ],
-        "name":name
-         },
-         "rules":[
-         {
-            "apiGroups":[
-                ""
-            ],
-            "resources":[
-                "pods"
-            ],
-            "verbs":[
-                "get",
-                "watch",
-                "list"
+                ],
+                "name": 'name'
+              },
+              "rules": [
+                {
+                    "apiGroups": [
+                        ""
+                    ],
+                    "resources": [
+                        "pods"
+                    ],
+                    "verbs": [
+                        "get",
+                        "watch",
+                        "list"
+                    ]
+                }
             ]
         }
-    ]
-}      
         role_details = kl.create_role_in_namespace('default', role_manifest)
         self.assertEqual(['pod-reader'], [item.metadata.name for item in role_details.items])
