@@ -557,8 +557,8 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         endpoints = kl.read_namespaced_endpoints('.*', 'default')
         endpoints2 = kl.get_endpoints_in_namespace('.*', 'default')
-        self.assertEqual(kl.filter_names(endpoints), kl.filter_endpoints_names(endpoints2))
-        self.assertEqual(['my-service'], kl.filter_names(endpoints))
+        self.assertEqual(endpoints.items[0].metadata.name, endpoints2.items[0].metadata.name)
+        self.assertEqual('my-service', endpoints.items[0].metadata.name)
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_config_map')
     def test_get_configmaps_in_namespace(self, mock_lnp):
