@@ -237,7 +237,7 @@ def mock_delete_role_in_namespace(name, namespace):
     if namespace == 'default':
         with open('test/resources/role.json') as json_file:
             role_details_content = json.load(json_file)
-            role_details = AttributeDict({'items': role_details_content})  
+            role_details = AttributeDict({'items': role_details_content})
             return role_details
 
 
@@ -726,9 +726,9 @@ class TestKubeLibrary(unittest.TestCase):
                 ],
                 "name": name
               },
-              "rules": [
-                {
-                    "apiGroups": [
+                "rules": [
+                    {
+                        "apiGroups": [
                         ""
                     ],
                     "resources": [
@@ -741,6 +741,6 @@ class TestKubeLibrary(unittest.TestCase):
                     ]
                 }
             ]
-        }                   
+        }       
         role_details = kl.create_role_in_namespace('default', role_manifest)
         self.assertEqual(['pod-reader'], [item.metadata.name for item in role_details.items])
