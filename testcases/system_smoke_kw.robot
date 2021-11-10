@@ -19,13 +19,14 @@ kubernetes has "${number}" healthy nodes
     Should Be Equal As integers    ${node_count}    ${number}
 
 getting all pods names in "${namespace}"
-    @{namespace_pods_names}=    list_namespaced_pod_by_pattern    .*    ${namespace}
+    @{namespace_pods}=    list_namespaced_pod_by_pattern    .*    ${namespace}
+    @{namespace_pods_names}=    Filter Names    ${namespace_pods}
     Log    ${namespace_pods_names}
     Set Test Variable    ${namespace_pods_names}
 
 all pods in "${namespace}" are running or succeeded
     FOR    ${name}    IN    @{namespace_pods_names}
-         ${status}=    get_pod_status_in_namespace    ${name}    ${namespace}
+         ${status}=    read_namespaced_pod_status    ${name}    ${namespace}
          Should Be True     '${status}'=='Running' or '${status}'=='Succeeded'
     END
 
