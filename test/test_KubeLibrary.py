@@ -724,7 +724,7 @@ class TestKubeLibrary(unittest.TestCase):
                         "time": "2021-03-10T04:54:29Z"
                     }
                 ],
-                "name": 'name'
+                "name": name
               },
               "rules": [
                 {
