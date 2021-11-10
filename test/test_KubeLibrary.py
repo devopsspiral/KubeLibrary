@@ -708,9 +708,9 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         name = 'pod-reader'
         role_manifest = {
-    "apiVersion":"rbac.authorization.k8s.io/v1",
-    "kind":"Role",
-    "metadata":{
+        "apiVersion":"rbac.authorization.k8s.io/v1",
+        "kind":"Role",
+        "metadata":{
         "creationTimestamp":"2021-03-10T04:54:29Z",
         "managedFields":[
             {
@@ -726,10 +726,10 @@ class TestKubeLibrary(unittest.TestCase):
                 "time":"2021-03-10T04:54:29Z"
             }
         ],
-    "name":name
-    },
-    "rules":[
-        {
+        "name":name
+         },
+         "rules":[
+         {
             "apiGroups":[
                 ""
             ],
