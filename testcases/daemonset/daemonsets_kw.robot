@@ -13,7 +13,7 @@ List all daemonsets
     Length Should Be  ${namespace_daemonsets}  1
     Log  \nDaemonsets ${namespace_daemonsets}:  console=True
     FOR  ${daemonset}  IN  @{namespace_daemonsets}
-        Wait Until Keyword Succeeds  1min  5sec  Check Daemonset readiness  ${daemonset}  ${namespace} 
+        Wait Until Keyword Succeeds  1min  5sec  Check Daemonset readiness  ${daemonset.metadata.name}  ${namespace} 
     END
 
 Check Daemonset readiness

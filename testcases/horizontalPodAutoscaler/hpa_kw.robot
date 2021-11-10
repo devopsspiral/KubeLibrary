@@ -14,7 +14,7 @@ List Horizontal Pod Autoscalers by namespace
     [Arguments]  ${namespace}  
     @{namespace_hpas}=  List Namespaced Horizontal Pod Autoscaler    ${namespace}  
     FOR  ${hpa}  IN  @{namespace_hpas}
-        ${hpa_details}=  Read Namespaced Horizontal Pod Autoscaler  ${hpa}  ${namespace}
+        ${hpa_details}=  Read Namespaced Horizontal Pod Autoscaler  ${hpa.metadata.name}  ${namespace}
         Should be Equal as Strings  ${hpa_details.spec.max_replicas}  5
         Should be Equal as Strings  ${hpa_details.spec.min_replicas}  1
         Should be Equal as Strings  ${hpa_details.spec.target_cpu_utilization_percentage}  50
