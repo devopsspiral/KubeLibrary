@@ -20,5 +20,3 @@ List services by label
         Dictionary Should Contain Item    ${sevice_details.metadata.labels}    ${label_key}  ${label_value}
         ...  msg=Expected labels do not match.
     END
-
-

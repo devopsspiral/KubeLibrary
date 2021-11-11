@@ -233,6 +233,22 @@ def mock_list_namespaced_role_bindings(namespace, watch=False):
             return list_of_role_bind
 
 
+def mock_delete_role_in_namespace(name, namespace):
+    if namespace == 'default':
+        with open('test/resources/role.json') as json_file:
+            role_details_content = json.load(json_file)
+            role_details = AttributeDict({'items': role_details_content})
+            return role_details
+
+
+def mock_create_role_in_namespace(namespace, body):
+    if namespace == 'default':
+        with open('test/resources/role.json') as json_file:
+            role_details_content = json.load(json_file)
+            read_role_details = AttributeDict({'items': role_details_content})
+            return read_role_details
+
+
 bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05RaWdSUFoyN004TmlGT1pSX28ifQ.' \
                'eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1' \
                'lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15c2EtdG' \
@@ -678,3 +694,53 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         cron_job_details = kl.get_cron_job_details_in_namespace('hello', 'default')
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.delete_namespaced_role')
+    def test_delete_role_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_delete_role_in_namespace
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        role_list = kl.delete_role_in_namespace('pod-reader', 'default')
+        self.assertEqual(['pod-reader'], [item.metadata.name for item in role_list.items])
+
+    @mock.patch('kubernetes.client.RbacAuthorizationV1Api.create_namespaced_role')
+    def test_create_role_in_namespace(self, mock_lnp):
+        mock_lnp.side_effect = mock_create_role_in_namespace
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        name = 'pod-reader'
+        role_manifest = {
+            "apiVersion": "rbac.authorization.k8s.io/v1",
+            "kind": "Role",
+            "metadata": {
+                "creationTimestamp": "2021-03-10T04:54:29Z",
+                "managedFields": [
+                    {
+                        "apiVersion": "rbac.authorization.k8s.io/v1",
+                        "fieldsType": "FieldsV1",
+                        "fieldsV1": {
+                            "f:rules": {}
+                        },
+                        "manager": "kubectl",
+                        "operation": "Update",
+                        "time": "2021-03-10T04:54:29Z"
+                    }
+                ],
+                "name": name
+              },
+            "rules": [
+                {
+                    "apiGroups": [
+                        ""
+                    ],
+                    "resources": [
+                        "pods"
+                    ],
+                    "verbs": [
+                        "get",
+                        "watch",
+                        "list"
+                    ]
+                }
+            ]
+        }
+        role_details = kl.create_role_in_namespace('default', role_manifest)
+        self.assertEqual(['pod-reader'], [item.metadata.name for item in role_details.items])

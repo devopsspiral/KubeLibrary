@@ -16,4 +16,3 @@ Working on Cron Job
     Edit obtained cron job    test-cronjob
     Create new cron job in namespace    kubelib-tests
     Delete created cron job in namespace    test-cronjob    kubelib-tests
-    

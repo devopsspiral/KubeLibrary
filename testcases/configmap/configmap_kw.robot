@@ -30,5 +30,3 @@ Log key value pairs
     FOR  ${key}  ${value}  IN  &{configmap_data}
         Log  ${key} = ${value}  console=True
     END
-
-

@@ -30,7 +30,3 @@ Show Grafana Deployment
 Assert Replica Status
     Should be Equal  ${DEPLOYMENT.status.available_replicas}  ${DEPLOYMENT.status.replicas}
     ...  msg=Available replica count (${DEPLOYMENT.status.available_replicas}) doesn't match current replica count (${DEPLOYMENT.status.replicas})
-
-
-
-

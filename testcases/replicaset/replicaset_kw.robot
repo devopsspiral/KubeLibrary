@@ -16,4 +16,3 @@ List all replicasets in namespace
     FOR  ${replicaset}  IN  @{namespace_replicasets}
         Log To Console   ${replicaset.metadata.name}  console=True
     END
-
