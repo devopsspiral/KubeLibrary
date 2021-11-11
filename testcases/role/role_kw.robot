@@ -13,7 +13,7 @@ List all roles in namespace
     Length Should Be  ${namespace_roles}  2
     Log  \nRoles in namespace ${namespace_roles}:  console=True
     FOR  ${role}  IN  @{namespace_roles}
-        ${role_details}=  Get Role Details In Namespace  ${role}  ${namespace}
+        ${role_details}=  Read Namespaced Role  ${role}  ${namespace}
         Log  ${role_details.metadata.name}  console=True
         Set Global Variable    ${role_name}    ${role_details.metadata.name}
       	Set Global Variable    ${role}    ${role_details}
