@@ -1014,7 +1014,7 @@ class KubeLibrary(object):
         """
         return [endpoints.metadata.name for endpoints in endpoints.items]
 
-    def get_role_details_in_namespace(self, name, namespace):
+    def read_namespaced_role(self, name, namespace):
         """Gets role details in given namespace.
         Returns Role object representation.
           Name of role.
