@@ -19,16 +19,16 @@ pod "${name_pattern}" status in namespace "${namespace}" is running
     ${num_of_pods}=    Get Length    ${namespace_pods}
     Should Be True    ${num_of_pods} >= 1    No pods matching "${name_pattern}" found
     FOR    ${pod}    IN    @{namespace_pods}
-        ${status}=    get_pod_status_in_namespace    ${pod.metadata.name}    ${namespace}
-        Should Be True     '${status}'=='Running'
+        ${status}=    read_namespaced_pod_status    ${pod.metadata.name}    ${namespace}
+        Should Be True     '${status.phase}'=='Running'
     END
 
 getting pods matching "${name_pattern}" in namespace "${namespace}"
-    @{namespace_pods}=    get_pods_in_namespace  ${name_pattern}    ${namespace}
+    @{namespace_pods}=    list_namespaced_pod_by_pattern  ${name_pattern}    ${namespace}
     Set Test Variable    ${namespace_pods}
 
 getting pods matching label "${label}" in namespace "${namespace}"
-    @{namespace_pods}=    get_pods_in_namespace  .*    ${namespace}  label_selector=${label}
+    @{namespace_pods}=    list_namespaced_pod_by_pattern  .*    ${namespace}  label_selector=${label}
     Set Test Variable    ${namespace_pods}
     ${label_key}=  Fetch From Left    ${KLIB_POD_LABELS}    =
     ${label_value}=  Fetch From Right    ${KLIB_POD_LABELS}    =
