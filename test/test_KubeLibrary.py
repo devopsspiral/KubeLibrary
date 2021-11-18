@@ -731,7 +731,7 @@ class TestKubeLibrary(unittest.TestCase):
     def test_read_namespaced_ingress(self, mock_lnp):
         mock_lnp.side_effect = mock_read_ingress_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        ingress_details = kl.get_ingress_details_in_namespace('max-ingress', 'default')
+        ingress_details = kl.read_namespaced_ingress('max-ingress', 'default')
         ingress_details2 = kl.get_ingress_details_in_namespace('max-ingress', 'default')
         self.assertEqual(ingress_details.items.metadata.labels.TestLabel, ingress_details2.items.metadata.labels.TestLabel)
         self.assertEqual('mytestlabel', ingress_details.items.metadata.labels.TestLabel)
