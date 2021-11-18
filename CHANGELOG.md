@@ -1,11 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
- 
+
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+
+## [0.5.0] - 2021-10-03
 ### Added
+- Dynamic client support and some utilities [#93](https://github.com/devopsspiral/KubeLibrary/pull/93) by [@mertkayhan](https://github.com/mertkayhan)
 - Keyword for getting Horizontal Pod Autoscalers [#80](https://github.com/devopsspiral/KubeLibrary/pull/80 )by [@Nilsty](https://github.com/Nilsty)
 - Keyword for list cluster role and cluster role binding [#58](https://github.com/devopsspiral/KubeLibrary/pull/58) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Keyword for getiing role and rolebinding [#56](https://github.com/devopsspiral/KubeLibrary/pull/56) by [@satish-nubolab](https://github.com/satish-nubolab)
@@ -34,7 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - CI implementation [#14](https://github.com/devopsspiral/KubeLibrary/pull/14) by [@m-wcislo](https://github.com/m-wcislo)
 - keywords to list deployments [#13](https://github.com/devopsspiral/KubeLibrary/pull/13) by [@Nilsty](https://github.com/Nilsty)
-- keywords for get/create/delete service accounts [#28](https://github.com/devopsspiral/KubeLibrary/pull/28) by [@kutayy](https://github.com/kutayy)   
+- keywords for get/create/delete service accounts [#28](https://github.com/devopsspiral/KubeLibrary/pull/28) by [@kutayy](https://github.com/kutayy)
 
 
 ## [0.2.0] - 2020-09-03
@@ -49,11 +52,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [0.1.4] - 2020-07-28
- 
+
 ### Added
 - pod generic testcases added, should be extended in future
 - add kw for getting configmaps, update docs [#5](https://github.com/devopsspiral/KubeLibrary/pull/5) by [@Nilsty](https://github.com/Nilsty)
- 
+
 ### Changed
 - reorganized library functions to getters, filters and asserts
 - python unit tests
