@@ -624,6 +624,20 @@ class KubeLibrary(object):
         """
         return [obj.metadata.name for obj in objects]
 
+    def filter_by_key(self, objects, key, match):
+        """Filter object with key matching value for list of k8s objects.
+
+        Returns list of objects.
+
+        - ``objects``:
+          List of k8s objects
+        - ``key``:
+          Key to match
+        - ``match``:
+          Value of the key based on which objects will be included
+        """
+        return [obj for obj in objects if getattr(obj, key) == match]
+
     def filter_deployments_names(self, deployments):
         """*DEPRECATED* Will be removed in v1.0.0. See examples in TBD.
         Returns list of strings.
