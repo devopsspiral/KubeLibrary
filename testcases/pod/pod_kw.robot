@@ -11,16 +11,18 @@ Library           KubeLibrary
 
 *** Keywords ***
 
-waited for pods matching "${name_pattern}" in namespace "${namespace}" to be running
-    Wait Until Keyword Succeeds    ${KLIB_POD_TIMEOUT}    ${KLIB_POD_RETRY_INTERVAL}   pod "${name_pattern}" status in namespace "${namespace}" is running
+waited for pods matching "${name_pattern}" in namespace "${namespace}" to be READY
+    Wait Until Keyword Succeeds    ${KLIB_POD_TIMEOUT}    ${KLIB_POD_RETRY_INTERVAL}   pod "${name_pattern}" status in namespace "${namespace}" is READY
 
-pod "${name_pattern}" status in namespace "${namespace}" is running 
+pod "${name_pattern}" status in namespace "${namespace}" is READY 
     @{namespace_pods}=    list_namespaced_pod_by_pattern  ${name_pattern}    ${namespace}
-    ${num_of_pods}=    Get Length    ${namespace_pods}
+    @{namespace_pods_names}=    Filter Names    ${namespace_pods}
+    ${num_of_pods}=    Get Length    ${namespace_pods_names}
     Should Be True    ${num_of_pods} >= 1    No pods matching "${name_pattern}" found
-    FOR    ${pod}    IN    @{namespace_pods}
-        ${status}=    read_namespaced_pod_status    ${pod.metadata.name}    ${namespace}
-        Should Be True     '${status.phase}'=='Running'
+    FOR    ${pod}    IN    @{namespace_pods_names}
+        ${status}=    read_namespaced_pod_status    ${pod}    ${namespace}
+        ${conditions}=    Filter by Key    ${status.conditions}    type    Ready
+        Should Be True     '${conditions[0].status}'=='True'
     END
 
 getting pods matching "${name_pattern}" in namespace "${namespace}"
