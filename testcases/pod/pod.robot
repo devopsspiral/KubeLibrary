@@ -19,37 +19,37 @@ ${KLIB_ENV_VARS}                   %{KLIB_ENV_VARS='Env vars missing!'}
 
 Pod images has correct version
     [Tags]    octopus
-    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then all pods containers are using "eu.gcr.io/kyma-project/incubator/develop/octopus:dc5dc284" image
 
 Pod has enough replicas
     [Tags]    octopus
-    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods have "${KLIB_POD_REPLICAS}" replicas
 
 Pod has not been restarted
     [Tags]    octopus
-    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods containers were not restarted
 
 Pod have correct labels
     [Tags]    octopus
-    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods have labels "${KLIB_POD_LABELS}"
 
 Pod has correct annotations
     [Tags]    grafana
-    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods have annotations "${KLIB_POD_ANNOTATIONS}"
 
 Pod has correct limits/requests
     [Tags]    octopus
-    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods containers have resource requests cpu "${KLIB_RESOURCE_REQUESTS_CPU}"
     Then pods containers have resource requests memory "${KLIB_RESOURCE_REQUESTS_MEMORY}"
@@ -58,19 +58,19 @@ Pod has correct limits/requests
 
 Pod has correct env variables
     [Tags]    octopus
-    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods containers have env variables "${KLIB_ENV_VARS}"
 
 Logs of pod are available
     [Tags]    other
-    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then logs of pod can be retrived
     And logs contain expected string
 
 List pods by label
     [Tags]    other
-    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be running
+    Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching label "${KLIB_POD_LABELS}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods have labels "${KLIB_POD_LABELS}"
