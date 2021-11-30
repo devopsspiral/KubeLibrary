@@ -1,0 +1,518 @@
+{
+    "api_version": "v1",
+    "kind": "Pod",
+    "metadata": {
+        "annotations": {
+            "checksum/config": "6554cd280cbfc996221d287c63c1bae2c5d3306173b19e6920ea3d6ad7ebe979",
+            "checksum/dashboards-json-config": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+            "checksum/sc-dashboard-provider-config": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+            "checksum/secret": "82880dc31f393c9c5167c9c3981b345b14971aaca804f8333e82938059d9a59c",
+            "kubelibrary": "testing"
+        },
+        "cluster_name": null,
+        "creation_timestamp": 1592598289,
+        "deletion_grace_period_seconds": null,
+        "deletion_timestamp": null,
+        "finalizers": null,
+        "generate_name": "grafana-6769d4b669-",
+        "generation": null,
+        "labels": {
+            "app.kubernetes.io/instance": "grafana",
+            "app.kubernetes.io/name": "grafana",
+            "pod-template-hash": "6769d4b669"
+        },
+        "managed_fields": null,
+        "name": "grafana-6769d4b669-fhspj",
+        "namespace": "default",
+        "owner_references": [
+            {
+                "api_version": "apps/v1",
+                "block_owner_deletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "grafana-6769d4b669",
+                "uid": "fc2e7570-5d8e-422a-a52e-8396e78ec8ae"
+            }
+        ],
+        "resource_version": "721",
+        "self_link": "/api/v1/namespaces/default/pods/grafana-6769d4b669-fhspj/status",
+        "uid": "304ed46c-a11d-49e0-adcb-c0bf1a333376"
+    },
+    "spec": {
+        "active_deadline_seconds": null,
+        "affinity": null,
+        "automount_service_account_token": true,
+        "containers": [
+            {
+                "args": null,
+                "command": null,
+                "env": [
+                    {
+                        "name": "GF_SECURITY_ADMIN_USER",
+                        "value": null,
+                        "value_from": {
+                            "config_map_key_ref": null,
+                            "field_ref": null,
+                            "resource_field_ref": null,
+                            "secret_key_ref": {
+                                "key": "admin-user",
+                                "name": "grafana",
+                                "optional": null
+                            }
+                        }
+                    },
+                    {
+                        "name": "GF_SECURITY_ADMIN_PASSWORD",
+                        "value": null,
+                        "value_from": {
+                            "config_map_key_ref": null,
+                            "field_ref": null,
+                            "resource_field_ref": null,
+                            "secret_key_ref": {
+                                "key": "admin-password",
+                                "name": "grafana",
+                                "optional": null
+                            }
+                        }
+                    },
+                    {
+                        "name": "GF_PATHS_DATA",
+                        "value": "/var/lib/grafana/",
+                        "value_from": null
+                    },
+                    {
+                        "name": "GF_PATHS_LOGS",
+                        "value": "/var/log/grafana",
+                        "value_from": null
+                    },
+                    {
+                        "name": "GF_PATHS_PLUGINS",
+                        "value": "/var/lib/grafana/plugins",
+                        "value_from": null
+                    },
+                    {
+                        "name": "GF_PATHS_PROVISIONING",
+                        "value": "/etc/grafana/provisioning",
+                        "value_from": null
+                    }
+                ],
+                "env_from": null,
+                "image": "grafana/grafana:8.1.2",
+                "image_pull_policy": "IfNotPresent",
+                "lifecycle": null,
+                "liveness_probe": {
+                    "_exec": null,
+                    "failure_threshold": 10,
+                    "http_get": {
+                        "host": null,
+                        "http_headers": null,
+                        "path": "/api/health",
+                        "port": 3000,
+                        "scheme": "HTTP"
+                    },
+                    "initial_delay_seconds": 60,
+                    "period_seconds": 10,
+                    "success_threshold": 1,
+                    "tcp_socket": null,
+                    "timeout_seconds": 30
+                },
+                "name": "grafana",
+                "ports": [
+                    {
+                        "container_port": 3000,
+                        "host_ip": null,
+                        "host_port": null,
+                        "name": "service",
+                        "protocol": "TCP"
+                    },
+                    {
+                        "container_port": 3000,
+                        "host_ip": null,
+                        "host_port": null,
+                        "name": "grafana",
+                        "protocol": "TCP"
+                    }
+                ],
+                "readiness_probe": {
+                    "_exec": null,
+                    "failure_threshold": 3,
+                    "http_get": {
+                        "host": null,
+                        "http_headers": null,
+                        "path": "/api/health",
+                        "port": 3000,
+                        "scheme": "HTTP"
+                    },
+                    "initial_delay_seconds": null,
+                    "period_seconds": 10,
+                    "success_threshold": 1,
+                    "tcp_socket": null,
+                    "timeout_seconds": 1
+                },
+                "resources": {
+                    "limits": null,
+                    "requests": null
+                },
+                "security_context": null,
+                "startup_probe": null,
+                "stdin": null,
+                "stdin_once": null,
+                "termination_message_path": "/dev/termination-log",
+                "termination_message_policy": "File",
+                "tty": null,
+                "volume_devices": null,
+                "volume_mounts": [
+                    {
+                        "mount_path": "/etc/grafana/grafana.ini",
+                        "mount_propagation": null,
+                        "name": "config",
+                        "read_only": null,
+                        "sub_path": "grafana.ini",
+                        "sub_path_expr": null
+                    },
+                    {
+                        "mount_path": "/var/lib/grafana",
+                        "mount_propagation": null,
+                        "name": "storage",
+                        "read_only": null,
+                        "sub_path": null,
+                        "sub_path_expr": null
+                    },
+                    {
+                        "mount_path": "/var/run/secrets/kubernetes.io/serviceaccount",
+                        "mount_propagation": null,
+                        "name": "grafana-token-k79kp",
+                        "read_only": true,
+                        "sub_path": null,
+                        "sub_path_expr": null
+                    }
+                ],
+                "working_dir": null
+            }
+        ],
+        "dns_config": null,
+        "dns_policy": "ClusterFirst",
+        "enable_service_links": true,
+        "ephemeral_containers": null,
+        "host_aliases": null,
+        "host_ipc": null,
+        "host_network": null,
+        "host_pid": null,
+        "hostname": null,
+        "image_pull_secrets": null,
+        "init_containers": [
+            {
+                "args": null,
+                "command": [
+                    "chown",
+                    "-R",
+                    "472:472",
+                    "/var/lib/grafana"
+                ],
+                "env": null,
+                "env_from": null,
+                "image": "busybox:1.31.1",
+                "image_pull_policy": "IfNotPresent",
+                "lifecycle": null,
+                "liveness_probe": null,
+                "name": "init-chown-data",
+                "ports": null,
+                "readiness_probe": null,
+                "resources": {
+                    "limits": null,
+                    "requests": null
+                },
+                "security_context": {
+                    "allow_privilege_escalation": null,
+                    "capabilities": null,
+                    "privileged": null,
+                    "proc_mount": null,
+                    "read_only_root_filesystem": null,
+                    "run_as_group": null,
+                    "run_as_non_root": false,
+                    "run_as_user": 0,
+                    "se_linux_options": null,
+                    "windows_options": null
+                },
+                "startup_probe": null,
+                "stdin": null,
+                "stdin_once": null,
+                "termination_message_path": "/dev/termination-log",
+                "termination_message_policy": "File",
+                "tty": null,
+                "volume_devices": null,
+                "volume_mounts": [
+                    {
+                        "mount_path": "/var/lib/grafana",
+                        "mount_propagation": null,
+                        "name": "storage",
+                        "read_only": null,
+                        "sub_path": null,
+                        "sub_path_expr": null
+                    },
+                    {
+                        "mount_path": "/var/run/secrets/kubernetes.io/serviceaccount",
+                        "mount_propagation": null,
+                        "name": "grafana-token-k79kp",
+                        "read_only": true,
+                        "sub_path": null,
+                        "sub_path_expr": null
+                    }
+                ],
+                "working_dir": null
+            }
+        ],
+        "node_name": "k3d-k3d-cluster-server-0",
+        "node_selector": null,
+        "overhead": null,
+        "preemption_policy": null,
+        "priority": 0,
+        "priority_class_name": null,
+        "readiness_gates": null,
+        "restart_policy": "Always",
+        "runtime_class_name": null,
+        "scheduler_name": "default-scheduler",
+        "security_context": {
+            "fs_group": 472,
+            "run_as_group": 472,
+            "run_as_non_root": null,
+            "run_as_user": 472,
+            "se_linux_options": null,
+            "supplemental_groups": null,
+            "sysctls": null,
+            "windows_options": null
+        },
+        "service_account": "grafana",
+        "service_account_name": "grafana",
+        "share_process_namespace": null,
+        "subdomain": null,
+        "termination_grace_period_seconds": 30,
+        "tolerations": [
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "toleration_seconds": 300,
+                "value": null
+            },
+            {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "toleration_seconds": 300,
+                "value": null
+            }
+        ],
+        "topology_spread_constraints": null,
+        "volumes": [
+            {
+                "aws_elastic_block_store": null,
+                "azure_disk": null,
+                "azure_file": null,
+                "cephfs": null,
+                "cinder": null,
+                "config_map": {
+                    "default_mode": 420,
+                    "items": null,
+                    "name": "grafana",
+                    "optional": null
+                },
+                "csi": null,
+                "downward_api": null,
+                "empty_dir": null,
+                "fc": null,
+                "flex_volume": null,
+                "flocker": null,
+                "gce_persistent_disk": null,
+                "git_repo": null,
+                "glusterfs": null,
+                "host_path": null,
+                "iscsi": null,
+                "name": "config",
+                "nfs": null,
+                "persistent_volume_claim": null,
+                "photon_persistent_disk": null,
+                "portworx_volume": null,
+                "projected": null,
+                "quobyte": null,
+                "rbd": null,
+                "scale_io": null,
+                "secret": null,
+                "storageos": null,
+                "vsphere_volume": null
+            },
+            {
+                "aws_elastic_block_store": null,
+                "azure_disk": null,
+                "azure_file": null,
+                "cephfs": null,
+                "cinder": null,
+                "config_map": null,
+                "csi": null,
+                "downward_api": null,
+                "empty_dir": null,
+                "fc": null,
+                "flex_volume": null,
+                "flocker": null,
+                "gce_persistent_disk": null,
+                "git_repo": null,
+                "glusterfs": null,
+                "host_path": null,
+                "iscsi": null,
+                "name": "storage",
+                "nfs": null,
+                "persistent_volume_claim": {
+                    "claim_name": "grafana",
+                    "read_only": null
+                },
+                "photon_persistent_disk": null,
+                "portworx_volume": null,
+                "projected": null,
+                "quobyte": null,
+                "rbd": null,
+                "scale_io": null,
+                "secret": null,
+                "storageos": null,
+                "vsphere_volume": null
+            },
+            {
+                "aws_elastic_block_store": null,
+                "azure_disk": null,
+                "azure_file": null,
+                "cephfs": null,
+                "cinder": null,
+                "config_map": null,
+                "csi": null,
+                "downward_api": null,
+                "empty_dir": null,
+                "fc": null,
+                "flex_volume": null,
+                "flocker": null,
+                "gce_persistent_disk": null,
+                "git_repo": null,
+                "glusterfs": null,
+                "host_path": null,
+                "iscsi": null,
+                "name": "grafana-token-k79kp",
+                "nfs": null,
+                "persistent_volume_claim": null,
+                "photon_persistent_disk": null,
+                "portworx_volume": null,
+                "projected": null,
+                "quobyte": null,
+                "rbd": null,
+                "scale_io": null,
+                "secret": {
+                    "default_mode": 420,
+                    "items": null,
+                    "optional": null,
+                    "secret_name": "grafana-token-k79kp"
+                },
+                "storageos": null,
+                "vsphere_volume": null
+            }
+        ]
+    },
+    "status": {
+        "conditions": [
+            {
+                "last_probe_time": null,
+                "last_transition_time": 1592598289,
+                "message": null,
+                "reason": null,
+                "status": "true",
+                "type": "Initialized"
+            },
+            {
+                "last_probe_time": null,
+                "last_transition_time": 1592598289,
+                "message": null,
+                "reason": null,
+                "status": "true",
+                "type": "Ready"
+            },
+            {
+                "last_probe_time": null,
+                "last_transition_time": 1592598289,
+                "message": null,
+                "reason": null,
+                "status": "true",
+                "type": "ContainersReady"
+            },
+            {
+                "last_probe_time": null,
+                "last_transition_time": 1592598289,
+                "message": null,
+                "reason": null,
+                "status": "true",
+                "type": "PodScheduled"
+            }
+        ],
+        "container_statuses": [
+            {
+                "container_id": "containerd://b317cd72f71779c0020d319d05cecfa67dafd19eeda4fc35c004f34507ea8a2d",
+                "image": "docker.io/grafana/grafana:8.1.2",
+                "image_id": "docker.io/grafana/grafana@sha256:811ee7d685fe45e5625928716d189c518f2b96edaa86122a04cc6faf1e988180",
+                "last_state": {
+                    "running": null,
+                    "terminated": null,
+                    "waiting": null
+                },
+                "name": "grafana",
+                "ready": true,
+                "restart_count": 0,
+                "started": true,
+                "state": {
+                    "running": {
+                        "started_at": 1592598289
+                    },
+                    "terminated": null,
+                    "waiting": null
+                }
+            }
+        ],
+        "ephemeral_container_statuses": null,
+        "host_ip": "172.18.0.2",
+        "init_container_statuses": [
+            {
+                "container_id": "containerd://927ed23ec8d2d46c69f0decbbedeedc235b423f1ece2f8d7ad56512d04708eaa",
+                "image": "docker.io/library/busybox:1.31.1",
+                "image_id": "docker.io/library/busybox@sha256:95cf004f559831017cdf4628aaf1bb30133677be8702a8c5f2994629f637a209",
+                "last_state": {
+                    "running": null,
+                    "terminated": null,
+                    "waiting": null
+                },
+                "name": "init-chown-data",
+                "ready": true,
+                "restart_count": 0,
+                "started": null,
+                "state": {
+                    "running": null,
+                    "terminated": {
+                        "container_id": "containerd://927ed23ec8d2d46c69f0decbbedeedc235b423f1ece2f8d7ad56512d04708eaa",
+                        "exit_code": 0,
+                        "finished_at": 1592598289,
+                        "message": null,
+                        "reason": "Completed",
+                        "signal": null,
+                        "started_at": 1592598289
+                    },
+                    "waiting": null
+                }
+            }
+        ],
+        "message": null,
+        "nominated_node_name": null,
+        "phase": "Running",
+        "pod_i_ps": [
+            {
+                "ip": "10.42.0.11"
+            }
+        ],
+        "pod_ip": "10.42.0.11",
+        "qos_class": "BestEffort",
+        "reason": null,
+        "start_time": 1592598289
+    }
+}

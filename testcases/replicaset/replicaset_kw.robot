@@ -11,7 +11,7 @@ Library           KubeLibrary
 *** Keywords ***
 List all replicasets in namespace
     [Arguments]  ${namespace}  ${label}=${EMPTY}
-    @{namespace_replicasets}=  Get Replicasets In Namespace    .*  ${namespace}  ${label}
+    @{namespace_replicasets}=  list_namespaced_replica_set_by_pattern    .*  ${namespace}  ${label}
     Log To Console  \nReplicasets in namespace ${namespace}:  console=True
     FOR  ${replicaset}  IN  @{namespace_replicasets}
         Log To Console   ${replicaset.metadata.name}  console=True

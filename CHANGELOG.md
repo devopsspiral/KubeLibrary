@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
-
+## [0.6.0] - 2021-11-30
+### Changed
+- Helpers and keywords unification [#75](https://github.com/devopsspiral/KubeLibrary/pull/75) by [@m-wcislo](https://github.com/m-wcislo)
 ## [0.5.0] - 2021-10-03
 ### Added
 - Dynamic client support and some utilities [#93](https://github.com/devopsspiral/KubeLibrary/pull/93) by [@mertkayhan](https://github.com/mertkayhan)

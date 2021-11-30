@@ -11,5 +11,6 @@ Library           KubeLibrary
 *** Keywords ***
 List pvcs by label
     [Arguments]  ${namespace}  ${label}
-    @{namespace_pvcs}=  Get PVC In Namespace    ${namespace}  ${label}
-    Log  List of PVCs in Namespace ${namespace} with Label ${label}: @{namespace_pvcs}  console=True
+    @{namespace_pvcs}=  List namespaced persistent volume claim    ${namespace}  ${label}
+    @{namespace_pvcs_names}=    Filter Names    ${namespace_pvcs}
+    Log  List of PVCs in Namespace ${namespace} with Label ${label}: @{namespace_pvcs_names}  console=True
