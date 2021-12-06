@@ -1,11 +1,21 @@
-import setuptools
+from pkg_resources import parse_requirements
+from pathlib import Path
+from setuptools import setup
+
+exec(open("src/KubeLibrary/version.py").read())
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-setuptools.setup(
+with Path("requirements.txt").open() as requirements:
+    install_requires = [
+        str(requirement)
+        for requirement in parse_requirements(requirements)
+    ]
+
+setup(
     name="robotframework-kubelibrary",
-    version="0.6.0",
+    version=version,
     author="Michał Wcisło",
     author_email="mwcislo999@gmail.com",
     description="Kubernetes library for Robot Framework",
@@ -24,10 +34,5 @@ setuptools.setup(
     keywords="robotframework testing test automation kubernetes",
     python_requires='>=3.6',
     package_dir={'': 'src'},
-    install_requires=[
-        'google-auth==1.21.3',
-        'kubernetes>=10.0.1',
-        'robotframework>=3.2.2',
-        'urllib3-mock>=0.3.3'
-    ],
+    install_requires=install_requires,
 )

@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+### Changed
+- Refactored setup.py and requirements
+- Moved library scope to SUITE
+- Exception moved to exceptions.py file
 ## [0.6.0] - 2021-11-30
 ### Changed
 - Helpers and keywords unification [#75](https://github.com/devopsspiral/KubeLibrary/pull/75) by [@m-wcislo](https://github.com/m-wcislo)

@@ -11,7 +11,9 @@ jobs:
     steps:
       - checkout
       - python/load-cache
-      - python/install-deps
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements-dev.txt
       - python/save-cache
       - python/test
   lint-and-coverage:
@@ -20,7 +22,9 @@ jobs:
       PYTHONPATH=./src
     steps:
       - checkout
-      - python/install-deps
+      - run:
+          name: Install dependencies
+          command: pip install -r requirements-dev.txt
       - run:
           name: Linter
           command: |

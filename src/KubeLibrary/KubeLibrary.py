@@ -2,22 +2,18 @@ import json
 import re
 import ssl
 import urllib3
+
 from kubernetes import client, config, dynamic
 from robot.api import logger
+from robot.api.deco import library
 from string import digits, ascii_lowercase
 from random import choices
 
+from KubeLibrary.exceptions import BearerTokenWithPrefixException
+from KubeLibrary.version import version
+
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-
-class BearerTokenWithPrefixException(Exception):
-
-    ROBOT_SUPPRESS_NAME = True
-
-    def __init__(self):
-        super().__init__("Unnecessary 'Bearer ' prefix in token")
-    pass
 
 
 class DynamicClient(dynamic.DynamicClient):
@@ -26,7 +22,8 @@ class DynamicClient(dynamic.DynamicClient):
         return self.client
 
 
-class KubeLibrary(object):
+@library(scope="SUITE", version=version, auto_keywords=True)
+class KubeLibrary:
     """KubeLibrary is a Robot Framework test library for Kubernetes.
 
     The approach taken by this library is to provide easy to access kubernetes objects representation that can
@@ -693,7 +690,8 @@ class KubeLibrary(object):
         """
         return self.filter_names(endpoints.items)
 
-    def filter_pods_containers_by_name(self, pods, name_pattern):
+    @staticmethod
+    def filter_pods_containers_by_name(pods, name_pattern):
         """Filters pods containers by name for given list of pods.
 
         Returns lists of containers (flattens).
@@ -709,7 +707,8 @@ class KubeLibrary(object):
                     containers.append(container)
         return containers
 
-    def filter_containers_images(self, containers):
+    @staticmethod
+    def filter_containers_images(containers):
         """Filters container images for given lists of containers.
 
         Returns list of images.
@@ -719,7 +718,8 @@ class KubeLibrary(object):
         """
         return [container.image for container in containers]
 
-    def filter_containers_resources(self, containers):
+    @staticmethod
+    def filter_containers_resources(containers):
         """Filters container resources for given lists of containers.
 
         Returns list of resources.
@@ -729,7 +729,8 @@ class KubeLibrary(object):
         """
         return [container.resources for container in containers]
 
-    def filter_pods_containers_statuses_by_name(self, pods, name_pattern):
+    @staticmethod
+    def filter_pods_containers_statuses_by_name(pods, name_pattern):
         """Filters pods containers statuses by container name for given list of pods.
 
         Returns lists of containers statuses.
@@ -767,7 +768,8 @@ class KubeLibrary(object):
         ret = self.v1.read_namespaced_pod_status(name, namespace)
         return ret.status.phase
 
-    def assert_pod_has_labels(self, pod, labels_json):
+    @staticmethod
+    def assert_pod_has_labels(pod, labels_json):
         """Assert pod has labels.
 
         Returns True/False
@@ -792,7 +794,8 @@ class KubeLibrary(object):
             logger.error(f'Failed parsing Pod Labels JSON:{labels_json}')
             return False
 
-    def assert_pod_has_annotations(self, pod, annotations_json):
+    @staticmethod
+    def assert_pod_has_annotations(pod, annotations_json):
         """Assert pod has annotations.
 
         Returns True/False
@@ -817,7 +820,8 @@ class KubeLibrary(object):
             logger.error(f'Failed parsing Pod Annotations JSON:{annotations_json}')
             return False
 
-    def assert_container_has_env_vars(self, container, env_vars_json):
+    @staticmethod
+    def assert_container_has_env_vars(container, env_vars_json):
         """Assert container has env vars.
 
         Returns True/False
