@@ -22,7 +22,7 @@ class DynamicClient(dynamic.DynamicClient):
         return self.client
 
 
-@library(scope="SUITE", version=version, auto_keywords=True)
+@library(scope="GLOBAL", version=version, auto_keywords=True)
 class KubeLibrary:
     """KubeLibrary is a Robot Framework test library for Kubernetes.
 
