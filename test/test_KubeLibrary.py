@@ -212,6 +212,11 @@ def mock_list_namespaced_secrets(namespace, watch=False, label_selector=""):
             return list_of_secrets
 
 
+def mock_connect_get_namespaced_pod_exec(namespace):
+    if namespace == "default":
+        return "This is test String!"
+
+
 def mock_list_namespaces(watch=False, label_selector=""):
     with open('test/resources/namespaces.json') as json_file:
         namespaces_content = json.load(json_file)
@@ -576,6 +581,14 @@ class TestKubeLibrary(unittest.TestCase):
         secrets2 = kl.get_secrets_in_namespace('.*', 'default')
         self.assertEqual(kl.filter_names(secrets), kl.filter_names(secrets2))
         self.assertEqual(['grafana'], kl.filter_names(secrets))
+
+    @mock.patch('kubernetes.stream.stream')
+    def test_get_namespaced_exec(self, mock_stream):
+        test_string = "This is test String!"
+        mock_stream.return_value = test_string
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        stdout = kl.get_namespaced_pod_exec(name="pod_name", namespace="default", cmd=f"echo {test_string}")
+        self.assertEqual(stdout, test_string)
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_cluster_role')
     def test_list_cluster_role(self, mock_lnp):

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.6.1] - 2022-01-27
 ### Changed
+- Added keyword for handling kubectl exec [#102](https://github.com/devopsspiral/KubeLibrary/pull/101) by [@MarcinMaciaszek](https://github.com/MarcinMaciaszek)
 - Refactored setup.py & requirements, moved library scope to GLOBAL, sperated exceptions [#101](https://github.com/devopsspiral/KubeLibrary/pull/101) by [@MarcinMaciaszek](https://github.com/MarcinMaciaszek)
 
 ### Fixed

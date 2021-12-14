@@ -3,8 +3,8 @@ import re
 import ssl
 import urllib3
 
-from kubernetes import client, config, dynamic
 from os import environ
+from kubernetes import client, config, dynamic, stream
 from robot.api import logger
 from robot.api.deco import library
 from string import digits, ascii_lowercase
@@ -617,6 +617,27 @@ class KubeLibrary:
         r = re.compile(name_pattern)
         secrets = [item for item in ret.items if r.match(item.metadata.name)]
         return secrets
+
+    def get_namespaced_pod_exec(self, name, namespace, cmd):
+        """Exec command on selected container for POD.
+
+        Returns command stdout/stderr
+
+        - ``name``:
+          pod name
+        - ``namespace``:
+          namespace to check
+        - ``command``:
+          command to be executed
+        """
+        return stream.stream(self.v1.connect_get_namespaced_pod_exec,
+                             name,
+                             namespace,
+                             command=["/bin/sh", "-c", cmd],
+                             stderr=True,
+                             stdin=True,
+                             stdout=True,
+                             tty=False).strip()
 
     def filter_names(self, objects):
         """Filter .metadata.name for list of k8s objects.
