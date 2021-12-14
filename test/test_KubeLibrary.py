@@ -3,7 +3,8 @@ import mock
 import re
 import ssl
 import unittest
-from KubeLibrary import KubeLibrary, BearerTokenWithPrefixException
+from KubeLibrary import KubeLibrary
+from KubeLibrary.exceptions import BearerTokenWithPrefixException
 from kubernetes.config.config_exception import ConfigException
 from urllib3_mock import Responses
 
