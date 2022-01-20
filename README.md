@@ -168,5 +168,13 @@ For development cluster you can use k3s/k3d as described in [DevOps spiral artic
 ### Generate docs
 
 ```
-python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html
+(
+    # To generate keyword documentation a connection
+    # to a cluster is not necessary. Skip to load a
+    # cluster configuration.
+    #
+    # Set the variable local for the libdoc call only
+    export INIT_FOR_LIBDOC_ONLY=1
+    python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html
+)
 ```

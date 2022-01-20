@@ -4,6 +4,7 @@ import ssl
 import urllib3
 
 from kubernetes import client, config, dynamic
+from os import environ
 from robot.api import logger
 from robot.api.deco import library
 from string import digits, ascii_lowercase
@@ -85,7 +86,13 @@ class KubeLibrary:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
+
+        Environment variables:
+        - INIT_FOR_LIBDOC_ONLY:
+          Set to '1' to generate keyword documentation and skip to load a kube config..
         """
+        if "1" == environ.get('INIT_FOR_LIBDOC_ONLY', "0"):
+            return
         self.reload_config(kube_config=kube_config, context=context, api_url=api_url, bearer_token=bearer_token,
                            ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
