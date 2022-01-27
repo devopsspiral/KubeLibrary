@@ -166,7 +166,6 @@ jobs:
           name: Verify setup.py version matches tag
           command: |
             SEMVER="${CIRCLE_TAG:1}"
-            grep  version='"'$SEMVER'"' setup.py
             grep  "## \[$SEMVER\]" CHANGELOG.md
       - run:
           name: Publish on Pypi
