@@ -618,7 +618,7 @@ class KubeLibrary:
         secrets = [item for item in ret.items if r.match(item.metadata.name)]
         return secrets
 
-    def get_namespaced_pod_exec(self, name, namespace, cmd):
+    def get_namespaced_pod_exec(self, name, namespace, argv_cmd, container=None):
         """Exec command on selected container for POD.
 
         Returns command stdout/stderr
@@ -627,17 +627,35 @@ class KubeLibrary:
           pod name
         - ``namespace``:
           namespace to check
-        - ``command``:
-          command to be executed
+        - ``argv_cmd``:
+          command to be executed using argv syntax: ["/bin/sh", "-c", "ls"]
+          it do not use shell as default!
+        - ``container``:
+          container on which we run exec, default: None
         """
-        return stream.stream(self.v1.connect_get_namespaced_pod_exec,
-                             name,
-                             namespace,
-                             command=["/bin/sh", "-c", cmd],
-                             stderr=True,
-                             stdin=True,
-                             stdout=True,
-                             tty=False).strip()
+        if not isinstance(argv_cmd, list) and not len(argv_cmd):
+            raise TypeError(
+                f"argv_cmd parameter should be a list and contains values like [\"/bin/bash\", \"-c\", \"ls\"] "
+                f"not {argv_cmd}")
+        if not container:
+            return stream.stream(self.v1.connect_get_namespaced_pod_exec,
+                                 name,
+                                 namespace,
+                                 command=argv_cmd,
+                                 stderr=True,
+                                 stdin=True,
+                                 stdout=True,
+                                 tty=False).strip()
+        else:
+            return stream.stream(self.v1.connect_get_namespaced_pod_exec,
+                                 name,
+                                 namespace,
+                                 container=container,
+                                 command=argv_cmd,
+                                 stderr=True,
+                                 stdin=True,
+                                 stdout=True,
+                                 tty=False).strip()
 
     def filter_names(self, objects):
         """Filter .metadata.name for list of k8s objects.

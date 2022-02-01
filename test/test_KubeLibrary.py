@@ -583,11 +583,35 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(['grafana'], kl.filter_names(secrets))
 
     @mock.patch('kubernetes.stream.stream')
-    def test_get_namespaced_exec(self, mock_stream):
+    def test_get_namespaced_exec_without_container(self, mock_stream):
         test_string = "This is test String!"
         mock_stream.return_value = test_string
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        stdout = kl.get_namespaced_pod_exec(name="pod_name", namespace="default", cmd=f"echo {test_string}")
+        stdout = kl.get_namespaced_pod_exec(name="pod_name",
+                                            namespace="default",
+                                            argv_cmd=["/bin/bash", "-c", f"echo {test_string}"])
+        self.assertEqual(stdout, test_string)
+
+    @mock.patch('kubernetes.stream.stream')
+    def test_get_namespaced_exec_without_container_with_container(self, mock_stream):
+        test_string = "This is test String!"
+        mock_stream.return_value = test_string
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        stdout = kl.get_namespaced_pod_exec(name="pod_name",
+                                            namespace="default",
+                                            container="manager",
+                                            argv_cmd=["/bin/bash", "-c", f"echo {test_string}"])
+        self.assertEqual(stdout, test_string)
+
+    @mock.patch('kubernetes.stream.stream')
+    def test_get_namespaced_exec_not_argv_and_list(self, mock_stream):
+        test_string = "This is test String!"
+        mock_stream.return_value = test_string
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        stdout = kl.get_namespaced_pod_exec(name="pod_name",
+                                            namespace="default",
+                                            container="manager",
+                                            argv_cmd=f"/bin/bash -c echo {test_string}")
         self.assertEqual(stdout, test_string)
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_cluster_role')
