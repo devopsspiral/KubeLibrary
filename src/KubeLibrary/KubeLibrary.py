@@ -257,7 +257,7 @@ class KubeLibrary:
         if not self.api_client:
             self.api_client = client.ApiClient(configuration=client.Configuration().get_default_copy())
         self._add_api('v1', client.CoreV1Api)
-        self._add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
+        self._add_api('networkingv1api', client.NetworkingV1Api)
         self._add_api('batchv1', client.BatchV1Api)
         self._add_api('appsv1', client.AppsV1Api)
         self._add_api('batchv1_beta1', client.BatchV1beta1Api)
@@ -633,7 +633,7 @@ class KubeLibrary:
         - ``container``:
           container on which we run exec, default: None
         """
-        if not isinstance(argv_cmd, list) and not len(argv_cmd):
+        if not isinstance(argv_cmd, list) or not len(argv_cmd):
             raise TypeError(
                 f"argv_cmd parameter should be a list and contains values like [\"/bin/bash\", \"-c\", \"ls\"] "
                 f"not {argv_cmd}")
@@ -1215,7 +1215,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.extensionsv1beta1.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
+        ret = self.networkingv1api.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
         return [item for item in ret.items]
 
     def get_ingresses_in_namespace(self, namespace, label_selector=""):
@@ -1228,7 +1228,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.extensionsv1beta1.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
+        ret = self.networkingv1api.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
     def read_namespaced_ingress(self, name, namespace):
@@ -1239,7 +1239,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
+        ret = self.networkingv1api.read_namespaced_ingress(name, namespace)
         return ret
 
     def get_ingress_details_in_namespace(self, name, namespace):
@@ -1252,7 +1252,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
+        ret = self.networkingv1api.read_namespaced_ingress(name, namespace)
         return ret
 
     def list_namespaced_cron_job(self, namespace, label_selector=""):

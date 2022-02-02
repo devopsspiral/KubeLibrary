@@ -267,7 +267,7 @@ responses = Responses('requests.packages.urllib3')
 
 class TestKubeLibrary(unittest.TestCase):
 
-    apis = ('v1', 'extensionsv1beta1', 'batchv1', 'appsv1', 'batchv1_beta1',
+    apis = ('v1', 'networkingv1api', 'batchv1', 'appsv1', 'batchv1_beta1',
             'custom_object', 'rbac_authv1_api', 'autoscalingv1', 'dynamic')
 
     @responses.activate
@@ -606,13 +606,16 @@ class TestKubeLibrary(unittest.TestCase):
     @mock.patch('kubernetes.stream.stream')
     def test_get_namespaced_exec_not_argv_and_list(self, mock_stream):
         test_string = "This is test String!"
+        ex = f"argv_cmd parameter should be a list and contains values like " \
+             f"[\"/bin/bash\", \"-c\", \"ls\"] not echo {test_string}"
         mock_stream.return_value = test_string
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        stdout = kl.get_namespaced_pod_exec(name="pod_name",
-                                            namespace="default",
-                                            container="manager",
-                                            argv_cmd=f"/bin/bash -c echo {test_string}")
-        self.assertEqual(stdout, test_string)
+        with self.assertRaises(TypeError) as cm:
+            kl.get_namespaced_pod_exec(name="pod_name",
+                                       namespace="default",
+                                       container="manager",
+                                       argv_cmd=f"echo {test_string}")
+        self.assertEqual(str(cm.exception), ex)
 
     @mock.patch('kubernetes.client.RbacAuthorizationV1Api.list_cluster_role')
     def test_list_cluster_role(self, mock_lnp):
@@ -693,7 +696,7 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(kl.filter_names(daemonsets), daemonsets2)
         self.assertEqual(['fluentd-elasticsearch'], kl.filter_names(daemonsets))
 
-    @mock.patch('kubernetes.client.ExtensionsV1beta1Api.list_namespaced_ingress')
+    @mock.patch('kubernetes.client.NetworkingV1Api.list_namespaced_ingress')
     def test_list_namespaced_ingress(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_ingresses
         kl = KubeLibrary(kube_config='test/resources/k3d')
@@ -765,7 +768,7 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(service_details.items.metadata.labels.Test, service_details2.items.metadata.labels.Test)
         self.assertEqual('mytest', service_details.items.metadata.labels.Test)
 
-    @mock.patch('kubernetes.client.ExtensionsV1beta1Api.read_namespaced_ingress')
+    @mock.patch('kubernetes.client.NetworkingV1Api.read_namespaced_ingress')
     def test_read_namespaced_ingress(self, mock_lnp):
         mock_lnp.side_effect = mock_read_ingress_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')
