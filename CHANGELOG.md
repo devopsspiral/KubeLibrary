@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
 
+## [0.6.2] - 2022-02-25
+
+### Fixed
+- Fix the kubernetes lib version (21.7.0) to still support extension/v1beta1 (ingress)
+
 ## [0.6.1] - 2022-01-27
 ### Changed
 - Refactored setup.py & requirements, moved library scope to GLOBAL, sperated exceptions [#101](https://github.com/devopsspiral/KubeLibrary/pull/101) by [@MarcinMaciaszek](https://github.com/MarcinMaciaszek)
