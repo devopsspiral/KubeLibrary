@@ -212,11 +212,6 @@ def mock_list_namespaced_secrets(namespace, watch=False, label_selector=""):
             return list_of_secrets
 
 
-def mock_connect_get_namespaced_pod_exec(namespace):
-    if namespace == "default":
-        return "This is test String!"
-
-
 def mock_list_namespaces(watch=False, label_selector=""):
     with open('test/resources/namespaces.json') as json_file:
         namespaces_content = json.load(json_file)
@@ -590,10 +585,11 @@ class TestKubeLibrary(unittest.TestCase):
         stdout = kl.get_namespaced_pod_exec(name="pod_name",
                                             namespace="default",
                                             argv_cmd=["/bin/bash", "-c", f"echo {test_string}"])
+        self.assertFalse("container" in mock_stream.call_args.kwargs.keys())
         self.assertEqual(stdout, test_string)
 
     @mock.patch('kubernetes.stream.stream')
-    def test_get_namespaced_exec_without_container_with_container(self, mock_stream):
+    def test_get_namespaced_exec_with_container(self, mock_stream):
         test_string = "This is test String!"
         mock_stream.return_value = test_string
         kl = KubeLibrary(kube_config='test/resources/k3d')
@@ -601,6 +597,8 @@ class TestKubeLibrary(unittest.TestCase):
                                             namespace="default",
                                             container="manager",
                                             argv_cmd=["/bin/bash", "-c", f"echo {test_string}"])
+        self.assertTrue("container" in mock_stream.call_args.kwargs.keys())
+        self.assertTrue("manager" in mock_stream.call_args.kwargs.values())
         self.assertEqual(stdout, test_string)
 
     @mock.patch('kubernetes.stream.stream')
