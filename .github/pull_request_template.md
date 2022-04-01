@@ -11,5 +11,5 @@ Before merge following needs to be applied:
 - [ ] All new testcases tagged as **prerelease** along other tags to exclude it from execution until released on PyPI
 - [ ] Coverage threshold increased in [.coveragerc](https://github.com/devopsspiral/KubeLibrary/blob/master/.coveragerc) if new coverage is higher than actual, see the lint-and-coverage step in CI
 ```
-fail_under = 67
+fail_under = 86
 ```

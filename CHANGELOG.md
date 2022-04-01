@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+- Added keyword for handling kubectl exec [#102](https://github.com/devopsspiral/KubeLibrary/pull/101) by [@MarcinMaciaszek](https://github.com/MarcinMaciaszek)
 
 ## [0.6.2] - 2022-02-25
 

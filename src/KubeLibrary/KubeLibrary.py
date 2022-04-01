@@ -3,8 +3,8 @@ import re
 import ssl
 import urllib3
 
-from kubernetes import client, config, dynamic
 from os import environ
+from kubernetes import client, config, dynamic, stream
 from robot.api import logger
 from robot.api.deco import library
 from string import digits, ascii_lowercase
@@ -257,7 +257,7 @@ class KubeLibrary:
         if not self.api_client:
             self.api_client = client.ApiClient(configuration=client.Configuration().get_default_copy())
         self._add_api('v1', client.CoreV1Api)
-        self._add_api('extensionsv1beta1', client.ExtensionsV1beta1Api)
+        self._add_api('networkingv1api', client.NetworkingV1Api)
         self._add_api('batchv1', client.BatchV1Api)
         self._add_api('appsv1', client.AppsV1Api)
         self._add_api('batchv1_beta1', client.BatchV1beta1Api)
@@ -617,6 +617,45 @@ class KubeLibrary:
         r = re.compile(name_pattern)
         secrets = [item for item in ret.items if r.match(item.metadata.name)]
         return secrets
+
+    def get_namespaced_pod_exec(self, name, namespace, argv_cmd, container=None):
+        """Exec command on selected container for POD.
+
+        Returns command stdout/stderr
+
+        - ``name``:
+          pod name
+        - ``namespace``:
+          namespace to check
+        - ``argv_cmd``:
+          command to be executed using argv syntax: ["/bin/sh", "-c", "ls"]
+          it do not use shell as default!
+        - ``container``:
+          container on which we run exec, default: None
+        """
+        if not isinstance(argv_cmd, list) or not len(argv_cmd):
+            raise TypeError(
+                f"argv_cmd parameter should be a list and contains values like [\"/bin/bash\", \"-c\", \"ls\"] "
+                f"not {argv_cmd}")
+        if not container:
+            return stream.stream(self.v1.connect_get_namespaced_pod_exec,
+                                 name,
+                                 namespace,
+                                 command=argv_cmd,
+                                 stderr=True,
+                                 stdin=True,
+                                 stdout=True,
+                                 tty=False).strip()
+        else:
+            return stream.stream(self.v1.connect_get_namespaced_pod_exec,
+                                 name,
+                                 namespace,
+                                 container=container,
+                                 command=argv_cmd,
+                                 stderr=True,
+                                 stdin=True,
+                                 stdout=True,
+                                 tty=False).strip()
 
     def filter_names(self, objects):
         """Filter .metadata.name for list of k8s objects.
@@ -1176,7 +1215,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.extensionsv1beta1.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
+        ret = self.networkingv1api.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
         return [item for item in ret.items]
 
     def get_ingresses_in_namespace(self, namespace, label_selector=""):
@@ -1189,7 +1228,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.extensionsv1beta1.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
+        ret = self.networkingv1api.list_namespaced_ingress(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
     def read_namespaced_ingress(self, name, namespace):
@@ -1200,7 +1239,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
+        ret = self.networkingv1api.read_namespaced_ingress(name, namespace)
         return ret
 
     def get_ingress_details_in_namespace(self, name, namespace):
@@ -1213,7 +1252,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.extensionsv1beta1.read_namespaced_ingress(name, namespace)
+        ret = self.networkingv1api.read_namespaced_ingress(name, namespace)
         return ret
 
     def list_namespaced_cron_job(self, namespace, label_selector=""):
