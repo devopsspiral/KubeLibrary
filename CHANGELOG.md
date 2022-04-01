@@ -5,8 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+## [0.7.0] - 2022-04-01
+### Added
 - Added keyword for handling kubectl exec [#102](https://github.com/devopsspiral/KubeLibrary/pull/101) by [@MarcinMaciaszek](https://github.com/MarcinMaciaszek)
-
+### Changed
+- networkingv1api used instead of extensionsv1beta1
 ## [0.6.2] - 2022-02-25
 
 ### Fixed
