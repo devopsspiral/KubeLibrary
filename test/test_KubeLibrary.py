@@ -783,3 +783,8 @@ class TestKubeLibrary(unittest.TestCase):
         cron_job_details2 = kl.get_cron_job_details_in_namespace('hello', 'default')
         self.assertEqual(cron_job_details.items.metadata.labels.TestLabel, cron_job_details2.items.metadata.labels.TestLabel)
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
+
+    @mock.patch('kubernetes.client.ApiextensionsV1Api.read_cluster_custom_definition')
+    def test_read_cluster_custom_definition(self, mock_stream):
+        test_array = []
+        pass
