@@ -785,9 +785,9 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
 
     def test_read_cluster_custom_definition(self):
-        kl = KubeLibrary(kube_config='test/resources/k3d')
-        crd = kl.read_cluster_custom_definition('test')
-        self.assertEqual('', crd)
+        pass
 
     def test_list_cluster_custom_definition(self):
-        pass
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        crd = kl.list_cluster_custom_definition()
+        self.assertEqual('', crd)
