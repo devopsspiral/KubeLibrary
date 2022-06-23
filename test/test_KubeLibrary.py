@@ -785,6 +785,6 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
 
     @mock.patch('kubernetes.client.ApiextensionsV1Api.read_cluster_custom_definition')
-    def test_read_cluster_custom_definition(self, mock_stream):
+    def test_read_cluster_custom_definition(self):
         pass
 
