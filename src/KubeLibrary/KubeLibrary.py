@@ -1454,24 +1454,24 @@ class KubeLibrary:
 
     def list_cluster_custom_definition(self, label_selector="", field_selector=""):
         """Lists Custom Resource Definitions.
- 
+
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
         Can be optionally filtered by field. e.g. field_selector=label_key=label_value
- 
+
         Returns list of CRD's.
- 
+
         https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
         """
         return self.custom_definition.list_custom_resource_definition(label_selector=label_selector, field_selector=field_selector).items
- 
+
     def read_cluster_custom_definition(self, name):
         """Reads the specified CustomResourceDefinition.
- 
+
         Returns an object.
- 
+
         - ``name``:
           Custom Resource Definition name, e.g. 'repos.configmanagement.gke.io'
-       
+
         https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
         """
         return self.custom_definition.read_custom_resource_definition(name)
