@@ -263,7 +263,7 @@ responses = Responses('requests.packages.urllib3')
 class TestKubeLibrary(unittest.TestCase):
 
     apis = ('v1', 'networkingv1api', 'batchv1', 'appsv1', 'batchv1_beta1',
-            'custom_object', 'rbac_authv1_api', 'autoscalingv1', 'dynamic')
+            'custom_object', 'custom_definition', 'rbac_authv1_api', 'autoscalingv1', 'dynamic')
 
     @responses.activate
     def test_KubeLibrary_inits_from_kubeconfig(self):

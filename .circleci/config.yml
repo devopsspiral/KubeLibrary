@@ -61,7 +61,7 @@ jobs:
           command: |
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo update
-            helm install grafana grafana/grafana -f ../testcases/grafana/values.yaml
+            helm install grafana grafana/grafana -f /repo/testcases/grafana/values.yaml
             git clone https://github.com/kyma-incubator/octopus
             docker cp octopus repo:/repo/
             helm install octopus /repo/octopus/chart/octopus/
