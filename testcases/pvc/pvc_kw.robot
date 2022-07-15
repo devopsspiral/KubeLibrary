@@ -2,11 +2,11 @@
 Library           Collections
 Library           RequestsLibrary
 # For regular execution
-#Library           KubeLibrary
+Library           KubeLibrary
 # For incluster execution
 #Library           KubeLibrary    None    True    False
 # For development
-Library           ../../src/KubeLibrary/KubeLibrary.py  ~/.kube/k3d
+#Library           ../../src/KubeLibrary/KubeLibrary.py  ~/.kube/k3d
 
 *** Keywords ***
 List pvcs by label
