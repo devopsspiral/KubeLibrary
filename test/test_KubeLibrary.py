@@ -678,7 +678,7 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(kl.filter_names(pvcs), pvcs2)
         self.assertEqual(['myclaim'], kl.filter_names(pvcs))
 
-    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim_by_pattern')
+    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_persistent_volume_claim')
     def test_list_namespaced_persistent_volume_claim_by_pattern(self, mock_lnp):
         mock_lnp.side_effect = mock_list_pvc
         kl = KubeLibrary(kube_config='test/resources/k3d')
