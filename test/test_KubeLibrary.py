@@ -790,4 +790,4 @@ class TestKubeLibrary(unittest.TestCase):
     def test_list_cluster_custom_definition(self):
         kl = KubeLibrary(kube_config='test/resources/k3d')
         crd = kl.list_cluster_custom_definition()
-        self.assertEqual('', crd)
+
