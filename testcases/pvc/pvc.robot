@@ -7,5 +7,5 @@ List Persitent Volume Claims by label
     List pvcs by label  default  app=grafana
 
 List Persitent Volume Claims by pattern
-    [Tags]    grafana
+    [Tags]    prerelease grafana
     List pvcs by pattern  .*  default
