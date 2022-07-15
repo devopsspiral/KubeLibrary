@@ -263,7 +263,7 @@ responses = Responses('requests.packages.urllib3')
 class TestKubeLibrary(unittest.TestCase):
 
     apis = ('v1', 'networkingv1api', 'batchv1', 'appsv1', 'batchv1_beta1',
-            'custom_object', 'rbac_authv1_api', 'autoscalingv1', 'dynamic')
+            'custom_object', 'custom_definition', 'rbac_authv1_api', 'autoscalingv1', 'dynamic')
 
     @responses.activate
     def test_KubeLibrary_inits_from_kubeconfig(self):
@@ -783,3 +783,11 @@ class TestKubeLibrary(unittest.TestCase):
         cron_job_details2 = kl.get_cron_job_details_in_namespace('hello', 'default')
         self.assertEqual(cron_job_details.items.metadata.labels.TestLabel, cron_job_details2.items.metadata.labels.TestLabel)
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
+
+    def test_read_cluster_custom_definition(self):
+        pass
+
+    def test_list_cluster_custom_definition(self):
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        crd = kl.list_cluster_custom_definition()
+

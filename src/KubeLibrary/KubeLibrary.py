@@ -262,6 +262,7 @@ class KubeLibrary:
         self._add_api('appsv1', client.AppsV1Api)
         self._add_api('batchv1_beta1', client.BatchV1beta1Api)
         self._add_api('custom_object', client.CustomObjectsApi)
+        self._add_api('custom_definition', client.ApiextensionsV1Api)
         self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
         self._add_api('autoscalingv1', client.AutoscalingV1Api)
         self._add_api('dynamic', DynamicClient)
@@ -1450,6 +1451,30 @@ class KubeLibrary:
         """
         ret = self.rbac_authv1_api.list_namespaced_role_binding(namespace, watch=False)
         return [item.metadata.name for item in ret.items]
+
+    def list_cluster_custom_definition(self, label_selector="", field_selector=""):
+        """Lists Custom Resource Definitions.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+        Can be optionally filtered by field. e.g. field_selector=label_key=label_value
+
+        Returns list of CRD's.
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_definition.list_custom_resource_definition(label_selector=label_selector, field_selector=field_selector).items
+
+    def read_cluster_custom_definition(self, name):
+        """Reads the specified CustomResourceDefinition.
+
+        Returns an object.
+
+        - ``name``:
+          Custom Resource Definition name, e.g. 'repos.configmanagement.gke.io'
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_definition.read_custom_resource_definition(name)
 
     def list_cluster_custom_object(self, group, version, plural):
         """Lists cluster level custom objects.
