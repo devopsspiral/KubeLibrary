@@ -1061,6 +1061,22 @@ class KubeLibrary:
         ret = self.v1.list_namespaced_persistent_volume_claim(namespace, watch=False, label_selector=label_selector)
         return [item for item in ret.items]
 
+    def list_namespaced_persistent_volume_claim_by_pattern(self, name_pattern, namespace, label_selector=""):
+        """Gets pvcs in given namespace.
+
+        Can be optionally filtered by label. e.g. label_selector=label_key=label_value
+
+       Returns list of strings.
+
+        - ``namespace``:
+          Namespace to check
+        - ``name_pattern``:
+          pvc name pattern to check
+        """
+        ret = self.v1.list_namespaced_persistent_volume_claim(namespace, watch=False, label_selector=label_selector)
+        r = re.compile(name_pattern)
+        return [item for item in ret.items if r.match(item.metadata.name)]
+
     def get_pvc_in_namespace(self, namespace, label_selector=""):
         """*DEPRECATED* Will be removed in v1.0.0. Use list_namespaced_persistent_volume_claim.
 
