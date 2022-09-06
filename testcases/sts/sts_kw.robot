@@ -9,14 +9,11 @@ Library           KubeLibrary
 #Library           ../../src/KubeLibrary/KubeLibrary.py  ~/.kube/k3d
 
 *** Keywords ***
-List sts by label
-    [Arguments]  ${namespace}  ${label}
-    @{namespace_sts}=  List namespaced stateful set    ${namespace}  ${label}
-    @{namespace_sts_names}=    Filter Names    ${namespace_sts}
-    Log  List of STSs in Namespace ${namespace} with Label ${label}: @{namespace_sts_names}  console=True
+List all statefulsets in namespace
+    [Arguments]  ${namespace}  ${label}=${EMPTY}
+    @{namespace_statefulsets}=  list_namespaced_stateful_set_by_pattern    .*  ${namespace}  ${label}
+    Log To Console  \nStatefulsets in namespace ${namespace}:  console=True
+    FOR  ${statefulset}  IN  @{namespace_statefulsets}
+        Log To Console   ${statefulset.metadata.name}  console=True
+    END
 
-List sts by pattern
-    [Arguments]  ${pattern}  ${namespace}
-    @{namespace_sts}=  List namespaced stateful set by pattern    ${pattern}  ${namespace}
-    @{namespace_sts_names}=    Filter Names    ${namespace_sts}
-    Log  List of STSs in Namespace ${namespace} with Patter ${pattern}: @{namespace_sts_names}  console=True
