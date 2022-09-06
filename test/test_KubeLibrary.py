@@ -694,7 +694,7 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(kl.filter_names(pvcs), pvcs2)
         self.assertEqual(['myclaim'], kl.filter_names(pvcs))
 
-    @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_stateful_set')
+    @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_stateful_set')
     def test_list_namespaced_stateful_set_by_pattern(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_statefulsets
         kl = KubeLibrary(kube_config='test/resources/k3d')
