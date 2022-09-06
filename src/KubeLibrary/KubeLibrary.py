@@ -1079,11 +1079,11 @@ class KubeLibrary:
 
     def list_namespaced_stateful_set(self, namespace, label_selector=""):
         """Lists statefulsets in given namespace.
- 
+
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
- 
+
         Returns list of  statefulsets.
- 
+
         - ``namespace``:
           Namespace to check
         """
@@ -1092,11 +1092,11 @@ class KubeLibrary:
 
     def list_namespaced_stateful_set_by_pattern(self, name_pattern, namespace, label_selector=""):
         """Lists statefulsets matching pattern in given namespace.
- 
+
         Can be optionally filtered by label. e.g. label_selector=label_key=label_value
- 
+
         Returns list of  statefulsets.
- 
+
         - ``namespace``:
           Namespace to check
         - ``name_pattern``:
