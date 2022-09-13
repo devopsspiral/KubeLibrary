@@ -152,7 +152,7 @@ cd KubeLibrary
 # create virtualenv
 virtualenv .venv
 . .venv/bin/activate
-pip install -r requirements
+pip install -r requirements-dev.txt
 ```
 
 Create keyword and test file, import KubeLibrary using below to point to library under development.
