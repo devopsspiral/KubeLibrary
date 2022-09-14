@@ -134,6 +134,13 @@ def mock_list_namespaced_replicasets(namespace, watch=False, label_selector=""):
         return replicasets
 
 
+def mock_list_namespaced_statefulsets(namespace, watch=False, label_selector=""):
+    with open('test/resources/sts.json') as json_file:
+        statefulsets_content = json.load(json_file)
+        statefulsets = AttributeDict({'items': statefulsets_content})
+        return statefulsets
+
+
 def mock_list_pvc(namespace, watch=False, label_selector=""):
     if namespace == 'default':
         with open('test/resources/pvc.json') as json_file:
@@ -686,6 +693,15 @@ class TestKubeLibrary(unittest.TestCase):
         pvcs2 = kl.get_pvc_in_namespace('default')
         self.assertEqual(kl.filter_names(pvcs), pvcs2)
         self.assertEqual(['myclaim'], kl.filter_names(pvcs))
+
+    @mock.patch('kubernetes.client.AppsV1Api.list_namespaced_stateful_set')
+    def test_list_namespaced_stateful_set_by_pattern(self, mock_lnp):
+        mock_lnp.side_effect = mock_list_namespaced_statefulsets
+        kl = KubeLibrary(kube_config='test/resources/k3d')
+        statefulsets = kl.list_namespaced_stateful_set_by_pattern('.*', 'default')
+        statefulsets2 = kl.list_namespaced_stateful_set('default')
+        self.assertEqual(kl.filter_names(statefulsets), kl.filter_names(statefulsets2))
+        self.assertEqual(['nginx-proxy'], kl.filter_names(statefulsets))
 
     @mock.patch('kubernetes.client.CoreV1Api.list_namespaced_service')
     def test_list_namespaced_service(self, mock_service):
