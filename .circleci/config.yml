@@ -51,6 +51,7 @@ jobs:
       - k3d/k3d-run:
           step-name: Prerequisites for 2nd cluster
           command: |
+            kubectl version
             kubectl create namespace test-ns-2
       - k3d/k3d-up:
           cluster-name: testk3d-1
