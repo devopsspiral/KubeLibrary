@@ -64,30 +64,30 @@ jobs:
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo update
             helm install grafana grafana/grafana -f /repo/testcases/grafana/values.yaml
-            git clone https://github.com/kyma-incubator/octopus
-            docker cp octopus repo:/repo/
-            helm install octopus /repo/octopus/chart/octopus/
+            # git clone https://github.com/kyma-incubator/octopus
+            # docker cp octopus repo:/repo/
+            # helm install octopus /repo/octopus/chart/octopus/
             export KLIB_POD_NAMESPACE=kubelib-tests
             kubectl create namespace $KLIB_POD_NAMESPACE
             kubectl label namespaces kubelib-tests test=test
             helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
-      - k3d/k3d-run:
-          step-name: Run Octopus examples
-          command: |
-            # Octopus tests
-            docker run --rm \
-            --network container:k3d-${K3D_CLUSTER}-serverlb \
-            --volumes-from kubeconfig \
-            -e KUBECONFIG=$K3D_KUBECONFIG \
-            -e KLIB_POD_PATTERN='octopus.*' \
-            -e KLIB_RESOURCE_LIMITS_MEMORY=30Mi \
-            -e KLIB_RESOURCE_REQUESTS_CPU=100m \
-            -e KLIB_POD_LABELS='{"app":"octopus"}' \
-            -e KLIB_RESOURCE_LIMITS_CPU=100m \
-            -e KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}' \
-            -e KLIB_POD_NAMESPACE=default \
-            -e KLIB_RESOURCE_REQUESTS_MEMORY=20Mi \
-            kubelibrary -i octopus /testcases/
+      # - k3d/k3d-run:
+      #     step-name: Run Octopus examples
+      #     command: |
+      #       # Octopus tests
+      #       docker run --rm \
+      #       --network container:k3d-${K3D_CLUSTER}-serverlb \
+      #       --volumes-from kubeconfig \
+      #       -e KUBECONFIG=$K3D_KUBECONFIG \
+      #       -e KLIB_POD_PATTERN='octopus.*' \
+      #       -e KLIB_RESOURCE_LIMITS_MEMORY=30Mi \
+      #       -e KLIB_RESOURCE_REQUESTS_CPU=100m \
+      #       -e KLIB_POD_LABELS='{"app":"octopus"}' \
+      #       -e KLIB_RESOURCE_LIMITS_CPU=100m \
+      #       -e KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}' \
+      #       -e KLIB_POD_NAMESPACE=default \
+      #       -e KLIB_RESOURCE_REQUESTS_MEMORY=20Mi \
+      #       kubelibrary -i octopus /testcases/
       - k3d/k3d-run:
           step-name: Run Other examples
           command: |
