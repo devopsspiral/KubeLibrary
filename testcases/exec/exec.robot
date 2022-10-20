@@ -4,7 +4,7 @@ Force Tags    exec    other    prerelease
 
 *** Variables ***
 ${string}            Hello
-${CONTAINER_NAME}    lb-port-3000
+${CONTAINER_NAME}    grafana
 
 *** Test Cases ***
 Exec test case example
