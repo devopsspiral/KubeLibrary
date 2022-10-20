@@ -48,7 +48,7 @@ jobs:
       - k3d/k3d-up:
           cluster-name: testk3d-2
           k3s-version: v1.24.6-k3s1
-          #k3s-bin-version: v4.4.2
+          k3s-bin-version: latest
       - k3d/k3d-run:
           step-name: Prerequisites for 2nd cluster
           command: |
@@ -57,7 +57,7 @@ jobs:
       - k3d/k3d-up:
           cluster-name: testk3d-1
           k3s-version: v1.24.6-k3s1
-          #k3s-bin-version: v4.4.2
+          k3s-bin-version: latest
       - k3d/k3d-run:
           step-name: Prerequisites for 1st cluster
           command: |
