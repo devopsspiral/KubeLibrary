@@ -71,6 +71,7 @@ jobs:
             kubectl create namespace $KLIB_POD_NAMESPACE
             kubectl label namespaces kubelib-tests test=test
             helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
+            kubectl get pod
       # - k3d/k3d-run:
       #     step-name: Run Octopus examples
       #     command: |
