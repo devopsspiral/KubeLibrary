@@ -55,7 +55,7 @@ jobs:
             kubectl create namespace test-ns-2
       - k3d/k3d-up:
           cluster-name: testk3d-1
-          k3s-version: v1.20.0-k3s2
+          # k3s-version: v1.20.0-k3s2
           #k3s-bin-version: v4.4.2
       - k3d/k3d-run:
           step-name: Prerequisites for 1st cluster
@@ -65,11 +65,11 @@ jobs:
             helm install grafana grafana/grafana -f /repo/testcases/grafana/values.yaml
             git clone https://github.com/kyma-incubator/octopus
             docker cp octopus repo:/repo/
-            # helm install octopus /repo/octopus/chart/octopus/
-            # export KLIB_POD_NAMESPACE=kubelib-tests
-            # kubectl create namespace $KLIB_POD_NAMESPACE
-            # kubectl label namespaces kubelib-tests test=test
-            # helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
+            helm install octopus /repo/octopus/chart/octopus/
+            export KLIB_POD_NAMESPACE=kubelib-tests
+            kubectl create namespace $KLIB_POD_NAMESPACE
+            kubectl label namespaces kubelib-tests test=test
+            helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
       - k3d/k3d-run:
           step-name: Run Octopus examples
           command: |
