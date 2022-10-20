@@ -728,7 +728,7 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(kl.filter_names(ingresses), ingresses2)
         self.assertEqual(['minimal-ingress'], kl.filter_names(ingresses))
 
-    @mock.patch('kubernetes.client.BatchV1beta1Api.list_namespaced_cron_job')
+    @mock.patch('kubernetes.client.BatchV1Api.list_namespaced_cron_job')
     def test_list_namespaced_cron_job(self, mock_lnp):
         mock_lnp.side_effect = mock_list_namespaced_cronjobs
         kl = KubeLibrary(kube_config='test/resources/k3d')
@@ -800,7 +800,7 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual(ingress_details.items.metadata.labels.TestLabel, ingress_details2.items.metadata.labels.TestLabel)
         self.assertEqual('mytestlabel', ingress_details.items.metadata.labels.TestLabel)
 
-    @mock.patch('kubernetes.client.BatchV1beta1Api.read_namespaced_cron_job')
+    @mock.patch('kubernetes.client.BatchV1Api.read_namespaced_cron_job')
     def test_read_namespaced_cron_job(self, mock_lnp):
         mock_lnp.side_effect = mock_read_cron_job_details_in_namespace
         kl = KubeLibrary(kube_config='test/resources/k3d')

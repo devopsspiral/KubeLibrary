@@ -260,7 +260,7 @@ class KubeLibrary:
         self._add_api('networkingv1api', client.NetworkingV1Api)
         self._add_api('batchv1', client.BatchV1Api)
         self._add_api('appsv1', client.AppsV1Api)
-        self._add_api('batchv1_beta1', client.BatchV1beta1Api)
+        self._add_api('batchv1_beta1', client.BatchV1Api)
         self._add_api('custom_object', client.CustomObjectsApi)
         self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
         self._add_api('autoscalingv1', client.AutoscalingV1Api)
