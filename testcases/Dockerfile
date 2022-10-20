@@ -1,4 +1,4 @@
-FROM python:3.8.1-alpine
+FROM python:3.9.0-alpine
 COPY setup.py README.md requirements.txt ./
 COPY src ./src
 COPY testcases ./testcases
