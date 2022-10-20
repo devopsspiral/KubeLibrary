@@ -64,11 +64,11 @@ jobs:
             helm install grafana grafana/grafana -f /repo/testcases/grafana/values.yaml
             git clone https://github.com/kyma-incubator/octopus
             docker cp octopus repo:/repo/
-            helm install octopus /repo/octopus/chart/octopus/
-            export KLIB_POD_NAMESPACE=kubelib-tests
-            kubectl create namespace $KLIB_POD_NAMESPACE
-            kubectl label namespaces kubelib-tests test=test
-            helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
+            # helm install octopus /repo/octopus/chart/octopus/
+            # export KLIB_POD_NAMESPACE=kubelib-tests
+            # kubectl create namespace $KLIB_POD_NAMESPACE
+            # kubectl label namespaces kubelib-tests test=test
+            # helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
       - k3d/k3d-run:
           step-name: Run Octopus examples
           command: |
