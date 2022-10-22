@@ -18,25 +18,25 @@ ${KLIB_ENV_VARS}                   %{KLIB_ENV_VARS='Env vars missing!'}
 *** Test Cases ***
 
 Pod images has correct version
-    [Tags]    octopus
+    [Tags]    grafana
     Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
-    Then all pods containers are using "eu.gcr.io/kyma-project/incubator/develop/octopus:dc5dc284" image
+    Then all pods containers are using "grafana/grafana" image
 
 Pod has enough replicas
-    [Tags]    octopus
+    [Tags]    grafana
     Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods have "${KLIB_POD_REPLICAS}" replicas
 
 Pod has not been restarted
-    [Tags]    octopus
+    [Tags]    grafana
     Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods containers were not restarted
 
 Pod have correct labels
-    [Tags]    octopus
+    [Tags]    grafana
     Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods have labels "${KLIB_POD_LABELS}"
@@ -57,7 +57,6 @@ Pod has correct limits/requests
     Then pods containers have resource limits memory "${KLIB_RESOURCE_LIMITS_MEMORY}"
 
 Pod has correct env variables
-    [Tags]    octopus
     Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods containers have env variables "${KLIB_ENV_VARS}"

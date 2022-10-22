@@ -40,7 +40,7 @@ all pods containers are using "${container_image}" image
     @{containers}=    filter_pods_containers_by_name    ${namespace_pods}    .*
     @{containers_images}=    filter_containers_images    ${containers}
     FOR    ${item}    IN    @{containers_images}
-        Should Be Equal As Strings    ${item}    ${container_image}
+        Should Contain    ${item}    ${container_image}
     END
 
 pods have "${pod_replicas}" replicas
