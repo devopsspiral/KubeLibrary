@@ -72,23 +72,23 @@ jobs:
             kubectl label namespaces kubelib-tests test=test
             helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
             kubectl get pod
-      - k3d/k3d-run:
-          step-name: Run Grafana examples
-          command: |
-            # Grafana tests
-            docker run --rm \
-            --network container:k3d-${K3D_CLUSTER}-serverlb \
-            --volumes-from kubeconfig \
-            -e KUBECONFIG=$K3D_KUBECONFIG \
-            -e KLIB_POD_PATTERN='grafana.*' \
-            -e KLIB_RESOURCE_LIMITS_MEMORY=128Mi \
-            -e KLIB_RESOURCE_REQUESTS_CPU=250m \
-            -e KLIB_POD_LABELS='{"app.kubernetes.io/name":"grafana"}' \
-            -e KLIB_RESOURCE_LIMITS_CPU=500m \
-            -e KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}' \
-            -e KLIB_POD_NAMESPACE=default \
-            -e KLIB_RESOURCE_REQUESTS_MEMORY=64Mi \
-            kubelibrary -i grafana /testcases/
+      # - k3d/k3d-run:
+      #     step-name: Run Grafana examples
+      #     command: |
+      #       # Grafana tests
+      #       docker run --rm \
+      #       --network container:k3d-${K3D_CLUSTER}-serverlb \
+      #       --volumes-from kubeconfig \
+      #       -e KUBECONFIG=$K3D_KUBECONFIG \
+      #       -e KLIB_POD_PATTERN='grafana.*' \
+      #       -e KLIB_RESOURCE_LIMITS_MEMORY=128Mi \
+      #       -e KLIB_RESOURCE_REQUESTS_CPU=250m \
+      #       -e KLIB_POD_LABELS='{"app.kubernetes.io/name":"grafana"}' \
+      #       -e KLIB_RESOURCE_LIMITS_CPU=500m \
+      #       -e KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}' \
+      #       -e KLIB_POD_NAMESPACE=default \
+      #       -e KLIB_RESOURCE_REQUESTS_MEMORY=64Mi \
+      #       kubelibrary -i grafana /testcases/
       - k3d/k3d-run:
           step-name: Run Other examples
           command: |
@@ -153,7 +153,6 @@ jobs:
           step-name: Run Grafana examples
           command: |
             # Grafana tests
-            sleep 15
             K8S_VERSION=$(echo ${K3D_CLUSTER_VERSION:1} | cut -d "-" -f1)
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
