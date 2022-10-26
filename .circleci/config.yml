@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@2.0.3
+  python: circleci/python@0.3.2
   k3d: devopsspiral/k3d@0.1.5
 jobs:
   build-and-test:
