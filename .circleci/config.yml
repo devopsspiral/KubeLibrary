@@ -108,12 +108,12 @@ jobs:
             # Multi cluster tests
             kubectl create namespace test-ns-1
             kubectl apply -f /repo/testcases/reload-config/sa.yaml
-            MYSA_TOKEN_SECRET=$(kubectl get sa mysa -o jsonpath="{.secrets[0].name}")
+            # MYSA_TOKEN_SECRET=$(kubectl get sa mysa -o jsonpath="{.secrets[0].name}")
             echo DEBUG
-            kubectl get sa mysa -o yaml
-            echo $MYSA_TOKEN_SECRET
-            kubectl get secret $MYSA_TOKEN_SECRET -o yaml
-            export K8S_TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET --template={{.data.token}} | base64 -d)
+            kubectl get secret mysa-token -o yaml
+            # echo $MYSA_TOKEN_SECRET
+            # kubectl get secret $MYSA_TOKEN_SECRET -o yaml
+            export K8S_TOKEN=$(kubectl get secret mysa-token --template={{.data.token}} | base64 -d)
             kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
             export K8S_CA_CRT=/.kube/ca.crt
             export KUBE_CONFIG1=/.kube/testk3d-1
