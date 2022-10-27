@@ -5,8 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+
+## [0.8.0] - 2022-10-27
+### Added
 - Add function list_namespaced_stateful_set_by_pattern [#114](https://github.com/devopsspiral/KubeLibrary/pull/113) by [@siaomingjeng](https://github.com/siaomingjeng)
 - Add function list_namespaced_persistent_volume_claim_by_pattern [#112](https://github.com/devopsspiral/KubeLibrary/pull/112) by [@siaomingjeng](https://github.com/siaomingjeng)
+
+### Changed
+- batchv1_beta1 deprecated
+- ci uses latest default k8s and latest k3s
+- octopus test helm chart removed as not working
 ## [0.7.0] - 2022-04-01
 ### Added
 - Added keyword for handling kubectl exec [#102](https://github.com/devopsspiral/KubeLibrary/pull/101) by [@MarcinMaciaszek](https://github.com/MarcinMaciaszek)

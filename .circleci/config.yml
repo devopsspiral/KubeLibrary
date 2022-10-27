@@ -5,7 +5,9 @@ orbs:
   k3d: devopsspiral/k3d@0.1.5
 jobs:
   build-and-test:
-    executor: python/default
+    executor: 
+      name: python/default
+      tag: "3.9"
     environment:
       PYTHONPATH=./src
     steps:
@@ -16,7 +18,9 @@ jobs:
       - python/save-cache
       - python/test
   lint-and-coverage:
-    executor: python/default
+    executor: 
+      name: python/default
+      tag: "3.9"
     environment:
       PYTHONPATH=./src
     steps:
@@ -34,7 +38,9 @@ jobs:
             coverage run
             coverage report
   test-on-k8s:
-    executor: python/default
+    executor: 
+      name: python/default
+      tag: "3.9"
     environment:
       PYTHONPATH=./src
     steps:
@@ -47,45 +53,27 @@ jobs:
       - k3d/k3d-helpers
       - k3d/k3d-up:
           cluster-name: testk3d-2
-          #k3s-bin-version: v4.4.2
+          k3s-version: latest
+          k3s-bin-version: latest
       - k3d/k3d-run:
           step-name: Prerequisites for 2nd cluster
           command: |
+            kubectl version
             kubectl create namespace test-ns-2
       - k3d/k3d-up:
           cluster-name: testk3d-1
-          k3s-version: v1.20.0-k3s2
-          #k3s-bin-version: v4.4.2
+          k3s-version: latest
+          k3s-bin-version: latest
       - k3d/k3d-run:
           step-name: Prerequisites for 1st cluster
           command: |
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo update
             helm install grafana grafana/grafana -f /repo/testcases/grafana/values.yaml
-            git clone https://github.com/kyma-incubator/octopus
-            docker cp octopus repo:/repo/
-            helm install octopus /repo/octopus/chart/octopus/
             export KLIB_POD_NAMESPACE=kubelib-tests
             kubectl create namespace $KLIB_POD_NAMESPACE
             kubectl label namespaces kubelib-tests test=test
             helm install kubelib-test /repo/test-objects-chart -n $KLIB_POD_NAMESPACE
-      - k3d/k3d-run:
-          step-name: Run Octopus examples
-          command: |
-            # Octopus tests
-            docker run --rm \
-            --network container:k3d-${K3D_CLUSTER}-serverlb \
-            --volumes-from kubeconfig \
-            -e KUBECONFIG=$K3D_KUBECONFIG \
-            -e KLIB_POD_PATTERN='octopus.*' \
-            -e KLIB_RESOURCE_LIMITS_MEMORY=30Mi \
-            -e KLIB_RESOURCE_REQUESTS_CPU=100m \
-            -e KLIB_POD_LABELS='{"app":"octopus"}' \
-            -e KLIB_RESOURCE_LIMITS_CPU=100m \
-            -e KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}' \
-            -e KLIB_POD_NAMESPACE=default \
-            -e KLIB_RESOURCE_REQUESTS_MEMORY=20Mi \
-            kubelibrary -i octopus /testcases/
       - k3d/k3d-run:
           step-name: Run Other examples
           command: |
@@ -105,16 +93,14 @@ jobs:
             # Multi cluster tests
             kubectl create namespace test-ns-1
             kubectl apply -f /repo/testcases/reload-config/sa.yaml
-            MYSA_TOKEN_SECRET=$(kubectl get sa mysa -o jsonpath="{.secrets[0].name}")
+            MYSA_TOKEN_SECRET=mysa-token
             export K8S_TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET --template={{.data.token}} | base64 -d)
             kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
             export K8S_CA_CRT=/.kube/ca.crt
             export KUBE_CONFIG1=/.kube/testk3d-1
             export KUBE_CONFIG2=/.kube/testk3d-2
             export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-server-0)
-            export CLUSTER1_PORT=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "6443/tcp") 0).HostPort}}' k3d-testk3d-1-server-0)
             export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
-            export CLUSTER2_PORT=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "6443/tcp") 0).HostPort}}' k3d-testk3d-2-server-0)
             export K8S_API_URL="https://$CLUSTER1_IP:6443"
             sed -i "s#server: https://.*#server: https://$CLUSTER1_IP:6443#g" ~/.k3d/kubeconfig-testk3d-1.yaml
             sed -i "s#server: https://.*#server: https://$CLUSTER2_IP:6443#g" ~/.k3d/kubeconfig-testk3d-2.yaml
@@ -153,11 +139,18 @@ jobs:
             -e KUBECONFIG=$K3D_KUBECONFIG \
             -e KLIB_POD_PATTERN='grafana.*' \
             -e KLIB_POD_ANNOTATIONS='{"kubelibrary":"testing"}' \
+            -e KLIB_POD_LABELS='{"app.kubernetes.io/name":"grafana"}' \
             -e KLIB_POD_NAMESPACE=default \
+            -e KLIB_RESOURCE_LIMITS_MEMORY=128Mi \
+            -e KLIB_RESOURCE_REQUESTS_CPU=250m \
+            -e KLIB_RESOURCE_LIMITS_CPU=500m \
+            -e KLIB_RESOURCE_REQUESTS_MEMORY=64Mi \
             -e KUBELET_VERSION=$K8S_VERSION \
             kubelibrary -i grafana /testcases/
   publish-to-pypi:
-    executor: python/default
+    executor: 
+      name: python/default
+      tag: "3.9"
     environment:
       PYTHONPATH=./src
     steps:
