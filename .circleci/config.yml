@@ -5,7 +5,9 @@ orbs:
   k3d: devopsspiral/k3d@0.1.5
 jobs:
   build-and-test:
-    executor: python/default
+    executor: 
+      name: python/default
+      tag: 3.9
     environment:
       PYTHONPATH=./src
     steps:
@@ -16,7 +18,9 @@ jobs:
       - python/save-cache
       - python/test
   lint-and-coverage:
-    executor: python/default
+    executor: 
+      name: python/default
+      tag: 3.9
     environment:
       PYTHONPATH=./src
     steps:
@@ -34,7 +38,9 @@ jobs:
             coverage run
             coverage report
   test-on-k8s:
-    executor: python/default
+    executor: 
+      name: python/default
+      tag: 3.9
     environment:
       PYTHONPATH=./src
     steps:
@@ -122,9 +128,9 @@ jobs:
             export KUBE_CONFIG2=/.kube/testk3d-2
             docker inspect k3d-testk3d-2-server-0
             export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-server-0)
-            export CLUSTER1_PORT=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "6443/tcp") 0).HostPort}}' k3d-testk3d-1-server-0)
+            # export CLUSTER1_PORT=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "6443/tcp") 0).HostPort}}' k3d-testk3d-1-server-0)
             export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
-            export CLUSTER2_PORT=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "6443/tcp") 0).HostPort}}' k3d-testk3d-2-server-0)
+            # export CLUSTER2_PORT=$(docker inspect -f '{{(index (index .NetworkSettings.Ports "6443/tcp") 0).HostPort}}' k3d-testk3d-2-server-0)
             export K8S_API_URL="https://$CLUSTER1_IP:6443"
             sed -i "s#server: https://.*#server: https://$CLUSTER1_IP:6443#g" ~/.k3d/kubeconfig-testk3d-1.yaml
             sed -i "s#server: https://.*#server: https://$CLUSTER2_IP:6443#g" ~/.k3d/kubeconfig-testk3d-2.yaml
@@ -167,7 +173,9 @@ jobs:
             -e KUBELET_VERSION=$K8S_VERSION \
             kubelibrary -i grafana /testcases/
   publish-to-pypi:
-    executor: python/default
+    executor: 
+      name: python/default
+      tag: 3.9
     environment:
       PYTHONPATH=./src
     steps:
