@@ -48,7 +48,7 @@ Pod has correct annotations
     Then pods have annotations "${KLIB_POD_ANNOTATIONS}"
 
 Pod has correct limits/requests
-    [Tags]    octopus
+    [Tags]    grafana
     Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then pods containers have resource requests cpu "${KLIB_RESOURCE_REQUESTS_CPU}"
