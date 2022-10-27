@@ -260,7 +260,7 @@ class KubeLibrary:
         self._add_api('networkingv1api', client.NetworkingV1Api)
         self._add_api('batchv1', client.BatchV1Api)
         self._add_api('appsv1', client.AppsV1Api)
-        self._add_api('batchv1_beta1', client.BatchV1Api)
+        # self._add_api('batchv1_beta1', client.BatchV1Api)
         self._add_api('custom_object', client.CustomObjectsApi)
         self._add_api('rbac_authv1_api', client.RbacAuthorizationV1Api)
         self._add_api('autoscalingv1', client.AutoscalingV1Api)
@@ -1311,7 +1311,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1_beta1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
+        ret = self.batchv1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
         return [item for item in ret.items]
 
     def get_cron_jobs_in_namespace(self, namespace, label_selector=""):
@@ -1326,7 +1326,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1_beta1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
+        ret = self.batchv1.list_namespaced_cron_job(namespace, watch=False, label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
     def read_namespaced_cron_job(self, name, namespace):
@@ -1339,7 +1339,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1_beta1.read_namespaced_cron_job(name, namespace)
+        ret = self.batchv1.read_namespaced_cron_job(name, namespace)
         return ret
 
     def get_cron_job_details_in_namespace(self, name, namespace):
@@ -1354,7 +1354,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1_beta1.read_namespaced_cron_job(name, namespace)
+        ret = self.batchv1.read_namespaced_cron_job(name, namespace)
         return ret
 
     def list_namespaced_daemon_set(self, namespace, label_selector=""):
@@ -1610,7 +1610,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1_beta1.create_namespaced_cron_job(namespace=namespace, body=body)
+        ret = self.batchv1.create_namespaced_cron_job(namespace=namespace, body=body)
         return ret
 
     def create_cron_job_in_namespace(self, namespace, body):
@@ -1624,7 +1624,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1_beta1.create_namespaced_cron_job(namespace=namespace, body=body)
+        ret = self.batchv1.create_namespaced_cron_job(namespace=namespace, body=body)
         return ret
 
     def delete_namespaced_cron_job(self, name, namespace):
@@ -1636,7 +1636,7 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1_beta1.delete_namespaced_cron_job(name=name, namespace=namespace)
+        ret = self.batchv1.delete_namespaced_cron_job(name=name, namespace=namespace)
         return ret
 
     def delete_cron_job_in_namespace(self, name, namespace):
@@ -1650,5 +1650,5 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.batchv1_beta1.delete_namespaced_cron_job(name=name, namespace=namespace)
+        ret = self.batchv1.delete_namespaced_cron_job(name=name, namespace=namespace)
         return ret
