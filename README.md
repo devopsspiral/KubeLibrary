@@ -67,25 +67,6 @@ export KLIB_POD_NAMESPACE=default
 
 robot -i grafana -e prerelease testcases/
 ```
-
-### Octopus Tests
-```
-git clone https://github.com/kyma-incubator/octopus
-helm install octopus octopus/chart/octopus/
-
-# run octopus tests
-export KLIB_RESOURCE_LIMITS_MEMORY=30Mi
-export KLIB_POD_PATTERN='octopus.*'
-export KLIB_RESOURCE_REQUESTS_CPU=100m
-export KLIB_POD_LABELS='{"app":"octopus"}'
-export KLIB_RESOURCE_LIMITS_CPU=100m
-export KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}'
-export KLIB_POD_NAMESPACE=default
-export KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
-
-robot -i octopus -e prerelease testcases/
-```
-
 ### Other Tests
 These tests require the kubelib-test helm-chart to be installed in your test cluster.
 ```
@@ -175,6 +156,6 @@ For development cluster you can use k3s/k3d as described in [DevOps spiral artic
     #
     # Set the variable local for the libdoc call only
     export INIT_FOR_LIBDOC_ONLY=1
-    python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html
+    python -m robot.libdoc src/KubeLibrary docs/index.html
 )
 ```

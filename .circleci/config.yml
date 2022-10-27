@@ -121,7 +121,8 @@ jobs:
       - k3d/k3d-run:
           step-name: Run Smoke examples
           command: |
-            K8S_VERSION=$(echo ${K3D_CLUSTER_VERSION:1} | cut -d "-" -f1)
+            #K8S_VERSION=$(echo ${K3D_CLUSTER_VERSION:1} | cut -d "-" -f1)
+            K8S_VERSION=latest
             docker run --rm \
             --network container:k3d-${K3D_CLUSTER}-serverlb \
             --volumes-from kubeconfig \
