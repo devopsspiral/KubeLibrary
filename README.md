@@ -49,11 +49,17 @@ ${NUM_WORKERS}         1
 ```
 
 1 - keyword definitions in separate file relative to testcase file
+
 2 - defining local variable taking value from environment variable
+
 3 - testcase definition
+
 4 - Documentation/comments
+
 5 - Tags, you can include (-i) and exclude (-e) tests by tag.
+
 6(7,8) - Given, When, Then clause. It is only way of organizing your test steps, given, when, then are just omitted, real keywords definition needs to match 'kubernetes API responds', 'getting all pods names in ...' etc.(see testcases/system_smoke_kw.robot)
+
 7 - kube-system in quotes is treated as parameter for 'getting all pods names in ...' keyword.
 
 More examples in testcases/ directory.
