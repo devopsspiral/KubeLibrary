@@ -20,32 +20,51 @@ cd KubeLibrary
 robot -e prerelease testcases
 ```
 
+## Documentation
+
+[Library docs](http://devopsspiral.com/KubeLibrary/)
+
 ## Example testcase
 
 ```
-Pods in kube-system are ok
-    [Documentation]  Test if all pods in kube-system initiated correctly and are running or succeeded
-    [Tags]    cluster    smoke
-    Given kubernetes API responds
-    When getting all pods in  "kube-system"
-    Then all pods in "kube-system" are running or succeeded
+testcases/system_smoke.robot
 
-Grafana has correct version
-    [Documentation]  Test if Grafana container image is in correct version
-    [Tags]    grafana
-    Given kubernetes API responds
-    When accessing "grafana-" excluding "svclb" container images version in "default"
-    Then "grafana/grafana:6.5.0" version is used
+*** Settings ***
+(1)Resource          ./system_smoke_kw.robot
+
+*** Variables ***
+(2)${KUBELET_VERSION}     %{KUBELET_VERSION}
+${NUM_NODES}           2
+${NUM_WORKERS}         1
+
+*** Test Cases ***
+
+(3)Pods in kube-system are ok
+(4)    [Documentation]  Test if all pods in kube-system initiated correctly and are running or succeeded
+(5)    [Tags]    cluster    smoke
+(6)    Given kubernetes API responds
+(7)    When getting all pods names in "kube-system"
+(8)    Then all pods in "kube-system" are running or succeeded
 
 ```
+
+1 - keyword definitions in separate file relative to testcase file
+
+2 - defining local variable taking value from environment variable
+
+3 - testcase definition
+
+4 - Documentation/comments
+
+5 - Tags, you can include (-i) and exclude (-e) tests by tag.
+
+6(7,8) - Given, When, Then clause. It is only way of organizing your test steps, given, when, then are just omitted, real keywords definition needs to match 'kubernetes API responds', 'getting all pods names in ...' etc.(see testcases/system_smoke_kw.robot)
+
+7 - kube-system in quotes is treated as parameter for 'getting all pods names in ...' keyword.
 
 More examples in testcases/ directory.
 
 To see all the tests passing execute below commands.
-
-## Documentation
-
-[Library docs](http://devopsspiral.com/KubeLibrary/)
 
 
 ### Cluster Tests
