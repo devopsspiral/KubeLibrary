@@ -230,6 +230,12 @@ class KubeLibrary:
           Default False. Indicates if used from within k8s cluster. Overrides kubeconfig.
         - ``cert_validation``:
           Default True. Can be set to False for self-signed certificates.
+
+        Environment variables:
+        - HTTP_PROXY:
+          Proxy URL
+        - NO_PROXY:
+          Bypass proxy for host in the no_proxy list.
         """
         self.api_client = None
         self.cert_validation = cert_validation
@@ -256,6 +262,10 @@ class KubeLibrary:
 
         if not self.api_client:
             self.api_client = client.ApiClient(configuration=client.Configuration().get_default_copy())
+
+        self.api_client.configuration.proxy = environ.get('HTTP_PROXY')
+        self.api_client.configuration.no_proxy = environ.get('NO_PROXY')
+
         self._add_api('v1', client.CoreV1Api)
         self._add_api('networkingv1api', client.NetworkingV1Api)
         self._add_api('batchv1', client.BatchV1Api)
