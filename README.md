@@ -134,6 +134,14 @@ kind delete cluster --name kind-cluster-2
 
 Keywords documentation can be found in docs/.
 
+## Proxy configuration
+
+To access cluster via proxy set `http_proxy` or `HTTP_PROXY` environment variable. 
+
+In similar way you can set `no_proxy` or `NO_PROXY` variable to specify hosts that should be excluded from proxying.
+
+**IMPORTANT:** Lowercase environment variables have higher priority than uppercase
+
 ## Further reading
 
 [DevOps spiral article on KubeLibrary](https://devopsspiral.com/articles/k8s/robotframework-kubelibrary/)
