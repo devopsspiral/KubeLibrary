@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+- Add proxy configuration fetched from `HTTP_PROXY` or `http_proxy` environment variable
 
 ## [0.8.0] - 2022-10-27
 ### Added
