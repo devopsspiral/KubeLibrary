@@ -1,7 +1,6 @@
 import json
 import mock
 import re
-import ssl
 import unittest
 from KubeLibrary import KubeLibrary
 from KubeLibrary.exceptions import BearerTokenWithPrefixException
