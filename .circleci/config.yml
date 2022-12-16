@@ -7,7 +7,7 @@ jobs:
   build-and-test:
     executor: 
       name: python/default
-      tag: "3.7"
+      tag: "3.9"
     environment:
       PYTHONPATH=./src
     steps:
@@ -20,7 +20,7 @@ jobs:
   lint-and-coverage:
     executor: 
       name: python/default
-      tag: "3.7"
+      tag: "3.9"
     environment:
       PYTHONPATH=./src
     steps:
@@ -40,7 +40,7 @@ jobs:
   test-on-k8s:
     executor: 
       name: python/default
-      tag: "3.7"
+      tag: "3.9"
     environment:
       PYTHONPATH=./src
     steps:
@@ -150,7 +150,7 @@ jobs:
   publish-to-pypi:
     executor: 
       name: python/default
-      tag: "3.7"
+      tag: "3.9"
     environment:
       PYTHONPATH=./src
     steps:
