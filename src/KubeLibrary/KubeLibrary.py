@@ -1,6 +1,5 @@
 import json
 import re
-import ssl
 import urllib3
 
 from os import environ

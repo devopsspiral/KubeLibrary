@@ -5,7 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+
+## [0.8.1] - 2022-12-16
+### Added
 - Add proxy configuration fetched from `HTTP_PROXY` or `http_proxy` environment variable
+
+### Fixed
+Fix disabling cert validation [#124](https://github.com/devopsspiral/KubeLibrary/pull/124) 
 
 ## [0.8.0] - 2022-10-27
 ### Added
