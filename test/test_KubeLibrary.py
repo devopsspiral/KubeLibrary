@@ -306,7 +306,7 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
         for api in TestKubeLibrary.apis:
             target = getattr(kl, api)
-            self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
+            self.assertEqual(target.api_client.configuration.verify_ssl, False)
 
     @responses.activate
     def test_KubeLibrary_inits_with_bearer_token(self):
