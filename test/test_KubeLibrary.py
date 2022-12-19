@@ -1,6 +1,7 @@
 import json
 import mock
 import re
+import ssl
 import unittest
 from KubeLibrary import KubeLibrary
 from KubeLibrary.exceptions import BearerTokenWithPrefixException
@@ -305,7 +306,7 @@ class TestKubeLibrary(unittest.TestCase):
         kl = KubeLibrary(kube_config='test/resources/k3d', cert_validation=False)
         for api in TestKubeLibrary.apis:
             target = getattr(kl, api)
-            self.assertEqual(target.api_client.configuration.verify_ssl, False)
+            self.assertEqual(target.api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'], ssl.CERT_NONE)
 
     @responses.activate
     def test_KubeLibrary_inits_with_bearer_token(self):
