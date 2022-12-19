@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## In progress
 - Add proxy configuration fetched from `HTTP_PROXY` or `http_proxy` environment variable
 
+## [0.8.3] - 2022-12-19
+revert
 ## [0.8.0] - 2022-10-27
 ### Added
 - Add function list_namespaced_stateful_set_by_pattern [#114](https://github.com/devopsspiral/KubeLibrary/pull/113) by [@siaomingjeng](https://github.com/siaomingjeng)
