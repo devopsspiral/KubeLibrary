@@ -277,6 +277,7 @@ class KubeLibrary:
         self.__dict__[reference] = class_name(self.api_client)
         if not self.cert_validation:
             self.__dict__[reference].api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
+            self.__dict__[reference].api_client.configuration.verify_ssl = False
 
     def k8s_api_ping(self):
         """Performs GET on /api/v1/ for simple check of API availability.
