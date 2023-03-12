@@ -2,6 +2,7 @@ import json
 import re
 import ssl
 import urllib3
+import logging
 
 from os import environ
 from kubernetes import client, config, dynamic, stream
@@ -15,8 +16,14 @@ from KubeLibrary.version import version
 
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-
+loggers = [logging.getLogger(name) for name in logging.root.manager.loggerDict]
+logger = logging.getLogger('kubernetes.client.rest')
+logger.setLevel(logging.DEBUG)
+# create file handler which logs even debug messages
+fh = logging.FileHandler('spam.log')
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
+logger.debug(loggers)
 class DynamicClient(dynamic.DynamicClient):
     @property
     def api_client(self):
@@ -247,6 +254,7 @@ class KubeLibrary:
             if bearer_token.startswith('Bearer '):
                 raise BearerTokenWithPrefixException
             configuration = client.Configuration()
+            configuration._default.proxy = environ.get('http_proxy') or environ.get('HTTP_PROXY')
             configuration.api_key["authorization"] = bearer_token
             configuration.api_key_prefix['authorization'] = 'Bearer'
             configuration.host = api_url
@@ -255,13 +263,12 @@ class KubeLibrary:
         else:
             try:
                 config.load_kube_config(kube_config, context)
+                client.Configuration._default.proxy = environ.get('http_proxy') or environ.get('HTTP_PROXY')
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
 
         if not self.api_client:
             self.api_client = client.ApiClient(configuration=client.Configuration().get_default_copy())
-
-        self.api_client.configuration.proxy = environ.get('http_proxy') or environ.get('HTTP_PROXY')
 
         self._add_api('v1', client.CoreV1Api)
         self._add_api('networkingv1api', client.NetworkingV1Api)
@@ -275,6 +282,7 @@ class KubeLibrary:
 
     def _add_api(self, reference, class_name):
         self.__dict__[reference] = class_name(self.api_client)
+        logger.error(self.__dict__[reference].api_client.configuration.proxy)
         if not self.cert_validation:
             self.__dict__[reference].api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
