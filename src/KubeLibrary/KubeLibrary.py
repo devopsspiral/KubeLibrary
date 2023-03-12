@@ -16,14 +16,8 @@ from KubeLibrary.version import version
 
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-loggers = [logging.getLogger(name) for name in logging.root.manager.loggerDict]
-logger = logging.getLogger('kubernetes.client.rest')
-logger.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-fh = logging.FileHandler('spam.log')
-fh.setLevel(logging.DEBUG)
-logger.addHandler(fh)
-logger.debug(loggers)
+
+
 class DynamicClient(dynamic.DynamicClient):
     @property
     def api_client(self):
