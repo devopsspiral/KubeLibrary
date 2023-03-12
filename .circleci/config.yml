@@ -115,6 +115,7 @@ jobs:
             -e K8S_API_URL=$K8S_API_URL \
             -e K8S_TOKEN=$K8S_TOKEN \
             -e K8S_CA_CRT=$K8S_CA_CRT \
+            -e HTTP_PROXY=http://1.1.1.1
             --name kubelibrary kubelibrary -i reload-config /testcases/
             docker network connect k3d-testk3d-2 kubelibrary
             docker start -a kubelibrary
@@ -127,6 +128,7 @@ jobs:
             --volumes-from kubeconfig \
             -e KUBECONFIG=$K3D_KUBECONFIG \
             -e KUBELET_VERSION=$K8S_VERSION \
+            -e HTTP_PROXY=http://1.1.1.1
             kubelibrary -i smoke /testcases/
       - k3d/k3d-run:
           step-name: Run Grafana examples
