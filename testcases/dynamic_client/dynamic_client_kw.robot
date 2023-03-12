@@ -15,7 +15,7 @@ discover resources
     [Arguments]    ${namespace}
     ${deployments}=     get resource names    Deployment     apps/v1     ${namespace}
     ${statefulsets}=    get resource names    StatefulSet    apps/v1    ${namespace}
-    ${cronjobs}=        get resource names    CronJob    batch/v1beta1    ${namespace}
+    ${cronjobs}=        get resource names    CronJob    batch/v1    ${namespace}
     ${secrets}=         get resource names    Secret    v1    ${namespace}
     ${configmaps}=      get resource names    ConfigMap    v1    ${namespace}
     ${found}=           BuiltIn.evaluate    ${deployments} + ${statefulsets} + ${cronjobs} + ${secrets} + ${configmaps}
