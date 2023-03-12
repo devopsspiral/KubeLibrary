@@ -67,7 +67,7 @@ jobs:
       - k3d/k3d-run:
           step-name: Prerequisites for 1st cluster
           command: |
-            sleep 60
+            sleep 20
             kubectl version
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo update
