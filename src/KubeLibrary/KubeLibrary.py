@@ -97,7 +97,7 @@ class KubeLibrary:
                            ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
     @staticmethod
-    def get_proxy(size):
+    def get_proxy():
         return environ.get('https_proxy') or environ.get('HTTPS_PROXY') or environ.get('http_proxy') or environ.get('HTTP_PROXY')
 
     @staticmethod
