@@ -16,6 +16,6 @@ Get Cluster Custom Object
 
 Get Namespaced Custom Object
     [Tags]  smoke
-    ${fo}=  Get Namespaced Custom Object   discovery.k8s.io  v1beta1  default  endpointslices  kubernetes
+    ${fo}=  Get Namespaced Custom Object   discovery.k8s.io  v1  default  endpointslices  kubernetes
     Should Be Equal As Strings  ${fo}[metadata][name]    kubernetes
     Should Be Equal As Strings  ${fo}[addressType]  IPv4
