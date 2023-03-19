@@ -97,6 +97,10 @@ class KubeLibrary:
                            ca_cert=ca_cert, incluster=incluster, cert_validation=cert_validation)
 
     @staticmethod
+    def get_proxy(size):
+        return environ.get('https_proxy') or environ.get('HTTPS_PROXY') or environ.get('http_proxy') or environ.get('HTTP_PROXY')
+
+    @staticmethod
     def generate_alphanumeric_str(size):
         """Generates a random alphanumeric string with given size.
 
@@ -247,7 +251,7 @@ class KubeLibrary:
             if bearer_token.startswith('Bearer '):
                 raise BearerTokenWithPrefixException
             configuration = client.Configuration()
-            configuration._default.proxy = environ.get('http_proxy') or environ.get('HTTP_PROXY')
+            configuration._default.proxy = KubeLibrary.get_proxy()
             configuration.api_key["authorization"] = bearer_token
             configuration.api_key_prefix['authorization'] = 'Bearer'
             configuration.host = api_url
@@ -256,7 +260,7 @@ class KubeLibrary:
         else:
             try:
                 config.load_kube_config(kube_config, context)
-                client.Configuration._default.proxy = environ.get('http_proxy') or environ.get('HTTP_PROXY')
+                client.Configuration._default.proxy = KubeLibrary.get_proxy()
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
 
