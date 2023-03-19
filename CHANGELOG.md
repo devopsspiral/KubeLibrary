@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.8.4] - 2022-03-19
 ### Fixed
 - Fixed proxy setting
-- Deprecating batch/v1beta1
+- Deprecating batch/v1beta1, discovery.k8s.io/v1beta1 
 
 ## [0.8.3] - 2022-12-19
 revert
