@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
 
-## [0.8.4] - 2022-03-19
+## [0.8.4] - 2022-04-10
 ### Fixed
 - Fixed proxy setting
 - Deprecating batch/v1beta1, discovery.k8s.io/v1beta1 
