@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+## [0.8.5] - 2022-04-22
+### Fixed
+- Fixed no_proxy setting
 
 ## [0.8.4] - 2022-04-10
 ### Fixed

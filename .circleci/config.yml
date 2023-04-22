@@ -129,6 +129,8 @@ jobs:
             --volumes-from kubeconfig \
             -e KUBECONFIG=$K3D_KUBECONFIG \
             -e KUBELET_VERSION=$K8S_VERSION \
+            -e HTTPS_PROXY=http://1.1.1.1 \
+            -e NO_PROXY=172.20.0.2 \
             kubelibrary -i smoke /testcases/
       - k3d/k3d-run:
           step-name: Run Grafana examples
