@@ -1593,7 +1593,7 @@ class KubeLibrary:
         https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
         """
         return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)
-    
+
     def list_namespaced_custom_object(self, group, version, namespace, plural):
         """List custom objects in namespace.
 
