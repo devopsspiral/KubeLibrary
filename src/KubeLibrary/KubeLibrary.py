@@ -1593,6 +1593,26 @@ class KubeLibrary:
         https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
         """
         return self.custom_object.get_namespaced_custom_object(group, version, namespace, plural, name)
+    
+    def list_namespaced_custom_object(self, group, version, namespace, plural):
+        """List custom objects in namespace.
+
+        Returns an object.
+
+        - ``group``:
+          API Group, e.g. 'k8s.cni.cncf.io'
+        - ``version``:
+          API version, e.g. 'v1'
+        - ``namespace``:
+          Namespace, e.g. 'default'
+        - ``plural``:
+          e.g. 'network-attachment-definitions'
+
+        As in ``GET /apis/{group}/{version}/namespaces/{namespace}/{plural}``
+
+        https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md
+        """
+        return self.custom_object.list_namespaced_custom_object(group, version, namespace, plural)
 
     def get_custom_object_in_namespace(self, group, version, namespace, plural, name):
         """*DEPRECATED* Will be removed in v1.0.0. Use get_namespaced_custom_object.

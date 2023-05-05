@@ -19,3 +19,10 @@ Get Namespaced Custom Object
     ${fo}=  Get Namespaced Custom Object   discovery.k8s.io  v1  default  endpointslices  kubernetes
     Should Be Equal As Strings  ${fo}[metadata][name]    kubernetes
     Should Be Equal As Strings  ${fo}[addressType]  IPv4
+
+Get List Of Namespaced Custom Objects
+    [Tags]  smoke
+    ${fo}=  List Namespaced Custom Object   discovery.k8s.io  v1  default  endpointslices
+    FOR  ${object}  IN  @{fo['items']}
+        Should Be Equal As Strings  ${object}[addressType]  IPv4
+    END
