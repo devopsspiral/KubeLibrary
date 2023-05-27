@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+## [0.8.6] - 2022-05-27
+### Added
+- add new keyword to list all namespaced custom objects [#133] (https://github.com/devopsspiral/KubeLibrary/pull/133) by [@kutayy]
 ## [0.8.5] - 2022-04-22
 ### Fixed
 - Fixed no_proxy setting
