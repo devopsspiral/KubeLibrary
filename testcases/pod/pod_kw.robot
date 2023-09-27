@@ -102,7 +102,13 @@ pods containers have env variables "${container_env_vars}"
 
 logs of pod can be retrived
     Set Test Variable    ${POD_NAME}    ${namespace_pods[0].metadata.name}
-    ${pod_logs}=  Read namespaced pod log  ${POD_NAME}  ${KLIB_POD_NAMESPACE}  busybox  since_seconds=1000
+    ${pod_logs}=  Read namespaced pod log  ${POD_NAME}  ${KLIB_POD_NAMESPACE}  busybox
+    Log  ${pod_logs}  console=True
+    Set Test Variable    ${POD_LOGS}    ${pod_logs}
+
+logs of pod can be retrived since "${seconds}"
+    Set Test Variable    ${POD_NAME}    ${namespace_pods[0].metadata.name}
+    ${pod_logs}=  Read namespaced pod log  ${POD_NAME}  ${KLIB_POD_NAMESPACE}  busybox  since_seconds=${seconds}
     Log  ${pod_logs}  console=True
     Set Test Variable    ${POD_LOGS}    ${pod_logs}
 

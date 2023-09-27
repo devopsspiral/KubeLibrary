@@ -19,6 +19,7 @@ class AttributeDict(object):
     allowing you to recurse down nested dicts (like: AttributeDict.attr.attr)
     """
     def __init__(self, entries):
+        self._root = None
         self.add_entries(entries)
 
     def add_entries(self, entries):
