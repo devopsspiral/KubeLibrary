@@ -70,7 +70,7 @@ Logs of pod are available
     And logs contain expected string
 
 Logs of pod since 1000s are available
-    [Tags]    other
+    [Tags]    prerelease
     Given waited for pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}" to be READY
     When getting pods matching "${KLIB_POD_PATTERN}" in namespace "${KLIB_POD_NAMESPACE}"
     Then logs of pod can be retrived since "${LOGS_SINCE}"
