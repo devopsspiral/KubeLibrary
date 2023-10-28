@@ -16,7 +16,6 @@ from KubeLibrary.version import version
 # supressing SSL warnings when using self-signed certs
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
 class DynamicClient(dynamic.DynamicClient):
     @property
     def api_client(self):
