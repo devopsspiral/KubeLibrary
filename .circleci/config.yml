@@ -104,10 +104,12 @@ jobs:
             export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-server-0)
             export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
             export K8S_API_URL="https://$CLUSTER1_IP:6443"
-            sed -i "s#server: https://.*#server: https://$CLUSTER1_IP:6443#g" ~/.k3d/kubeconfig-testk3d-1.yaml
-            sed -i "s#server: https://.*#server: https://$CLUSTER2_IP:6443#g" ~/.k3d/kubeconfig-testk3d-2.yaml
-            docker cp ~/.k3d/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
-            docker cp ~/.k3d/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
+            docker cp kubeconfig:$KUBE_CONFIG1 ~/kubeconfig-testk3d-1.yaml 
+            docker cp kubeconfig:$KUBE_CONFIG2 ~/kubeconfig-testk3d-2.yaml 
+            sed -i "s#server: https://.*#server: https://$CLUSTER1_IP:6443#g" ~/kubeconfig-testk3d-1.yaml
+            sed -i "s#server: https://.*#server: https://$CLUSTER2_IP:6443#g" ~/kubeconfig-testk3d-2.yaml
+            docker cp ~/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
+            docker cp ~/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
             docker cp ca.crt kubeconfig:$K8S_CA_CRT
             docker create --rm -it \
             --network k3d-testk3d-1 \
