@@ -104,7 +104,7 @@ jobs:
             export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-server-0)
             export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
             export K8S_API_URL="https://$CLUSTER1_IP:6443"
-            ls -a ~/.k3d/
+            ls -a ~/.kube/
             sed -i "s#server: https://.*#server: https://$CLUSTER1_IP:6443#g" ~/.k3d/kubeconfig-testk3d-1.yaml
             sed -i "s#server: https://.*#server: https://$CLUSTER2_IP:6443#g" ~/.k3d/kubeconfig-testk3d-2.yaml
             docker cp ~/.k3d/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
