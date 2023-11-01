@@ -1,4 +1,4 @@
-google-auth==1.21.3
+google-auth>=2.5.0
 kubernetes>=21.7.0
 robotframework>=3.2.2
 urllib3-mock>=0.3.3
