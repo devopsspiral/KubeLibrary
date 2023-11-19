@@ -1,6 +1,6 @@
 *** Settings ***
 Resource      ./exec_kw.robot
-Force Tags    exec    prerelease
+Force Tags    exec    other
 
 *** Variables ***
 ${string}            Hello
