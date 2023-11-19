@@ -5,16 +5,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
-- update read_namespaced_pod_log keyword with new optional parameter 'since_seconds'
+## [0.8.7] - 2023-11-19
+### Added
+- update read_namespaced_pod_log keyword with new optional parameter 'since_seconds' [#136](https://github.com/devopsspiral/KubeLibrary/pull/136) by [@LissaGreense] 
+- google-auth>=2.5.0 [#138](https://github.com/devopsspiral/KubeLibrary/pull/138) by [@angegar] 
 
-## [0.8.6] - 2022-05-27
+## [0.8.6] - 2023-05-27
 ### Added
 - add new keyword to list all namespaced custom objects [#133] (https://github.com/devopsspiral/KubeLibrary/pull/133) by [@kutayy]
-## [0.8.5] - 2022-04-22
+## [0.8.5] - 2023-04-22
 ### Fixed
 - Fixed no_proxy setting
 
-## [0.8.4] - 2022-04-10
+## [0.8.4] - 2023-04-10
 ### Fixed
 - Fixed proxy setting
 - Deprecating batch/v1beta1, discovery.k8s.io/v1beta1 
