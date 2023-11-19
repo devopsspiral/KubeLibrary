@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+- update read_namespaced_pod_log keyword with new optional parameter 'since_seconds'
+
 ## [0.8.6] - 2022-05-27
 ### Added
 - add new keyword to list all namespaced custom objects [#133] (https://github.com/devopsspiral/KubeLibrary/pull/133) by [@kutayy]

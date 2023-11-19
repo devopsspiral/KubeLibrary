@@ -69,6 +69,7 @@ class KubeLibrary:
     | Library           KubeLibrary          None    True
 
     """
+
     def __init__(self, kube_config=None, context=None, api_url=None, bearer_token=None,
                  ca_cert=None, incluster=False, cert_validation=True):
         """KubeLibrary can be configured with several optional arguments.
@@ -98,7 +99,8 @@ class KubeLibrary:
 
     @staticmethod
     def get_proxy():
-        return environ.get('https_proxy') or environ.get('HTTPS_PROXY') or environ.get('http_proxy') or environ.get('HTTP_PROXY')
+        return environ.get('https_proxy') or environ.get('HTTPS_PROXY') or environ.get('http_proxy') or environ.get(
+            'HTTP_PROXY')
 
     @staticmethod
     def get_no_proxy():
@@ -221,7 +223,8 @@ class KubeLibrary:
         resource = self.get_dynamic_resource(api_version, kind)
         resource.replace(**kwargs)
 
-    def reload_config(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None, incluster=False, cert_validation=True):
+    def reload_config(self, kube_config=None, context=None, api_url=None, bearer_token=None, ca_cert=None,
+                      incluster=False, cert_validation=True):
         """Reload the KubeLibrary to be configured with different optional arguments.
            This can be used to connect to a different cluster during the same test.
         - ``kube_config``:
@@ -394,8 +397,10 @@ class KubeLibrary:
         pods = [item for item in ret.items if r.match(item.metadata.name)]
         return pods
 
-    def read_namespaced_pod_log(self, name, namespace, container):
+    def read_namespaced_pod_log(self, name, namespace, container, since_seconds=None):
         """Gets container logs of given pod in given namespace.
+
+        Can be optionally filtered by time in seconds. e.g. since_seconds=1000.
 
         Returns logs.
 
@@ -406,7 +411,8 @@ class KubeLibrary:
         - ``container``:
           Container to check
         """
-        pod_logs = self.v1.read_namespaced_pod_log(name=name, namespace=namespace, container=container, follow=False)
+        pod_logs = self.v1.read_namespaced_pod_log(name=name, namespace=namespace, container=container, follow=False,
+                                                   since_seconds=since_seconds)
         return pod_logs
 
     def get_pod_logs(self, name, namespace, container):
@@ -873,7 +879,8 @@ class KubeLibrary:
             for k, v in annotations.items():
                 if pod.metadata.annotations and k in pod.metadata.annotations:
                     if pod.metadata.annotations[k] != v:
-                        logger.error(f'Annotation "{k}" value "{v}" not matching actual "{pod.metadata.annotations[k]}"')
+                        logger.error(
+                            f'Annotation "{k}" value "{v}" not matching actual "{pod.metadata.annotations[k]}"')
                         return False
                 else:
                     logger.error(f'Annotation "{k}" not found in actual')
@@ -983,7 +990,8 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.autoscalingv1.list_namespaced_horizontal_pod_autoscaler(namespace, watch=False, label_selector=label_selector)
+        ret = self.autoscalingv1.list_namespaced_horizontal_pod_autoscaler(namespace, watch=False,
+                                                                           label_selector=label_selector)
         return [item for item in ret.items]
 
     def get_hpas_in_namespace(self, namespace, label_selector=""):
@@ -998,7 +1006,8 @@ class KubeLibrary:
         - ``namespace``:
           Namespace to check
         """
-        ret = self.autoscalingv1.list_namespaced_horizontal_pod_autoscaler(namespace, watch=False, label_selector=label_selector)
+        ret = self.autoscalingv1.list_namespaced_horizontal_pod_autoscaler(namespace, watch=False,
+                                                                           label_selector=label_selector)
         return [item.metadata.name for item in ret.items]
 
     def read_namespaced_horizontal_pod_autoscaler(self, name, namespace):
