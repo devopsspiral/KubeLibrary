@@ -4,7 +4,8 @@ Force Tags    exec    other
 
 *** Variables ***
 ${string}            Hello
-${CONTAINER_NAME}    grafana
+${POD_NAME}          myapp-pod
+${CONTAINER_NAME}    myapp-container
 
 *** Test Cases ***
 Exec test case example
