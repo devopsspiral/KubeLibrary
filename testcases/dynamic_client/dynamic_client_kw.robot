@@ -30,7 +30,8 @@ get resource names
     [return]    ${names}
 create pod
     [Arguments]     ${conf}
-    KubeLibrary.create      api_version=v1      kind=Pod      body=${conf}
+    ${new_pod}=    KubeLibrary.create      api_version=v1      kind=Pod      body=${conf}
+    [return]      ${new_pod}
 get specific pod
     [Arguments]     ${namespace}      ${label_selector}
     ${pods}=      KubeLibrary.get      api_version=v1      kind=Pod      namespace=${namespace}      label_selector=${label_selector}
