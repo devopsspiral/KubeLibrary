@@ -249,7 +249,6 @@ def mock_list_namespaced_role_bindings(namespace, watch=False):
             list_of_role_bind = AttributeDict({'items': role_bind_content})
             return list_of_role_bind
 
-
 bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05RaWdSUFoyN004TmlGT1pSX28ifQ.' \
                'eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1' \
                'lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15c2EtdG' \
@@ -395,14 +394,17 @@ class TestKubeLibrary(unittest.TestCase):
 
     @responses.activate
     def test_KubeLibrary_dynamic_create(self):
+        with open('test/resources/pod.json') as json_file:
+            sample_pod = json.load(json_file)
         responses.add("GET", "/version", status=200)
         responses.add("GET", "/apis", status=200, body='{"groups": [], "kind": "Pod" }', content_type="application/json")
         responses.add("GET", "/api/v1", status=200,
                       body='{"resources": [{"api_version": "v1", "kind": "Pod", "name": "Mock"}], "kind": "Pod"}',
                       content_type="application/json")
-        responses.add("POST", "/api/v1/mock", status=200)
+        responses.add("POST", "/api/v1/mock", status=200, body=json.dumps(sample_pod), content_type="application/json")
         kl = KubeLibrary(kube_config='test/resources/k3d')
-        kl.create("v1", "Pod", name="Mock")
+        created = kl.create("v1", "Pod", body=json.dumps(sample_pod))
+        self.assertEqual(created.to_dict(), sample_pod)
 
     @responses.activate
     def test_KubeLibrary_dynamic_delete(self):
