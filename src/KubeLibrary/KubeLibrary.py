@@ -178,7 +178,7 @@ class KubeLibrary:
           Keyword arguments for argument forwarding
         """
         resource = self.get_dynamic_resource(api_version, kind)
-        ret =  resource.create(**kwargs)
+        ret = resource.create(**kwargs)
         return ret
 
     def delete(self, api_version, kind, **kwargs):
