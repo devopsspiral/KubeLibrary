@@ -45,7 +45,7 @@ Health API Reports Ok For etcd
     etcd  ok
 
 Health API Reports Ok For poststarthook/start-kube-apiserver-admission-initializer
-    [Tags]    cluster    smoke
+    [Tags]    cluster
     [Template]  Health API Template
     poststarthook/start-kube-apiserver-admission-initializer  ok
 
