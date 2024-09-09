@@ -168,6 +168,8 @@ class KubeLibrary:
         If the resource is cluster-level, then one of ``name``, ``label_selector``, or ``field_selector`` is required.
         Can be optionally given a kubernetes manifest (``body``) which respects the above considerations.
 
+        Returns created object
+
         - ``api_version``:
           Api version of the desired kubernetes resource
         - ``kind``:
@@ -176,7 +178,8 @@ class KubeLibrary:
           Keyword arguments for argument forwarding
         """
         resource = self.get_dynamic_resource(api_version, kind)
-        resource.create(**kwargs)
+        ret = resource.create(**kwargs)
+        return ret
 
     def delete(self, api_version, kind, **kwargs):
         """Deletes resource instances based on the provided configuration.

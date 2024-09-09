@@ -41,3 +41,14 @@ Dynamic client test case example 3
     create pod     ${conf}
     sleep     5 seconds
     [Teardown]      Run Keywords     delete pod     default     svc-lookup       AND         delete svc     default     myservice
+
+Dynamic client test case example create Pod with generated name
+    [Tags]     dynamic-client    other    prerelease
+    ${conf}=     read conf     testcases/dynamic_client/resources/pod_generated_name.yaml
+    ${pod}=    create pod     ${conf}
+    sleep     5 seconds
+    ${pod_dict}=    Call Method    ${pod}    to_dict
+    ${pod_name}=     Get From Dictionary     ${pod_dict['metadata']}    name
+    ${created_pod}=    Get    api_version=v1    kind=Pod    namespace=default    name=${pod_name}
+    Should Not Be Empty    ${created_pod}
+    [Teardown]    delete pod    default    ${pod_name}
