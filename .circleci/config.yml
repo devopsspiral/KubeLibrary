@@ -172,6 +172,19 @@ jobs:
             pip install twine
             python3 setup.py sdist bdist_wheel
             python3 -m twine upload dist/*
+  generate-index file:
+    executor: python/default
+    environment:
+      PYTHONPATH=./src
+    steps:
+      - checkout
+      - python/install-deps    
+      - run:
+          name: Build image.html
+          command: |
+            git branch
+            pwd
+            python3 -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html            
 workflows:
   main:
     jobs:
@@ -197,3 +210,11 @@ workflows:
               ignore: /.*/
             tags:
               only: /^v.*/
+      - generate-index file:
+          requires:
+            - build-and-test
+            - lint-and-coverage
+            - test-on-k8s            
+          filters:
+            tags:
+              only: /.*/          
