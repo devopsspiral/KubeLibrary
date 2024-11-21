@@ -11,7 +11,7 @@ ${KUBE_CONFIG2}         %{KUBE_CONFIG2=./cluster2-conf}
 
 *** Keywords ***
 Connected to cluster-1 
-    Reload Config  kube_config=${KUBE_CONFIG1}  incluster=False  cert_validation=False
+    Reload Config  kube_config=${KUBE_CONFIG1}  incluster=False  cert_validation=True
     K8s Api Ping
 
 Cluster has namespace
