@@ -260,9 +260,7 @@ class KubeLibrary:
         elif api_url and bearer_token:
             if bearer_token.startswith('Bearer '):
                 raise BearerTokenWithPrefixException
-            configuration = client.Configuration()
-            configuration._default.proxy = KubeLibrary.get_proxy()
-            configuration._default.no_proxy = KubeLibrary.get_no_proxy()
+            configuration = client.Configuration.get_default_copy()
             configuration.api_key["authorization"] = bearer_token
             configuration.api_key_prefix['authorization'] = 'Bearer'
             configuration.host = api_url
@@ -271,13 +269,11 @@ class KubeLibrary:
         else:
             try:
                 config.load_kube_config(kube_config, context)
-                client.Configuration._default.proxy = KubeLibrary.get_proxy()
-                client.Configuration._default.no_proxy = KubeLibrary.get_no_proxy()
             except TypeError:
                 logger.error('Neither KUBECONFIG nor ~/.kube/config available.')
 
         if not self.api_client:
-            self.api_client = client.ApiClient(configuration=client.Configuration().get_default_copy())
+            self.api_client = client.ApiClient(configuration=client.Configuration.get_default_copy())
 
         self._add_api('v1', client.CoreV1Api)
         self._add_api('networkingv1api', client.NetworkingV1Api)
