@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
 
+## [0.8.9] - 2025-07-17
+### Fixed
+- Fixed proxy settings which are now handled by kubernetes python client
+
 ## [0.8.8] - 2024-10-07
 ### Added
 - update create keyword to return created object [#143](https://github.com/devopsspiral/KubeLibrary/pull/143) by [@aisonaku]
