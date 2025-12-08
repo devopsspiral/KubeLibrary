@@ -2,6 +2,8 @@ FROM python:3.12-alpine
 COPY setup.py README.md requirements.txt ./
 COPY src ./src
 COPY testcases ./testcases
+RUN python -m pip install --upgrade pip \
+    && python -m pip install --upgrade setuptools
 RUN pip install robotframework-requests \
     && python setup.py install
 
