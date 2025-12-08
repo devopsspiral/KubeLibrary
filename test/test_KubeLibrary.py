@@ -249,8 +249,23 @@ def mock_list_namespaced_role_bindings(namespace, watch=False):
             list_of_role_bind = AttributeDict({'items': role_bind_content})
             return list_of_role_bind
 
+
 def mock_k8s_version():
-    k8s_version = {'major': '1', 'minor': '33', 'emulationMajor': '1', 'emulationMinor': '33', 'minCompatibilityMajor': '1', 'minCompatibilityMinor': '32', 'gitVersion': 'v1.33.5-gke.1308000', 'gitCommit': 'a53c2ee3f2e9859ad8413e216edd44aed40e011d', 'gitTreeState': 'clean', 'buildDate': '2025-10-13T04:22:26Z', 'goVersion': 'go1.24.6 X:boringcrypto', 'compiler': 'gc', 'platform': 'linux/amd64'}
+    k8s_version = {
+        'major': '1',
+        'minor': '33',
+        'emulationMajor': '1',
+        'emulationMinor': '33',
+        'minCompatibilityMajor': '1',
+        'minCompatibilityMinor': '32',
+        'gitVersion': 'v1.33.5-gke.1308000',
+        'gitCommit': 'a53c2ee3f2e9859ad8413e216edd44aed40e011d',
+        'gitTreeState': 'clean',
+        'buildDate': '2025-10-13T04:22:26Z',
+        'goVersion': 'go1.24.6 X:boringcrypto',
+        'compiler': 'gc',
+        'platform': 'linux/amd64'
+        }
     return k8s_version
 
 
