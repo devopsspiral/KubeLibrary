@@ -1,2 +1,3 @@
 robotframework-requests
 robotframework-kubelibrary
+urllib3<2
