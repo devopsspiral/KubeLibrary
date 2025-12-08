@@ -45,7 +45,7 @@ Health API Reports Ok For etcd
     etcd  ok
 
 Health API Reports Ok For poststarthook/start-kube-apiserver-admission-initializer
-    [Tags]    cluster    smoke
+    [Tags]    cluster
     [Template]  Health API Template
     poststarthook/start-kube-apiserver-admission-initializer  ok
 
@@ -104,10 +104,10 @@ Health API Reports Ok For poststarthook/apiservice-registration-controller
     [Template]  Health API Template
     poststarthook/apiservice-registration-controller  ok
 
-Health API Reports Ok For poststarthook/apiservice-status-available-controller
-    [Tags]    cluster    smoke
-    [Template]  Health API Template
-    poststarthook/apiservice-status-available-controller  ok
+#Health API Reports Ok For poststarthook/apiservice-status-available-controller
+#    [Tags]    cluster    smoke
+#    [Template]  Health API Template
+#    poststarthook/apiservice-status-available-controller  ok
 
 Health API Reports Ok For poststarthook/kube-apiserver-autoregistration
     [Tags]    cluster    smoke

@@ -20,32 +20,51 @@ cd KubeLibrary
 robot -e prerelease testcases
 ```
 
+## Documentation
+
+[Library docs](http://devopsspiral.com/KubeLibrary/)
+
 ## Example testcase
 
 ```
-Pods in kube-system are ok
-    [Documentation]  Test if all pods in kube-system initiated correctly and are running or succeeded
-    [Tags]    cluster    smoke
-    Given kubernetes API responds
-    When getting all pods in  "kube-system"
-    Then all pods in "kube-system" are running or succeeded
+testcases/system_smoke.robot
 
-Grafana has correct version
-    [Documentation]  Test if Grafana container image is in correct version
-    [Tags]    grafana
-    Given kubernetes API responds
-    When accessing "grafana-" excluding "svclb" container images version in "default"
-    Then "grafana/grafana:6.5.0" version is used
+*** Settings ***
+(1)Resource          ./system_smoke_kw.robot
+
+*** Variables ***
+(2)${KUBELET_VERSION}     %{KUBELET_VERSION}
+${NUM_NODES}           2
+${NUM_WORKERS}         1
+
+*** Test Cases ***
+
+(3)Pods in kube-system are ok
+(4)    [Documentation]  Test if all pods in kube-system initiated correctly and are running or succeeded
+(5)    [Tags]    cluster    smoke
+(6)    Given kubernetes API responds
+(7)    When getting all pods names in "kube-system"
+(8)    Then all pods in "kube-system" are running or succeeded
 
 ```
+
+1 - keyword definitions in separate file relative to testcase file
+
+2 - defining local variable taking value from environment variable
+
+3 - testcase definition
+
+4 - Documentation/comments
+
+5 - Tags, you can include (-i) and exclude (-e) tests by tag.
+
+6(7,8) - Given, When, Then clause. It is only way of organizing your test steps, given, when, then are just omitted, real keywords definition needs to match 'kubernetes API responds', 'getting all pods names in ...' etc.(see testcases/system_smoke_kw.robot)
+
+7 - kube-system in quotes is treated as parameter for 'getting all pods names in ...' keyword.
 
 More examples in testcases/ directory.
 
 To see all the tests passing execute below commands.
-
-## Documentation
-
-[Library docs](http://devopsspiral.com/KubeLibrary/)
 
 
 ### Cluster Tests
@@ -67,25 +86,6 @@ export KLIB_POD_NAMESPACE=default
 
 robot -i grafana -e prerelease testcases/
 ```
-
-### Octopus Tests
-```
-git clone https://github.com/kyma-incubator/octopus
-helm install octopus octopus/chart/octopus/
-
-# run octopus tests
-export KLIB_RESOURCE_LIMITS_MEMORY=30Mi
-export KLIB_POD_PATTERN='octopus.*'
-export KLIB_RESOURCE_REQUESTS_CPU=100m
-export KLIB_POD_LABELS='{"app":"octopus"}'
-export KLIB_RESOURCE_LIMITS_CPU=100m
-export KLIB_ENV_VARS='{"SECRET_NAME":"webhook-server-secret"}'
-export KLIB_POD_NAMESPACE=default
-export KLIB_RESOURCE_REQUESTS_MEMORY=20Mi
-
-robot -i octopus -e prerelease testcases/
-```
-
 ### Other Tests
 These tests require the kubelib-test helm-chart to be installed in your test cluster.
 ```
@@ -134,6 +134,14 @@ kind delete cluster --name kind-cluster-2
 
 Keywords documentation can be found in docs/.
 
+## Proxy configuration
+
+To access cluster via proxy set `http_proxy` or `HTTP_PROXY` environment variable. 
+
+In similar way you can set `no_proxy` or `NO_PROXY` variable to specify hosts that should be excluded from proxying.
+
+**IMPORTANT:** Lowercase environment variables have higher priority than uppercase
+
 ## Further reading
 
 [DevOps spiral article on KubeLibrary](https://devopsspiral.com/articles/k8s/robotframework-kubelibrary/)
@@ -152,7 +160,7 @@ cd KubeLibrary
 # create virtualenv
 virtualenv .venv
 . .venv/bin/activate
-pip install -r requirements
+pip install -r requirements-dev.txt
 ```
 
 Create keyword and test file, import KubeLibrary using below to point to library under development.
@@ -168,5 +176,13 @@ For development cluster you can use k3s/k3d as described in [DevOps spiral artic
 ### Generate docs
 
 ```
-python -m robot.libdoc src/KubeLibrary/KubeLibrary.py docs/index.html
+(
+    # To generate keyword documentation a connection
+    # to a cluster is not necessary. Skip to load a
+    # cluster configuration.
+    #
+    # Set the variable local for the libdoc call only
+    export INIT_FOR_LIBDOC_ONLY=1
+    python -m robot.libdoc src/KubeLibrary docs/index.html
+)
 ```

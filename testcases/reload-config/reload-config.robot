@@ -21,7 +21,7 @@ Reload config test case example
     AND Cluster has no namespace  test-ns-1
 
 Authenticate using bearer token
-    [Tags]    reload-config    auth.bearer-token    prerelease
+    [Tags]    reload-config    auth.bearer-token
     [Documentation]  Test authentication using brearer token
 
     WHEN Connected to cluster-1 using bearer token

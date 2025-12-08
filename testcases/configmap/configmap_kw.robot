@@ -11,7 +11,7 @@ Library           KubeLibrary
 *** Keywords ***
 List all configmaps in namespace
     [Arguments]  ${namespace}  ${label}=${EMPTY}
-    @{namespace_configmaps}=  Get Configmaps In Namespace    .*  ${namespace}  ${label}
+    @{namespace_configmaps}=  List namespaced config map by pattern    .*  ${namespace}  ${label}
     Log  \nConfigmaps in namespace ${namespace}:  console=True
     FOR  ${configmap}  IN  @{namespace_configmaps}
         Log  ${configmap.metadata.name}  console=True
@@ -19,7 +19,7 @@ List all configmaps in namespace
 
 List all key value pairs in configmap
     [Arguments]  ${configmap_name}  ${namespace}
-    @{namespace_configmaps}=  Get Configmaps In Namespace    ^${configmap_name}$  ${namespace}
+    @{namespace_configmaps}=  List namespaced config map by pattern    ^${configmap_name}$  ${namespace}
     Log  \nList of key value pairs in configmap ${configmap_name}:  console=True
     FOR  ${configmap}  IN  @{namespace_configmaps}
         Log key value pairs  ${configmap.data}

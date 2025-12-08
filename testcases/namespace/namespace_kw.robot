@@ -8,12 +8,14 @@ Library           KubeLibrary
 
 *** Keywords ***
 List all namespaces
-    @{namespaces_list}=  Get Namespaces
-    Log  \nNamespaces ${namespaces_list}:  console=True
+    @{namespaces_list}=  List Namespace
+    @{namespace_names}=    Filter Names    ${namespaces_list}
+    Log  \nNamespaces ${namespace_names}:  console=True
 
 List namespaces filtered by label
-    @{namespaces_list}=  Get Namespaces  label_selector=test=test
-    Log  \nNamespaces with label test=test ${namespaces_list}:  console=True
+    @{namespaces_list}=  List Namespace  label_selector=test=test
+    @{namespace_names}=    Filter Names    ${namespaces_list}
+    Log  \nNamespaces with label test=test ${namespace_names}:  console=True
 
 
 

@@ -11,7 +11,7 @@ Library           KubeLibrary
 *** Keywords ***
 List all service accounts for matching name pattern in namespace
     [Arguments]  ${name_pattern}    ${namespace}
-    @{namespace_service_account}=  Get Service Accounts In Namespace    ${name_pattern}  ${namespace}
+    @{namespace_service_account}=  List Namespaced Service Account By Pattern    ${name_pattern}  ${namespace}
     Log  \nService Accounts in namespace ${namespace}:  console=True
     FOR  ${sa}  IN  @{namespace_service_account}
         Log  ${sa.metadata.name}  console=True
@@ -21,7 +21,7 @@ List all service accounts for matching name pattern in namespace
 
 List all service accounts for matching name pattern in namespace with label
     [Arguments]  ${name_pattern}  ${namespace}  ${label}
-    @{namespace_service_account}=  Get Service Accounts In Namespace    ${name_pattern}  ${namespace}  ${label}
+    @{namespace_service_account}=  List Namespaced Service Account By Pattern    ${name_pattern}  ${namespace}  ${label}
     Log  \nService Accounts in namespace ${namespace}:  console=True
     FOR  ${sa}  IN  @{namespace_service_account}
         Log  ${sa.metadata.name}  console=True
@@ -37,10 +37,10 @@ Edit obtained service account
 
 Create new service account in namespace
     [Arguments]  ${namespace}
-    ${new_sa}=    Create Service Account In Namespace  ${namespace}  ${new_service_account}
+    ${new_sa}=    create_namespaced_service_account  ${namespace}  ${new_service_account}
     Log  ${new_sa}
 
 Delete created service account in namespace
     [Arguments]  ${service_account_name}    ${namespace}
-    ${status}=    Delete Service Account In Namespace  ${service_account_name}    ${namespace}
+    ${status}=    delete_namespaced_service_account  ${service_account_name}    ${namespace}
     Log  ${status}

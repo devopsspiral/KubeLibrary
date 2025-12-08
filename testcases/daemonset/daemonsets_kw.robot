@@ -9,16 +9,16 @@ Library           KubeLibrary
 *** Keywords ***
 List all daemonsets
     [Arguments]  ${namespace} 
-    @{namespace_daemonsets}=  Get Daemonsets In Namespace    ${namespace}  
+    @{namespace_daemonsets}=  List Namespaced Daemon Set    ${namespace}  
     Length Should Be  ${namespace_daemonsets}  1
     Log  \nDaemonsets ${namespace_daemonsets}:  console=True
     FOR  ${daemonset}  IN  @{namespace_daemonsets}
-        Wait Until Keyword Succeeds  1min  5sec  Check Daemonset readiness  ${daemonset}  ${namespace} 
+        Wait Until Keyword Succeeds  1min  5sec  Check Daemonset readiness  ${daemonset.metadata.name}  ${namespace} 
     END
 
 Check Daemonset readiness
     [Arguments]  ${daemonset}  ${namespace}
-    ${daemonset_details}=  Get Daemonset Details In Namespace  ${daemonset}  ${namespace}
+    ${daemonset_details}=  Read Namespaced Daemon Set  ${daemonset}  ${namespace}
     Log  \nDaemonset - ${daemonset}:  console=True
     Log  \n\tDesired Number Scheduled : ${daemonset_details.status.desired_number_scheduled}   console=True
     Log  \n\tNumber Ready : ${daemonset_details.status.number_ready} :  console=True
@@ -28,11 +28,11 @@ Check Daemonset readiness
 
 List daemonsets filtered by label
     [Arguments]  ${namespace}   ${label}
-    @{namespace_daemonsets}=  Get Daemonsets In Namespace    ${namespace}    ${label}	
+    @{namespace_daemonsets}=  List Namespaced Daemon Set    ${namespace}    ${label}	
 	Length Should Be  ${namespace_daemonsets}  1
     Log  \nDaemonsets with label ${label} ${namespace_daemonsets}:  console=True
     FOR  ${daemonset}  IN  @{namespace_daemonsets}
-        ${daemonset_details}=  Get Daemonset Details In Namespace  ${daemonset}  ${namespace}
+        ${daemonset_details}=  Read Namespaced Daemon Set  ${daemonset.metadata.name}  ${namespace}
         Log  \nDaemonset - ${daemonset}:  console=True
         Log  \n\tDesired Number Scheduled : ${daemonset_details.status.desired_number_scheduled}   console=True
         Log  \n\tNumber Ready : ${daemonset_details.status.number_ready} :  console=True

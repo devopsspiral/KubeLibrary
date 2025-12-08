@@ -9,7 +9,7 @@ ${NUM_WORKERS}         1
 *** Test Cases ***
 Kubernetes has correct version
     [Documentation]  Test if Kubernetes has correct version
-    [Tags]    cluster    smoke
+    [Tags]    cluster
     Given kubernetes has "${NUM_NODES}" healthy nodes
     When getting kubelet version
     Then Kubernetes version is correct

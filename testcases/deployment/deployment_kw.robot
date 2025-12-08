@@ -11,14 +11,14 @@ Library           KubeLibrary
 *** Keywords ***
 List all deployments in namespace
     [Arguments]  ${namespace}  ${label}=${EMPTY}
-    @{namespace_deployments}=  Get Deployments In Namespace    .*  ${namespace}  ${label}
+    @{namespace_deployments}=  List Namespaced Deployment By Pattern    .*  ${namespace}  ${label}
     Log  \nDeployments in namespace ${namespace}:  console=True
     FOR  ${deployment}  IN  @{namespace_deployments}
         Log  ${deployment.metadata.name}  console=True
     END
 
 Show Grafana Deployment
-    @{namespace_deployments}=  Get Deployments In Namespace    grafana  default
+    @{namespace_deployments}=  List Namespaced Deployment By Pattern    grafana  default
     FOR  ${deployment}  IN  @{namespace_deployments}
         Should be Equal   ${deployment.metadata.name}  grafana
         Set Global Variable  ${DEPLOYMENT}  ${deployment}

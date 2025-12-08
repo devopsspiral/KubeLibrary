@@ -9,14 +9,14 @@ Library           KubeLibrary
 *** Keywords ***
 List all secrets in namespace
     [Arguments]  ${namespace}  ${label}=${EMPTY}
-    @{namespace_secrets}=  Get Secrets In Namespace    .*  ${namespace}  ${label}
+    @{namespace_secrets}=  List Namespaced Secret By Pattern    .*  ${namespace}  ${label}
     Log  \nSecrets in namespace ${namespace}:  console=True
     FOR  ${secret}  IN  @{namespace_secrets}
         Log  ${secret.metadata.name}  console=True
     END
 
 Read grafana secrets
-    @{namespace_secrets}=  Get Secrets In Namespace    ^grafana$  default
+    @{namespace_secrets}=  List Namespaced Secret By Pattern    ^grafana$  default
     Length Should Be  ${namespace_secrets}  1
   
     Set Suite Variable  ${GRAFANA_USER}  ${namespace_secrets[0].data["admin-user"]}

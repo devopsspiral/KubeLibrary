@@ -1,16 +1,77 @@
 # Change Log
 All notable changes to this project will be documented in this file.
- 
+
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+
+## [0.8.9] - 2025-07-17
+### Fixed
+- Fixed proxy settings which are now handled by kubernetes python client
+
+## [0.8.8] - 2024-10-07
 ### Added
+- update create keyword to return created object [#143](https://github.com/devopsspiral/KubeLibrary/pull/143) by [@aisonaku]
+
+## [0.8.7] - 2023-11-19
+### Added
+- update read_namespaced_pod_log keyword with new optional parameter 'since_seconds' [#136](https://github.com/devopsspiral/KubeLibrary/pull/136) by [@LissaGreense] 
+- google-auth>=2.5.0 [#138](https://github.com/devopsspiral/KubeLibrary/pull/138) by [@angegar] 
+
+## [0.8.6] - 2023-05-27
+### Added
+- add new keyword to list all namespaced custom objects [#133] (https://github.com/devopsspiral/KubeLibrary/pull/133) by [@kutayy]
+## [0.8.5] - 2023-04-22
+### Fixed
+- Fixed no_proxy setting
+
+## [0.8.4] - 2023-04-10
+### Fixed
+- Fixed proxy setting
+- Deprecating batch/v1beta1, discovery.k8s.io/v1beta1 
+
+## [0.8.3] - 2022-12-19
+revert
+
+- Add proxy configuration fetched from `HTTP_PROXY` or `http_proxy` environment variable by [@LissaGreense]
+## [0.8.0] - 2022-10-27
+### Added
+- Add function list_namespaced_stateful_set_by_pattern [#114](https://github.com/devopsspiral/KubeLibrary/pull/113) by [@siaomingjeng](https://github.com/siaomingjeng)
+- Add function list_namespaced_persistent_volume_claim_by_pattern [#112](https://github.com/devopsspiral/KubeLibrary/pull/112) by [@siaomingjeng](https://github.com/siaomingjeng)
+
+### Changed
+- batchv1_beta1 deprecated
+- ci uses latest default k8s and latest k3s
+- octopus test helm chart removed as not working
+## [0.7.0] - 2022-04-01
+### Added
+- Added keyword for handling kubectl exec [#102](https://github.com/devopsspiral/KubeLibrary/pull/101) by [@MarcinMaciaszek](https://github.com/MarcinMaciaszek)
+### Changed
+- networkingv1api used instead of extensionsv1beta1
+## [0.6.2] - 2022-02-25
+
+### Fixed
+- Fix the kubernetes lib version (21.7.0) to still support extension/v1beta1 (ingress)
+
+## [0.6.1] - 2022-01-27
+### Changed
+- Refactored setup.py & requirements, moved library scope to GLOBAL, sperated exceptions [#101](https://github.com/devopsspiral/KubeLibrary/pull/101) by [@MarcinMaciaszek](https://github.com/MarcinMaciaszek)
+
+### Fixed
+- Generate keyword documentation without a kubernetes cluster [#103](https://github.com/devopsspiral/KubeLibrary/pull/103) by [bli74](https://github.com/bli74)
+## [0.6.0] - 2021-11-30
+### Changed
+- Helpers and keywords unification [#75](https://github.com/devopsspiral/KubeLibrary/pull/75) by [@m-wcislo](https://github.com/m-wcislo)
+## [0.5.0] - 2021-10-03
+### Added
+- Dynamic client support and some utilities [#93](https://github.com/devopsspiral/KubeLibrary/pull/93) by [@mertkayhan](https://github.com/mertkayhan)
 - Keyword for getting Horizontal Pod Autoscalers [#80](https://github.com/devopsspiral/KubeLibrary/pull/80 )by [@Nilsty](https://github.com/Nilsty)
 - Keyword for list cluster role and cluster role binding [#58](https://github.com/devopsspiral/KubeLibrary/pull/58) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Keyword for getiing role and rolebinding [#56](https://github.com/devopsspiral/KubeLibrary/pull/56) by [@satish-nubolab](https://github.com/satish-nubolab)
 - Bearer token authentication [#39](https://github.com/devopsspiral/KubeLibrary/pull/39) by [@m-wcislo](https://github.com/m-wcislo)
 - Keyoword for create and delete a cronjob [#71](https://github.com/devopsspiral/KubeLibrary/pull/71) by [@satish-nubolab](https://github.com/satish-nubolab)
+- Keywords for get replicaset in a namespace [#82](https://github.com/devopsspiral/KubeLibrary/pull/92) by [@hello2ray](https://github.com/hello2ray)
 ## [0.4.0] - 2021-03-12
 ### Added
 - Kubeconfig context support [#36](https://github.com/devopsspiral/KubeLibrary/pull/36) by [@m-wcislo](https://github.com/m-wcislo)
@@ -33,7 +94,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - CI implementation [#14](https://github.com/devopsspiral/KubeLibrary/pull/14) by [@m-wcislo](https://github.com/m-wcislo)
 - keywords to list deployments [#13](https://github.com/devopsspiral/KubeLibrary/pull/13) by [@Nilsty](https://github.com/Nilsty)
-- keywords for get/create/delete service accounts [#28](https://github.com/devopsspiral/KubeLibrary/pull/28) by [@kutayy](https://github.com/kutayy)   
+- keywords for get/create/delete service accounts [#28](https://github.com/devopsspiral/KubeLibrary/pull/28) by [@kutayy](https://github.com/kutayy)
 
 
 ## [0.2.0] - 2020-09-03
@@ -48,11 +109,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## [0.1.4] - 2020-07-28
- 
+
 ### Added
 - pod generic testcases added, should be extended in future
 - add kw for getting configmaps, update docs [#5](https://github.com/devopsspiral/KubeLibrary/pull/5) by [@Nilsty](https://github.com/Nilsty)
- 
+
 ### Changed
 - reorganized library functions to getters, filters and asserts
 - python unit tests

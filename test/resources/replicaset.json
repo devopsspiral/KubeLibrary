@@ -1,0 +1,57 @@
+[
+  {
+    "apiVersion": "apps/v1",
+    "kind": "ReplicaSet",
+    "metadata": {
+      "creationTimestamp": "2021-07-22T00:56:58Z",
+      "generation": 1,
+      "labels": {
+        "app": "nginx-proxy",
+        "tier": "frontend"
+      },
+      "name": "nginx-proxy",
+      "namespace": "test-auto",
+      "resourceVersion": "94849081",
+      "selfLink": "/apis/apps/v1/namespaces/test-auto/replicasets/nginx-proxy",
+      "uid": "3c64a9fb-b891-475b-905b-84ec84e079ee"
+    },
+    "spec": {
+      "replicas": 5,
+      "selector": {
+        "matchLabels": {
+          "tier": "frontend"
+        }
+      },
+      "template": {
+        "metadata": {
+          "creationTimestamp": null,
+          "labels": {
+            "tier": "frontend"
+          }
+        },
+        "spec": {
+          "containers": [
+            {
+              "image": "nginx",
+              "imagePullPolicy": "Always",
+              "name": "nginx",
+              "resources": {},
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {},
+          "terminationGracePeriodSeconds": 30
+        }
+      }
+    },
+    "status": {
+      "fullyLabeledReplicas": 5,
+      "observedGeneration": 1,
+      "replicas": 5
+    }
+  }
+]

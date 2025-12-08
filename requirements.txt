@@ -1,8 +1,4 @@
-kubernetes
+google-auth>=2.5.0
+kubernetes>=21.7.0
 robotframework>=3.2.2
-# for development
-mock
-flake8
-coverage
-# for example testcases
-robotframework-requests
+urllib3-mock>=0.3.3
