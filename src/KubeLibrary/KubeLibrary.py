@@ -313,7 +313,7 @@ class KubeLibrary:
     def k8s_version(self):
         """Performs GET on /version to show the k8s cluster version.
 
-        Returns tuple of (response data, response status, response headers). Can be used as prerequisite in tests.
+        Returns a dict of kubernetes version information, similar to `kubectl version`.
         """
         path_params = {}
         query_params = []
