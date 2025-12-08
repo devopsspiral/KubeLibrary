@@ -833,5 +833,5 @@ class TestKubeLibrary(unittest.TestCase):
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
 
     def test_k8s_version(self):
-        mock_resp = mock_k8s_version
+        mock_resp = mock_k8s_version()
         self.assertEqual("v1.33.5-gke.1308000", str(mock_resp['gitVersion']))
