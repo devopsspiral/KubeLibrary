@@ -132,7 +132,7 @@ jobs:
             -e KUBECONFIG=$K3D_KUBECONFIG \
             -e KUBELET_VERSION=$K8S_VERSION \
             -e HTTPS_PROXY=http://1.1.1.1 \
-            -e NO_PROXY="localhost,127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,${K8S_SERVICE_HOST},172.20.0.2" \
+            -e NO_PROXY=172.20.0.2 \
             kubelibrary -i smoke /testcases/
       - k3d/k3d-run:
           step-name: Run Grafana examples
