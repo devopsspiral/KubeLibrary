@@ -250,6 +250,25 @@ def mock_list_namespaced_role_bindings(namespace, watch=False):
             return list_of_role_bind
 
 
+def mock_k8s_version():
+    k8s_version = {
+        'major': '1',
+        'minor': '33',
+        'emulationMajor': '1',
+        'emulationMinor': '33',
+        'minCompatibilityMajor': '1',
+        'minCompatibilityMinor': '32',
+        'gitVersion': 'v1.33.5-gke.1308000',
+        'gitCommit': 'a53c2ee3f2e9859ad8413e216edd44aed40e011d',
+        'gitTreeState': 'clean',
+        'buildDate': '2025-10-13T04:22:26Z',
+        'goVersion': 'go1.24.6 X:boringcrypto',
+        'compiler': 'gc',
+        'platform': 'linux/amd64'
+        }
+    return k8s_version
+
+
 bearer_token = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjdXVWJMOUdTaDB1TjcyNmF0Sjk4RWlzQ05RaWdSUFoyN004TmlGT1pSX28ifQ.' \
                'eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1' \
                'lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6Im15c2EtdG' \
@@ -812,3 +831,7 @@ class TestKubeLibrary(unittest.TestCase):
         cron_job_details2 = kl.get_cron_job_details_in_namespace('hello', 'default')
         self.assertEqual(cron_job_details.items.metadata.labels.TestLabel, cron_job_details2.items.metadata.labels.TestLabel)
         self.assertEqual('mytestlabel', cron_job_details.items.metadata.labels.TestLabel)
+
+    def test_k8s_version(self):
+        mock_resp = mock_k8s_version()
+        self.assertEqual("v1.33.5-gke.1308000", str(mock_resp['gitVersion']))

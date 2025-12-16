@@ -1,3 +1,4 @@
+import ast
 import json
 import re
 import ssl
@@ -308,6 +309,26 @@ class KubeLibrary:
                                            async_req=False,
                                            _return_http_data_only=False)
         return resp
+
+    def k8s_version(self):
+        """Performs GET on /version to show the k8s cluster version.
+
+        Returns a dict of kubernetes version information, similar to `kubectl version`.
+        """
+        path_params = {}
+        query_params = []
+        header_params = {}
+        auth_settings = ['BearerToken']
+        resp = self.v1.api_client.call_api('/version/', 'GET',
+                                           path_params,
+                                           query_params,
+                                           header_params,
+                                           response_type='str',
+                                           auth_settings=auth_settings,
+                                           async_req=False,
+                                           _return_http_data_only=False)
+        version = ast.literal_eval(resp[0])
+        return version
 
     def list_namespace(self, label_selector=""):
         """Lists available namespaces.
