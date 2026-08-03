@@ -96,7 +96,19 @@ jobs:
             kubectl create namespace test-ns-1
             kubectl apply -f /repo/testcases/reload-config/sa.yaml
             MYSA_TOKEN_SECRET=mysa-token
-            export K8S_TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET --template={{.data.token}} | base64 -d)
+            TOKEN=""
+            for i in $(seq 1 30); do
+              TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath='{.data.token}' 2>/dev/null || true)
+              if [ -n "$TOKEN" ]; then
+                TOKEN=$(echo "$TOKEN" | base64 -d)
+                break
+              fi
+              sleep 1
+            done
+            if [ -z "$TOKEN" ]; then
+              TOKEN=$(kubectl create token mysa -n default)
+            fi
+            export K8S_TOKEN="$TOKEN"
             kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
             export K8S_CA_CRT=/.kube/ca.crt
             export KUBE_CONFIG1=/.kube/testk3d-1
