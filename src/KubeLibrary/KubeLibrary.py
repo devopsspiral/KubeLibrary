@@ -1,4 +1,5 @@
 import ast
+import inspect
 import json
 import re
 import ssl
@@ -291,6 +292,26 @@ class KubeLibrary:
         if not self.cert_validation:
             self.__dict__[reference].api_client.rest_client.pool_manager.connection_pool_kw['cert_reqs'] = ssl.CERT_NONE
 
+    def _call_api(self, resource_path, method, path_params, query_params,
+                  header_params, response_type='str', auth_settings=None,
+                  async_req=False, _return_http_data_only=False):
+        kwargs = {
+            'auth_settings': auth_settings,
+            'async_req': async_req,
+            '_return_http_data_only': _return_http_data_only,
+        }
+        if 'response_types_map' in inspect.signature(
+                self.v1.api_client.call_api).parameters:
+            kwargs['response_types_map'] = {'default': response_type}
+        else:
+            kwargs['response_type'] = response_type
+        return self.v1.api_client.call_api(
+            resource_path, method,
+            path_params,
+            query_params,
+            header_params,
+            **kwargs)
+
     def k8s_api_ping(self):
         """Performs GET on /api/v1/ for simple check of API availability.
 
@@ -300,14 +321,14 @@ class KubeLibrary:
         query_params = []
         header_params = {}
         auth_settings = ['BearerToken']
-        resp = self.v1.api_client.call_api('/api/v1/', 'GET',
-                                           path_params,
-                                           query_params,
-                                           header_params,
-                                           response_type='str',
-                                           auth_settings=auth_settings,
-                                           async_req=False,
-                                           _return_http_data_only=False)
+        resp = self._call_api('/api/v1/', 'GET',
+                               path_params,
+                               query_params,
+                               header_params,
+                               response_type='str',
+                               auth_settings=auth_settings,
+                               async_req=False,
+                               _return_http_data_only=False)
         return resp
 
     def k8s_version(self):
@@ -319,14 +340,14 @@ class KubeLibrary:
         query_params = []
         header_params = {}
         auth_settings = ['BearerToken']
-        resp = self.v1.api_client.call_api('/version/', 'GET',
-                                           path_params,
-                                           query_params,
-                                           header_params,
-                                           response_type='str',
-                                           auth_settings=auth_settings,
-                                           async_req=False,
-                                           _return_http_data_only=False)
+        resp = self._call_api('/version/', 'GET',
+                               path_params,
+                               query_params,
+                               header_params,
+                               response_type='str',
+                               auth_settings=auth_settings,
+                               async_req=False,
+                               _return_http_data_only=False)
         version = ast.literal_eval(resp[0])
         return version
 
@@ -1289,14 +1310,14 @@ class KubeLibrary:
         if not (endpoint.startswith('/readyz') or endpoint.startswith('/livez')):
             raise RuntimeError(f'{endpoint} does not start with "/readyz" or "/livez"')
         endpoint = endpoint if not verbose else endpoint + '?verbose'
-        resp = self.v1.api_client.call_api(endpoint, 'GET',
-                                           path_params,
-                                           query_params,
-                                           header_params,
-                                           response_type='str',
-                                           auth_settings=auth_settings,
-                                           async_req=False,
-                                           _return_http_data_only=False)
+        resp = self._call_api(endpoint, 'GET',
+                               path_params,
+                               query_params,
+                               header_params,
+                               response_type='str',
+                               auth_settings=auth_settings,
+                               async_req=False,
+                               _return_http_data_only=False)
         return resp
 
     def list_namespaced_ingress(self, namespace, label_selector=""):
