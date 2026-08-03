@@ -94,8 +94,10 @@ jobs:
           command: |
             # Multi cluster tests
             export KUBECONFIG=$K3D_KUBECONFIG
-            # Ensure kubeconfig volume is writable before running kubectl (prevents .lock permission errors)
-            docker run --rm --volumes-from kubeconfig alpine sh -c "mkdir -p /.kube || true; chmod 666 $K3D_KUBECONFIG || true; ls -l $K3D_KUBECONFIG || true"
+            # Copy kubeconfig from the kubeconfig volume to a host-writable path and use it
+            docker cp kubeconfig:$K3D_KUBECONFIG /tmp/k3d_kubeconfig || true
+            chmod 666 /tmp/k3d_kubeconfig || true
+            export KUBECONFIG=/tmp/k3d_kubeconfig
             kubectl config get-contexts -o name
             CTX1=$(kubectl config get-contexts -o name | grep testk3d-1 | head -1)
             echo "Using context for cluster1: $CTX1"
