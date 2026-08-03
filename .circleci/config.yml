@@ -98,17 +98,17 @@ jobs:
             docker cp kubeconfig:$K3D_KUBECONFIG /tmp/k3d_kubeconfig || true
             chmod 666 /tmp/k3d_kubeconfig || true
             export KUBECONFIG=/tmp/k3d_kubeconfig
-            kubectl config get-contexts -o name
-            CTX1=$(kubectl config get-contexts -o name | grep testk3d-1 | head -1)
+            kubectl --kubeconfig /tmp/k3d_kubeconfig config get-contexts -o name
+            CTX1=$(kubectl --kubeconfig /tmp/k3d_kubeconfig config get-contexts -o name | grep testk3d-1 | head -1)
             echo "Using context for cluster1: $CTX1"
-            kubectl config use-context $CTX1
-            kubectl config current-context
-            kubectl create namespace test-ns-1
-            kubectl apply -f /repo/testcases/reload-config/sa.yaml
+            kubectl --kubeconfig /tmp/k3d_kubeconfig config use-context $CTX1
+            kubectl --kubeconfig /tmp/k3d_kubeconfig config current-context
+            kubectl --kubeconfig /tmp/k3d_kubeconfig create namespace test-ns-1
+            kubectl --kubeconfig /tmp/k3d_kubeconfig apply -f /repo/testcases/reload-config/sa.yaml
             MYSA_TOKEN_SECRET=mysa-token
             TOKEN=""
             for i in $(seq 1 30); do
-              TOKEN=$(kubectl -n default get secret $MYSA_TOKEN_SECRET -o jsonpath='{.data.token}' 2>/dev/null || true)
+              TOKEN=$(kubectl --kubeconfig /tmp/k3d_kubeconfig -n default get secret $MYSA_TOKEN_SECRET -o jsonpath='{.data.token}' 2>/dev/null || true)
               if [ -n "$TOKEN" ]; then
                 TOKEN=$(printf '%s' "$TOKEN" | base64 -d | tr -d '\n')
                 break
@@ -116,11 +116,11 @@ jobs:
               sleep 1
             done
             if [ -z "$TOKEN" ]; then
-              TOKEN=$(kubectl -n default create token mysa | tr -d '\n')
+              TOKEN=$(kubectl --kubeconfig /tmp/k3d_kubeconfig -n default create token mysa | tr -d '\n')
             fi
             echo "Token length: ${#TOKEN}"
             export K8S_TOKEN="$TOKEN"
-            kubectl -n default get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
+            kubectl --kubeconfig /tmp/k3d_kubeconfig -n default get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
             export K8S_CA_CRT=/.kube/ca.crt
             export KUBE_CONFIG1=/.kube/testk3d-1
             export KUBE_CONFIG2=/.kube/testk3d-2
@@ -130,7 +130,7 @@ jobs:
             echo "K8S_API_URL=$K8S_API_URL"
             echo "K8S_CA_CRT=$K8S_CA_CRT"
             echo "K8S_TOKEN length=${#K8S_TOKEN}"
-            kubectl version
+            kubectl --kubeconfig /tmp/k3d_kubeconfig version
             curl --silent --show-error --insecure --header "Authorization: Bearer $K8S_TOKEN" "$K8S_API_URL/version" || true
             docker run --rm --network k3d-testk3d-1 --entrypoint sh kubelibrary -c "curl --silent --show-error --cacert /$K8S_CA_CRT --header \"Authorization: Bearer $K8S_TOKEN\" $K8S_API_URL/version || true"
             docker cp kubeconfig:$KUBE_CONFIG1 ~/kubeconfig-testk3d-1.yaml 
