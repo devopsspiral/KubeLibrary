@@ -1,4 +1,4 @@
-FROM python:3.10-alpine
+FROM python:3.14-slim
 COPY setup.py README.md requirements.txt pyproject.toml ./
 COPY src ./src
 COPY testcases ./testcases
