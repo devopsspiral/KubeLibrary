@@ -1,17 +1,16 @@
-from pkg_resources import parse_requirements
 from pathlib import Path
 from setuptools import setup
 
-exec(open("src/KubeLibrary/version.py").read())
+exec(Path("src/KubeLibrary/version.py").read_text())
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-with Path("requirements.txt").open() as requirements:
-    install_requires = [
-        str(requirement)
-        for requirement in parse_requirements(requirements)
-    ]
+install_requires = [
+    line.strip()
+    for line in Path("requirements.txt").read_text().splitlines()
+    if line.strip() and not line.strip().startswith("#")
+]
 
 setup(
     name="robotframework-kubelibrary",
@@ -22,12 +21,11 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/devopsspiral/KubeLibrary",
-    license="MIT",
+    license_expression="MIT",
     packages=["KubeLibrary"],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Testing",
     ],
