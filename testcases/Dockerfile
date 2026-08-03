@@ -1,4 +1,4 @@
-FROM python:3.14-alpine
+FROM python:3.12-alpine
 COPY setup.py README.md requirements.txt ./
 COPY src ./src
 COPY testcases ./testcases
