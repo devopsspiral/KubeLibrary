@@ -136,6 +136,8 @@ jobs:
             docker cp ~/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
             docker cp ~/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
             docker cp ca.crt kubeconfig:$K8S_CA_CRT
+            # Ensure kubeconfig and CA files are writable by the test container user
+            docker run --rm --volumes-from kubeconfig alpine sh -c "chmod 644 $KUBE_CONFIG1 $KUBE_CONFIG2 /$K8S_CA_CRT || true; chown 1000:1000 $KUBE_CONFIG1 $KUBE_CONFIG2 /$K8S_CA_CRT || true"
             docker create --rm -it \
             --network k3d-testk3d-1 \
             --volumes-from kubeconfig \
