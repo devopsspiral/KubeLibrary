@@ -321,14 +321,15 @@ class KubeLibrary:
         query_params = []
         header_params = {}
         auth_settings = ['BearerToken']
-        resp = self._call_api('/api/v1/', 'GET',
-                               path_params,
-                               query_params,
-                               header_params,
-                               response_type='str',
-                               auth_settings=auth_settings,
-                               async_req=False,
-                               _return_http_data_only=False)
+        resp = self._call_api(
+            '/api/v1/', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            response_type='str',
+            auth_settings=auth_settings,
+            async_req=False,
+            _return_http_data_only=False)
         return resp
 
     def k8s_version(self):
@@ -340,14 +341,15 @@ class KubeLibrary:
         query_params = []
         header_params = {}
         auth_settings = ['BearerToken']
-        resp = self._call_api('/version/', 'GET',
-                               path_params,
-                               query_params,
-                               header_params,
-                               response_type='str',
-                               auth_settings=auth_settings,
-                               async_req=False,
-                               _return_http_data_only=False)
+        resp = self._call_api(
+            '/version/', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            response_type='str',
+            auth_settings=auth_settings,
+            async_req=False,
+            _return_http_data_only=False)
         version = ast.literal_eval(resp[0])
         return version
 
@@ -1310,14 +1312,15 @@ class KubeLibrary:
         if not (endpoint.startswith('/readyz') or endpoint.startswith('/livez')):
             raise RuntimeError(f'{endpoint} does not start with "/readyz" or "/livez"')
         endpoint = endpoint if not verbose else endpoint + '?verbose'
-        resp = self._call_api(endpoint, 'GET',
-                               path_params,
-                               query_params,
-                               header_params,
-                               response_type='str',
-                               auth_settings=auth_settings,
-                               async_req=False,
-                               _return_http_data_only=False)
+        resp = self._call_api(
+            endpoint, 'GET',
+            path_params,
+            query_params,
+            header_params,
+            response_type='str',
+            auth_settings=auth_settings,
+            async_req=False,
+            _return_http_data_only=False)
         return resp
 
     def list_namespaced_ingress(self, namespace, label_selector=""):
