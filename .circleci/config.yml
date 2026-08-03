@@ -93,12 +93,14 @@ jobs:
           step-name: Run Multi cluster examples
           command: |
             # Multi cluster tests
+            export KUBECONFIG=$K3D_KUBECONFIG
+            kubectl config current-context
             kubectl create namespace test-ns-1
             kubectl apply -f /repo/testcases/reload-config/sa.yaml
             MYSA_TOKEN_SECRET=mysa-token
             TOKEN=""
             for i in $(seq 1 30); do
-              TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath='{.data.token}' 2>/dev/null || true)
+              TOKEN=$(kubectl -n default get secret $MYSA_TOKEN_SECRET -o jsonpath='{.data.token}' 2>/dev/null || true)
               if [ -n "$TOKEN" ]; then
                 TOKEN=$(echo "$TOKEN" | base64 -d)
                 break
@@ -106,16 +108,22 @@ jobs:
               sleep 1
             done
             if [ -z "$TOKEN" ]; then
-              TOKEN=$(kubectl create token mysa -n default)
+              TOKEN=$(kubectl -n default create token mysa)
             fi
+            echo "Token length: ${#TOKEN}"
             export K8S_TOKEN="$TOKEN"
-            kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
+            kubectl -n default get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
             export K8S_CA_CRT=/.kube/ca.crt
             export KUBE_CONFIG1=/.kube/testk3d-1
             export KUBE_CONFIG2=/.kube/testk3d-2
             export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-server-0)
             export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
             export K8S_API_URL="https://$CLUSTER1_IP:6443"
+            echo "K8S_API_URL=$K8S_API_URL"
+            echo "K8S_CA_CRT=$K8S_CA_CRT"
+            echo "K8S_TOKEN length=${#K8S_TOKEN}"
+            kubectl version --short
+            curl --silent --show-error --insecure --header "Authorization: Bearer $K8S_TOKEN" "$K8S_API_URL/version"
             docker cp kubeconfig:$KUBE_CONFIG1 ~/kubeconfig-testk3d-1.yaml 
             docker cp kubeconfig:$KUBE_CONFIG2 ~/kubeconfig-testk3d-2.yaml 
             sed -i "s#server: https://.*#server: https://$CLUSTER1_IP:6443#g" ~/kubeconfig-testk3d-1.yaml
