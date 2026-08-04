@@ -96,8 +96,6 @@ jobs:
             kubectl create namespace test-ns-1
             kubectl apply -f /repo/testcases/reload-config/sa.yaml
             export K8S_TOKEN="$(kubectl -n default create token mysa)"
-            echo "checking kubeconfig container status"
-            docker inspect --format '{{.State.Status}}' kubeconfig || true
             export K8S_CA_CRT=/.kube/ca.crt
             export KUBE_CONFIG1=/.kube/testk3d-1
             export KUBE_CONFIG2=/.kube/testk3d-2
@@ -108,6 +106,10 @@ jobs:
             docker cp kubeconfig:$KUBE_CONFIG2 ~/kubeconfig-testk3d-2.yaml
             sed -i "s#server: https://.*#server: https://$CLUSTER1_IP:6443#g" ~/kubeconfig-testk3d-1.yaml
             sed -i "s#server: https://.*#server: https://$CLUSTER2_IP:6443#g" ~/kubeconfig-testk3d-2.yaml
+            echo "checking kubeconfig for cluster 1"
+            kubectl config view --kubeconfig ~/kubeconfig-testk3d-1.yaml
+            echo "checking kubeconfig for cluster 2"
+            kubectl config view --kubeconfig ~/kubeconfig-testk3d-2.yaml
             kubectl config view --kubeconfig ~/kubeconfig-testk3d-1.yaml -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d > ca.crt
             docker cp ~/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
             docker cp ~/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
