@@ -101,7 +101,7 @@ jobs:
             kubectl --kubeconfig /tmp/k3d_kubeconfig config get-contexts -o name
             CTX1=$(kubectl --kubeconfig /tmp/k3d_kubeconfig config get-contexts -o name | grep testk3d-1 | head -1)
             echo "Using context for cluster1: $CTX1"
-            kubectl --kubeconfig /tmp/k3d_kubeconfig config use-context $CTX1
+            # kubectl --kubeconfig /tmp/k3d_kubeconfig config use-context $CTX1
             kubectl --kubeconfig /tmp/k3d_kubeconfig config current-context
             kubectl --kubeconfig /tmp/k3d_kubeconfig create namespace test-ns-1
             kubectl --kubeconfig /tmp/k3d_kubeconfig apply -f /repo/testcases/reload-config/sa.yaml
