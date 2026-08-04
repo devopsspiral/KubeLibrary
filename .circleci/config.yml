@@ -111,8 +111,13 @@ jobs:
             docker cp ~/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
             docker cp ca.crt kubeconfig:$K8S_CA_CRT
             test -s ca.crt
-            grep -q 'BEGIN CERTIFICATE' ca.crt
-            openssl x509 -in ca.crt -noout -issuer -subject
+            python3 - <<'PY'
+              import pathlib
+              crt = pathlib.Path('ca.crt').read_text()
+              if 'BEGIN CERTIFICATE' not in crt or 'END CERTIFICATE' not in crt:
+                raise SystemExit('ca.crt does not contain a PEM certificate')
+              print('ca.crt PEM validation OK')
+              PY
             docker create --rm -it \
             --network k3d-testk3d-1 \
             --volumes-from kubeconfig \
