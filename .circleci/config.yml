@@ -110,6 +110,9 @@ jobs:
             docker cp ~/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
             docker cp ~/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
             docker cp ca.crt kubeconfig:$K8S_CA_CRT
+            test -s ca.crt
+            grep -q 'BEGIN CERTIFICATE' ca.crt
+            openssl x509 -in ca.crt -noout -issuer -subject
             docker create --rm -it \
             --network k3d-testk3d-1 \
             --volumes-from kubeconfig \
