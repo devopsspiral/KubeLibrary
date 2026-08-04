@@ -96,8 +96,8 @@ jobs:
             kubectl create namespace test-ns-1
             kubectl apply -f /repo/testcases/reload-config/sa.yaml
             export K8S_TOKEN="$(kubectl -n default create token mysa)"
-            echo "listing kubeconfig files in kubeconfig container"
-            docker exec kubeconfig ls -la /.kube
+            echo "checking kubeconfig container status"
+            docker inspect --format '{{.State.Status}}' kubeconfig || true
             export K8S_CA_CRT=/.kube/ca.crt
             export KUBE_CONFIG1=/.kube/testk3d-1
             export KUBE_CONFIG2=/.kube/testk3d-2
