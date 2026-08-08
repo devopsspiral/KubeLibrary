@@ -114,7 +114,22 @@ jobs:
             sed -n '1,120p' ~/kubeconfig-testk3d-1.yaml || true
             echo "=== raw view (nonprintables shown) ==="
             cat -A ~/kubeconfig-testk3d-1.yaml || true
-            hexdump -C ~/kubeconfig-testk3d-1.yaml | head -n 40 || true
+            if command -v hexdump >/dev/null 2>&1; then
+              hexdump -C ~/kubeconfig-testk3d-1.yaml | head -n 40 || true
+            elif command -v xxd >/dev/null 2>&1; then
+              xxd -l 256 ~/kubeconfig-testk3d-1.yaml || true
+            else
+              python3 - <<'PY'
+import os
+p=os.path.expanduser('$HOME/kubeconfig-testk3d-1.yaml')
+try:
+    b=open(p,'rb').read(256)
+    print('bytes_len=%d' % len(b))
+    print(' '.join('%02x' % c for c in b))
+except Exception as e:
+    print('python hexdump error:', e)
+PY
+            fi || true
             echo "=== kubectl parse (raw) ==="
             kubectl config view --kubeconfig ~/kubeconfig-testk3d-1.yaml --raw -o yaml || true
             echo "=== kubeconfig 2 info ==="
@@ -123,7 +138,22 @@ jobs:
             sed -n '1,120p' ~/kubeconfig-testk3d-2.yaml || true
             echo "=== raw view (nonprintables shown) ==="
             cat -A ~/kubeconfig-testk3d-2.yaml || true
-            hexdump -C ~/kubeconfig-testk3d-2.yaml | head -n 40 || true
+            if command -v hexdump >/dev/null 2>&1; then
+              hexdump -C ~/kubeconfig-testk3d-2.yaml | head -n 40 || true
+            elif command -v xxd >/dev/null 2>&1; then
+              xxd -l 256 ~/kubeconfig-testk3d-2.yaml || true
+            else
+              python3 - <<'PY'
+import os
+p=os.path.expanduser('$HOME/kubeconfig-testk3d-2.yaml')
+try:
+    b=open(p,'rb').read(256)
+    print('bytes_len=%d' % len(b))
+    print(' '.join('%02x' % c for c in b))
+except Exception as e:
+    print('python hexdump error:', e)
+PY
+            fi || true
             echo "=== kubectl parse (raw) ==="
             kubectl config view --kubeconfig ~/kubeconfig-testk3d-2.yaml --raw -o yaml || true
             # update cluster server endpoints
