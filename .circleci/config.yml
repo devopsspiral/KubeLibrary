@@ -103,52 +103,56 @@ jobs:
             export KUBE_CONFIG2=/.kube/testk3d-2
             export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-server-0)
             export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
+            export HOME=/tmp
+            mkdir -p /tmp/.kube
+            export KUBE_CONFIG1_FILE=/tmp/kubeconfig-testk3d-1.yaml
+            export KUBE_CONFIG2_FILE=/tmp/kubeconfig-testk3d-2.yaml
             export K8S_API_URL="https://$CLUSTER1_IP:6443"
             # copy kubeconfigs out of the volume-only container by streaming via a temporary alpine container
-            docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG1" > ~/kubeconfig-testk3d-1.yaml
-            docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG2" > ~/kubeconfig-testk3d-2.yaml
+            docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG1" > "$KUBE_CONFIG1_FILE"
+            docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG2" > "$KUBE_CONFIG2_FILE"
             # quick debug of copied files to detect corruption or non-printables
             echo "=== kubeconfig 1 info ==="
-            ls -l ~/kubeconfig-testk3d-1.yaml || true
-            file ~/kubeconfig-testk3d-1.yaml || true
-            sed -n '1,120p' ~/kubeconfig-testk3d-1.yaml || true
+            ls -l "$KUBE_CONFIG1_FILE" || true
+            file "$KUBE_CONFIG1_FILE" || true
+            sed -n '1,120p' "$KUBE_CONFIG1_FILE" || true
             echo "=== raw view (nonprintables shown) ==="
-            cat -A ~/kubeconfig-testk3d-1.yaml || true
+            cat -A "$KUBE_CONFIG1_FILE" || true
             if command -v hexdump >/dev/null 2>&1; then
-              hexdump -C ~/kubeconfig-testk3d-1.yaml | head -n 40 || true
+              hexdump -C "$KUBE_CONFIG1_FILE" | head -n 40 || true
             elif command -v xxd >/dev/null 2>&1; then
-              xxd -l 256 ~/kubeconfig-testk3d-1.yaml || true
+              xxd -l 256 "$KUBE_CONFIG1_FILE" || true
             else
-              python3 -c "import os; p=os.path.expanduser('$HOME/kubeconfig-testk3d-1.yaml'); b=open(p,'rb').read(256); print('bytes_len=%d'%len(b)); print(' '.join('%02x'%c for c in b))" || true
+              python3 -c "import os; b=open('$KUBE_CONFIG1_FILE','rb').read(256); print('bytes_len=%d'%len(b)); print(' '.join('%02x'%c for c in b))" || true
             fi || true
             echo "=== kubectl parse (raw) ==="
-            kubectl config view --kubeconfig ~/kubeconfig-testk3d-1.yaml --raw -o yaml || true
+            KUBECONFIG="$KUBE_CONFIG1_FILE" kubectl config view --raw -o yaml || true
             echo "=== kubeconfig 2 info ==="
-            ls -l ~/kubeconfig-testk3d-2.yaml || true
-            file ~/kubeconfig-testk3d-2.yaml || true
-            sed -n '1,120p' ~/kubeconfig-testk3d-2.yaml || true
+            ls -l "$KUBE_CONFIG2_FILE" || true
+            file "$KUBE_CONFIG2_FILE" || true
+            sed -n '1,120p' "$KUBE_CONFIG2_FILE" || true
             echo "=== raw view (nonprintables shown) ==="
-            cat -A ~/kubeconfig-testk3d-2.yaml || true
+            cat -A "$KUBE_CONFIG2_FILE" || true
             if command -v hexdump >/dev/null 2>&1; then
-              hexdump -C ~/kubeconfig-testk3d-2.yaml | head -n 40 || true
+              hexdump -C "$KUBE_CONFIG2_FILE" | head -n 40 || true
             elif command -v xxd >/dev/null 2>&1; then
-              xxd -l 256 ~/kubeconfig-testk3d-2.yaml || true
+              xxd -l 256 "$KUBE_CONFIG2_FILE" || true
             else
-              python3 -c "import os; p=os.path.expanduser('$HOME/kubeconfig-testk3d-2.yaml'); b=open(p,'rb').read(256); print('bytes_len=%d'%len(b)); print(' '.join('%02x'%c for c in b))" || true
+              python3 -c "import os; b=open('$KUBE_CONFIG2_FILE','rb').read(256); print('bytes_len=%d'%len(b)); print(' '.join('%02x'%c for c in b))" || true
             fi || true
             echo "=== kubectl parse (raw) ==="
-            kubectl config view --kubeconfig ~/kubeconfig-testk3d-2.yaml --raw -o yaml || true
+            KUBECONFIG="$KUBE_CONFIG2_FILE" kubectl config view --raw -o yaml || true
             # update cluster endpoints using kubectl but avoid writing to $HOME by setting HOME=/tmp
-            HOME=/tmp kubectl --kubeconfig ~/kubeconfig-testk3d-1.yaml config set-cluster k3d-testk3d-1 --server="https://$CLUSTER1_IP:6443" || true
-            HOME=/tmp kubectl --kubeconfig ~/kubeconfig-testk3d-2.yaml config set-cluster k3d-testk3d-2 --server="https://$CLUSTER2_IP:6443" || true
-            echo "server lines after update (cluster1):"; sed -n '1,160p' ~/kubeconfig-testk3d-1.yaml | grep -n "server:" || true
-            echo "server lines after update (cluster2):"; sed -n '1,160p' ~/kubeconfig-testk3d-2.yaml | grep -n "server:" || true
+            HOME=/tmp KUBECONFIG="$KUBE_CONFIG1_FILE" kubectl config set-cluster k3d-testk3d-1 --server="https://$CLUSTER1_IP:6443" || true
+            HOME=/tmp KUBECONFIG="$KUBE_CONFIG2_FILE" kubectl config set-cluster k3d-testk3d-2 --server="https://$CLUSTER2_IP:6443" || true
+            echo "server lines after update (cluster1):"; sed -n '1,160p' "$KUBE_CONFIG1_FILE" | grep -n "server:" || true
+            echo "server lines after update (cluster2):"; sed -n '1,160p' "$KUBE_CONFIG2_FILE" | grep -n "server:" || true
             echo "checking kubeconfig for cluster 1"
-            kubectl config view --kubeconfig ~/kubeconfig-testk3d-1.yaml
+            KUBECONFIG="$KUBE_CONFIG1_FILE" kubectl config view
             echo "checking kubeconfig for cluster 2"
-            kubectl config view --kubeconfig ~/kubeconfig-testk3d-2.yaml
-            docker cp ~/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
-            docker cp ~/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
+            KUBECONFIG="$KUBE_CONFIG2_FILE" kubectl config view
+            docker cp "$KUBE_CONFIG1_FILE" kubeconfig:$KUBE_CONFIG1
+            docker cp "$KUBE_CONFIG2_FILE" kubeconfig:$KUBE_CONFIG2
             docker cp ca.crt kubeconfig:$K8S_CA_CRT
             docker create --rm -it \
             --network k3d-testk3d-1 \
