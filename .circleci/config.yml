@@ -104,8 +104,29 @@ jobs:
             export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-server-0)
             export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
             export K8S_API_URL="https://$CLUSTER1_IP:6443"
-            docker cp kubeconfig:$KUBE_CONFIG1 ~/kubeconfig-testk3d-1.yaml 
-            docker cp kubeconfig:$KUBE_CONFIG2 ~/kubeconfig-testk3d-2.yaml 
+            # copy kubeconfigs out of the volume-only container by streaming via a temporary alpine container
+            docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG1" > ~/kubeconfig-testk3d-1.yaml
+            docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG2" > ~/kubeconfig-testk3d-2.yaml
+            # quick debug of copied files to detect corruption or non-printables
+            echo "=== kubeconfig 1 info ==="
+            ls -l ~/kubeconfig-testk3d-1.yaml || true
+            file ~/kubeconfig-testk3d-1.yaml || true
+            sed -n '1,120p' ~/kubeconfig-testk3d-1.yaml || true
+            echo "=== raw view (nonprintables shown) ==="
+            cat -A ~/kubeconfig-testk3d-1.yaml || true
+            hexdump -C ~/kubeconfig-testk3d-1.yaml | head -n 40 || true
+            echo "=== kubectl parse (raw) ==="
+            kubectl config view --kubeconfig ~/kubeconfig-testk3d-1.yaml --raw -o yaml || true
+            echo "=== kubeconfig 2 info ==="
+            ls -l ~/kubeconfig-testk3d-2.yaml || true
+            file ~/kubeconfig-testk3d-2.yaml || true
+            sed -n '1,120p' ~/kubeconfig-testk3d-2.yaml || true
+            echo "=== raw view (nonprintables shown) ==="
+            cat -A ~/kubeconfig-testk3d-2.yaml || true
+            hexdump -C ~/kubeconfig-testk3d-2.yaml | head -n 40 || true
+            echo "=== kubectl parse (raw) ==="
+            kubectl config view --kubeconfig ~/kubeconfig-testk3d-2.yaml --raw -o yaml || true
+            # update cluster server endpoints
             sed -i "s#server: https://.*#server: https://$CLUSTER1_IP:6443#g" ~/kubeconfig-testk3d-1.yaml
             sed -i "s#server: https://.*#server: https://$CLUSTER2_IP:6443#g" ~/kubeconfig-testk3d-2.yaml
             echo "checking kubeconfig for cluster 1"
