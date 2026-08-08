@@ -158,7 +158,18 @@ jobs:
             echo "K8S_TOKEN length: $(echo -n \"$K8S_TOKEN\" | wc -c)" || true
             echo "K8S_TOKEN head: ${K8S_TOKEN:0:8}..." || true
             # inject bearer token into staged kubeconfig users so tests use token auth
-              python3 -c 'import os,json; files=[os.environ.get("KUBE_CONFIG1_FILE"),os.environ.get("KUBE_CONFIG2_FILE")]; token=os.environ.get("K8S_TOKEN","") ; [(lambda p: (None if (not p or not os.path.exists(p)) else open(p,"w",encoding="utf-8").write("\n".join((lambda s: (lambda out: out)([(out.append(line), out.append((line[:len(line)-len(line.lstrip())]+"  token: "+json.dumps(token))) and None if line.strip()=="user:" else None)[0] for line in s]) ) (open(p,"r",encoding="utf-8").read().splitlines())) )))(p) for p in files]' || true
+            # Use kubectl to set-credentials with a token (set HOME to /tmp to avoid permission issues)
+            for f in "$KUBE_CONFIG1_FILE" "$KUBE_CONFIG2_FILE"; do
+              user_name=$(sed -n '/^users:/,/^contexts:/p' "$f" | sed -n 's/^[[:space:]]*name:[[:space:]]*//p' | head -n1)
+              if [ -n "$user_name" ]; then
+                echo "Setting token for user '$user_name' in $f"
+                HOME=/tmp KUBECONFIG="$f" kubectl config set-credentials "$user_name" --token="$K8S_TOKEN" || true
+                echo "Post-injection excerpt for $f:";
+                sed -n '1,120p' "$f" || true
+              else
+                echo "Could not find user name in $f" >&2
+              fi
+            done
             docker create --rm -it \
             --network k3d-testk3d-1 \
             --volumes-from kubeconfig \
