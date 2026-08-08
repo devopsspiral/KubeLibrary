@@ -160,14 +160,21 @@ jobs:
             # inject bearer token into staged kubeconfig users so tests use token auth
             # Use kubectl to set-credentials with a token (set HOME to /tmp to avoid permission issues)
             for f in "$KUBE_CONFIG1_FILE" "$KUBE_CONFIG2_FILE"; do
-              user_name=$(sed -n '/^users:/,/^contexts:/p' "$f" | sed -n 's/^[[:space:]]*name:[[:space:]]*//p' | head -n1)
+              if [ ! -f "$f" ]; then
+                echo "kubeconfig $f not present, skipping" >&2
+                continue
+              fi
+              # Use kubectl JSONPath to reliably get the first user name from the kubeconfig
+              user_name=$(HOME=/tmp KUBECONFIG="$f" kubectl config view -o jsonpath='{.users[0].name}' 2>/dev/null || true)
               if [ -n "$user_name" ]; then
                 echo "Setting token for user '$user_name' in $f"
                 HOME=/tmp KUBECONFIG="$f" kubectl config set-credentials "$user_name" --token="$K8S_TOKEN" || true
                 echo "Post-injection excerpt for $f:";
                 sed -n '1,120p' "$f" || true
+                echo "Verifying token (can-i get pods) for $f:";
+                HOME=/tmp KUBECONFIG="$f" kubectl auth can-i get pods --all-namespaces || echo "auth check failed for $f" >&2
               else
-                echo "Could not find user name in $f" >&2
+                echo "Could not determine user name from $f" >&2
               fi
             done
             docker create --rm -it \
