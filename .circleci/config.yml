@@ -138,9 +138,11 @@ jobs:
             fi || true
             echo "=== kubectl parse (raw) ==="
             kubectl config view --kubeconfig ~/kubeconfig-testk3d-2.yaml --raw -o yaml || true
-            # update only the `server:` lines in-place using perl to avoid kubectl/Home permission issues
-            perl -0777 -pe "s/^(\s*server:\s*)https?:\/\/.*$/\1https://$CLUSTER1_IP:6443/m" -i ~/kubeconfig-testk3d-1.yaml || true
-            perl -0777 -pe "s/^(\s*server:\s*)https?:\/\/.*$/\1https://$CLUSTER2_IP:6443/m" -i ~/kubeconfig-testk3d-2.yaml || true
+            # update cluster endpoints using kubectl but avoid writing to $HOME by setting HOME=/tmp
+            HOME=/tmp kubectl --kubeconfig ~/kubeconfig-testk3d-1.yaml config set-cluster k3d-testk3d-1 --server="https://$CLUSTER1_IP:6443" || true
+            HOME=/tmp kubectl --kubeconfig ~/kubeconfig-testk3d-2.yaml config set-cluster k3d-testk3d-2 --server="https://$CLUSTER2_IP:6443" || true
+            echo "server lines after update (cluster1):"; sed -n '1,160p' ~/kubeconfig-testk3d-1.yaml | grep -n "server:" || true
+            echo "server lines after update (cluster2):"; sed -n '1,160p' ~/kubeconfig-testk3d-2.yaml | grep -n "server:" || true
             echo "checking kubeconfig for cluster 1"
             kubectl config view --kubeconfig ~/kubeconfig-testk3d-1.yaml
             echo "checking kubeconfig for cluster 2"
