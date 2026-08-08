@@ -177,6 +177,13 @@ jobs:
                 echo "Could not determine user name from $f" >&2
               fi
             done
+            # copy injected kubeconfigs back into the kubeconfig volume so test containers use updated files
+            echo "Copying injected kubeconfigs back into kubeconfig volume"
+            docker cp "$KUBE_CONFIG1_FILE" kubeconfig:$KUBE_CONFIG1 || true
+            docker cp "$KUBE_CONFIG2_FILE" kubeconfig:$KUBE_CONFIG2 || true
+            # quick check of the files inside the volume
+            docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "echo '--- inside volume: $KUBE_CONFIG1 ---'; sed -n '1,80p' $KUBE_CONFIG1 || true"
+            docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "echo '--- inside volume: $KUBE_CONFIG2 ---'; sed -n '1,80p' $KUBE_CONFIG2 || true"
             docker create --rm -it \
             --network k3d-testk3d-1 \
             --volumes-from kubeconfig \
