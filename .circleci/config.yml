@@ -142,9 +142,9 @@ jobs:
             fi || true
             echo "=== kubectl parse (raw) ==="
             KUBECONFIG="$KUBE_CONFIG2_FILE" kubectl config view --raw -o yaml || true
-            # update cluster endpoints using kubectl but avoid writing to $HOME by setting HOME=/tmp
-            HOME=/tmp KUBECONFIG="$KUBE_CONFIG1_FILE" kubectl config set-cluster k3d-testk3d-1 --server="https://$CLUSTER1_IP:6443" || true
-            HOME=/tmp KUBECONFIG="$KUBE_CONFIG2_FILE" kubectl config set-cluster k3d-testk3d-2 --server="https://$CLUSTER2_IP:6443" || true
+            # update cluster endpoints by replacing the server line in the staged kubeconfig files (avoid kubectl write locks)
+            sed -i "s|server: https://127.0.0.1:6443|server: https://$CLUSTER1_IP:6443|g" "$KUBE_CONFIG1_FILE" || true
+            sed -i "s|server: https://127.0.0.1:6443|server: https://$CLUSTER2_IP:6443|g" "$KUBE_CONFIG2_FILE" || true
             echo "server lines after update (cluster1):"; sed -n '1,160p' "$KUBE_CONFIG1_FILE" | grep -n "server:" || true
             echo "server lines after update (cluster2):"; sed -n '1,160p' "$KUBE_CONFIG2_FILE" | grep -n "server:" || true
             echo "checking kubeconfig for cluster 1"
