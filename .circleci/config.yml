@@ -157,6 +157,9 @@ jobs:
             # debug: short, non-sensitive token info to validate extraction (length and first 8 chars)
             echo "K8S_TOKEN length: $(echo -n \"$K8S_TOKEN\" | wc -c)" || true
             echo "K8S_TOKEN head: ${K8S_TOKEN:0:8}..." || true
+            # inject bearer token into staged kubeconfig users so tests use token auth
+            python3 -c 'import os,json; files=[os.environ.get("KUBE_CONFIG1_FILE"),os.environ.get("KUBE_CONFIG2_FILE")]; token=os.environ.get("K8S_TOKEN","")
+      ;[ (lambda p: (None if (not p or not os.path.exists(p)) else (open(p,"w",encoding="utf-8").write("\n".join((lambda s: (lambda out: out)([(out.append(line), out.append((line[:len(line)-len(line.lstrip())]+"  token: "+json.dumps(token))) and None if line.strip()=="user:" else None)[0] for line in s]) ) (open(p,"r",encoding="utf-8").read().splitlines())) ) )))(p) for p in files ]' || true
             docker create --rm -it \
             --network k3d-testk3d-1 \
             --volumes-from kubeconfig \
