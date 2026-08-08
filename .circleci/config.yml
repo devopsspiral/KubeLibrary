@@ -119,16 +119,7 @@ jobs:
             elif command -v xxd >/dev/null 2>&1; then
               xxd -l 256 ~/kubeconfig-testk3d-1.yaml || true
             else
-              python3 - <<'PY'
-import os
-p=os.path.expanduser('$HOME/kubeconfig-testk3d-1.yaml')
-try:
-    b=open(p,'rb').read(256)
-    print('bytes_len=%d' % len(b))
-    print(' '.join('%02x' % c for c in b))
-except Exception as e:
-    print('python hexdump error:', e)
-PY
+              python3 -c "import os; p=os.path.expanduser('$HOME/kubeconfig-testk3d-1.yaml'); b=open(p,'rb').read(256); print('bytes_len=%d'%len(b)); print(' '.join('%02x'%c for c in b))" || true
             fi || true
             echo "=== kubectl parse (raw) ==="
             kubectl config view --kubeconfig ~/kubeconfig-testk3d-1.yaml --raw -o yaml || true
@@ -143,16 +134,7 @@ PY
             elif command -v xxd >/dev/null 2>&1; then
               xxd -l 256 ~/kubeconfig-testk3d-2.yaml || true
             else
-              python3 - <<'PY'
-import os
-p=os.path.expanduser('$HOME/kubeconfig-testk3d-2.yaml')
-try:
-    b=open(p,'rb').read(256)
-    print('bytes_len=%d' % len(b))
-    print(' '.join('%02x' % c for c in b))
-except Exception as e:
-    print('python hexdump error:', e)
-PY
+              python3 -c "import os; p=os.path.expanduser('$HOME/kubeconfig-testk3d-2.yaml'); b=open(p,'rb').read(256); print('bytes_len=%d'%len(b)); print(' '.join('%02x'%c for c in b))" || true
             fi || true
             echo "=== kubectl parse (raw) ==="
             kubectl config view --kubeconfig ~/kubeconfig-testk3d-2.yaml --raw -o yaml || true
