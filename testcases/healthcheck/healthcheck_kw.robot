@@ -22,7 +22,8 @@ Query Health API
     [Arguments]  ${endpoint}=/livez  ${verbose}=True
     ${response}=    get_healthcheck  ${endpoint}  ${verbose}
     Should Be Equal As integers  ${response}[1]  200
-    [Return]  ${response}
+    ${body}=    Set Variable If    ${response}[0] is ${None}    ok    ${response}[0]
+    RETURN  ${body}  ${response}[1]  ${response}[2]
 
 Health API Template
     [Documentation]  Checks both /readyz/${endpoint} and /livez/${endpoint}

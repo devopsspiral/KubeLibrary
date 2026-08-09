@@ -19,7 +19,7 @@ discover resources
     ${secrets}=         get resource names    Secret    v1    ${namespace}
     ${configmaps}=      get resource names    ConfigMap    v1    ${namespace}
     ${found}=           BuiltIn.evaluate    ${deployments} + ${statefulsets} + ${cronjobs} + ${secrets} + ${configmaps}
-    [return]    ${found}
+    RETURN    ${found}
 get resource names
     [Arguments]     ${kind}    ${api_version}    ${namespace}
     ${resource_list}=     KubeLibrary.get    kind=${kind}     api_version=${api_version}     namespace=${namespace}
@@ -27,15 +27,15 @@ get resource names
     FOR     ${resource}     IN     @{resource_list.items}
         Append To List     ${names}    ${resource.metadata.name}
     END
-    [return]    ${names}
+    RETURN    ${names}
 create pod
     [Arguments]     ${conf}
     ${new_pod}=    KubeLibrary.create      api_version=v1      kind=Pod      body=${conf}
-    [return]      ${new_pod}
+    RETURN      ${new_pod}
 get specific pod
     [Arguments]     ${namespace}      ${label_selector}
     ${pods}=      KubeLibrary.get      api_version=v1      kind=Pod      namespace=${namespace}      label_selector=${label_selector}
-    [return]      ${pods}
+    RETURN      ${pods}
 patch pod
     [Arguments]      ${pod}
     KubeLibrary.patch      api_version=v1      kind=Pod      body=${pod}
@@ -49,7 +49,7 @@ read conf
     [Arguments]     ${path}
     ${stream}=  Get Binary File      ${path}
     ${conf}=  yaml.Safe Load      ${stream}
-    [return]      ${conf}
+    RETURN      ${conf}
 create svc
     [Arguments]    ${conf}
     KubeLibrary.create     api_version=v1     kind=Service     body=${conf}
@@ -59,4 +59,4 @@ delete svc
 get specific svc
     [Arguments]    ${namespace}    ${name}
     ${svc}=    KubeLibrary.get    api_version=v1     kind=Service     name=${name}     namespace=${namespace}
-    [return]    ${svc}
+    RETURN    ${svc}
