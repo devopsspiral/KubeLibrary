@@ -125,19 +125,19 @@ jobs:
               -v /tmp/.local/bin/kubectl:/tmp/kubectl \
               -v "$PWD":/repo \
               --volumes-from kubeconfig \
-              alpine:3.4 sh -c "/tmp/kubectl --kubeconfig=$KUBE_CONFIG1 create namespace test-ns-1 && /tmp/kubectl --kubeconfig=$KUBE_CONFIG1 apply -f /repo/testcases/reload-config/sa.yaml"
+              alpine:3.4 sh -c "chmod +x /tmp/kubectl && /tmp/kubectl --kubeconfig=$KUBE_CONFIG1 create namespace test-ns-1 && /tmp/kubectl --kubeconfig=$KUBE_CONFIG1 apply -f /repo/testcases/reload-config/sa.yaml"
 
             export K8S_TOKEN=$(docker run --rm \
               --network container:k3d-testk3d-1-serverlb \
               -v /tmp/.local/bin/kubectl:/tmp/kubectl \
               --volumes-from kubeconfig \
-              alpine:3.4 sh -c "/tmp/kubectl --kubeconfig=$KUBE_CONFIG1 get secret $K8S_TOKEN_SECRET --template='{{.data.token}}' | base64 --decode | tr -d '\\r\\n'")
+              alpine:3.4 sh -c "chmod +x /tmp/kubectl && /tmp/kubectl --kubeconfig=$KUBE_CONFIG1 get secret $K8S_TOKEN_SECRET --template='{{.data.token}}' | base64 --decode | tr -d '\r\n'" )
 
             docker run --rm \
               --network container:k3d-testk3d-1-serverlb \
               -v /tmp/.local/bin/kubectl:/tmp/kubectl \
               --volumes-from kubeconfig \
-              alpine:3.4 sh -c "/tmp/kubectl --kubeconfig=$KUBE_CONFIG1 get secret $K8S_TOKEN_SECRET -o jsonpath='{.data.ca\\.crt}' | base64 --decode" > ca.crt
+              alpine:3.4 sh -c "chmod +x /tmp/kubectl && /tmp/kubectl --kubeconfig=$KUBE_CONFIG1 get secret $K8S_TOKEN_SECRET -o jsonpath='{.data.ca\\.crt}' | base64 --decode" > ca.crt
 
             docker cp ca.crt kubeconfig:$K8S_CA_CRT
 
