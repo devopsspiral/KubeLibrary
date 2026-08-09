@@ -16,7 +16,11 @@ export K8S_CA_CRT=/.kube/ca.crt
 docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG1" > "$KUBE_CONFIG1_FILE"
 docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG2" > "$KUBE_CONFIG2_FILE"
 
-cat > /tmp/sa.yaml <<'EOF'
+docker run --rm \
+  --network container:k3d-testk3d-1-serverlb \
+  --volumes-from kubeconfig \
+  --entrypoint sh \
+  bitnami/kubectl:latest -c "kubectl --kubeconfig=$KUBE_CONFIG1 create namespace test-ns-1 && cat <<'EOF' | kubectl --kubeconfig=$KUBE_CONFIG1 apply -f -
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -44,14 +48,7 @@ metadata:
   annotations:
     kubernetes.io/service-account.name: mysa
 type: kubernetes.io/service-account-token
-EOF
-
-docker run --rm \
-  --network container:k3d-testk3d-1-serverlb \
-  --volumes-from kubeconfig \
-  -v /tmp/sa.yaml:/tmp/sa.yaml \
-  --entrypoint sh \
-  bitnami/kubectl:latest -c "kubectl --kubeconfig=$KUBE_CONFIG1 create namespace test-ns-1 && kubectl --kubeconfig=$KUBE_CONFIG1 apply -f /tmp/sa.yaml"
+EOF"
 
 export K8S_TOKEN=$(docker run --rm \
   --network container:k3d-testk3d-1-serverlb \
