@@ -95,6 +95,17 @@ docker create --rm -it \
   -e K8S_API_URL=$K8S_API_URL \
   -e K8S_TOKEN=$K8S_TOKEN \
   -e K8S_CA_CRT=$K8S_CA_CRT \
-  --name kubelibrary kubelibrary -i reload-config /testcases/
+  --name kubelibrary-bearer kubelibrary -i auth.bearer-token /testcases/
+docker start -a kubelibrary-bearer
+
+docker create --rm -it \
+  --network k3d-testk3d-1 \
+  --volumes-from kubeconfig \
+  -e KUBE_CONFIG1=$KUBE_CONFIG1 \
+  -e KUBE_CONFIG2=$KUBE_CONFIG2 \
+  -e K8S_API_URL=$K8S_API_URL \
+  -e K8S_TOKEN=$K8S_TOKEN \
+  -e K8S_CA_CRT=$K8S_CA_CRT \
+  --name kubelibrary kubelibrary -i reload-config -e auth.bearer-token /testcases/
 docker network connect k3d-testk3d-2 kubelibrary
 docker start -a kubelibrary
