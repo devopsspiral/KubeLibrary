@@ -96,8 +96,8 @@ jobs:
             kubectl create namespace test-ns-1
             kubectl apply -f /repo/testcases/reload-config/sa.yaml
             MYSA_TOKEN_SECRET=mysa-token
-            export K8S_TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET --template={{.data.token}} | base64 -d)
-            kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
+            export K8S_TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET --template='{{.data.token}}' | base64 --decode | tr -d '\r\n')
+            kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 --decode > ca.crt
             export K8S_CA_CRT=/.kube/ca.crt
             export KUBE_CONFIG1=/.kube/testk3d-1
             export KUBE_CONFIG2=/.kube/testk3d-2
@@ -126,7 +126,7 @@ jobs:
               python3 -c "import os; b=open('$KUBE_CONFIG1_FILE','rb').read(256); print('bytes_len=%d'%len(b)); print(' '.join('%02x'%c for c in b))" || true
             fi || true
             echo "=== kubectl parse (raw) ==="
-            KUBECONFIG="$KUBE_CONFIG1_FILE" kubectl config view --raw -o yaml || true
+            command kubectl --kubeconfig="$KUBE_CONFIG1_FILE" config view --raw -o yaml || true
             echo "=== kubeconfig 2 info ==="
             ls -l "$KUBE_CONFIG2_FILE" || true
             file "$KUBE_CONFIG2_FILE" || true
@@ -141,16 +141,16 @@ jobs:
               python3 -c "import os; b=open('$KUBE_CONFIG2_FILE','rb').read(256); print('bytes_len=%d'%len(b)); print(' '.join('%02x'%c for c in b))" || true
             fi || true
             echo "=== kubectl parse (raw) ==="
-            KUBECONFIG="$KUBE_CONFIG2_FILE" kubectl config view --raw -o yaml || true
+            command kubectl --kubeconfig="$KUBE_CONFIG2_FILE" config view --raw -o yaml || true
             # update cluster endpoints by replacing the server line in the staged kubeconfig files (avoid kubectl write locks)
             sed -i "s|server: https://127.0.0.1:6443|server: https://$CLUSTER1_IP:6443|g" "$KUBE_CONFIG1_FILE" || true
             sed -i "s|server: https://127.0.0.1:6443|server: https://$CLUSTER2_IP:6443|g" "$KUBE_CONFIG2_FILE" || true
             echo "server lines after update (cluster1):"; sed -n '1,160p' "$KUBE_CONFIG1_FILE" | grep -n "server:" || true
             echo "server lines after update (cluster2):"; sed -n '1,160p' "$KUBE_CONFIG2_FILE" | grep -n "server:" || true
             echo "checking kubeconfig for cluster 1"
-            KUBECONFIG="$KUBE_CONFIG1_FILE" kubectl config view
+            command kubectl --kubeconfig="$KUBE_CONFIG1_FILE" config view
             echo "checking kubeconfig for cluster 2"
-            KUBECONFIG="$KUBE_CONFIG2_FILE" kubectl config view
+            command kubectl --kubeconfig="$KUBE_CONFIG2_FILE" config view
             docker cp "$KUBE_CONFIG1_FILE" kubeconfig:$KUBE_CONFIG1
             docker cp "$KUBE_CONFIG2_FILE" kubeconfig:$KUBE_CONFIG2
             docker cp ca.crt kubeconfig:$K8S_CA_CRT
@@ -165,14 +165,14 @@ jobs:
                 continue
               fi
               # Use kubectl JSONPath to reliably get the first user name from the kubeconfig
-              user_name=$(HOME=/tmp KUBECONFIG="$f" kubectl config view -o jsonpath='{.users[0].name}' 2>/dev/null || true)
+              user_name=$(HOME=/tmp command kubectl --kubeconfig="$f" config view -o jsonpath='{.users[0].name}' 2>/dev/null || true)
               if [ -n "$user_name" ]; then
                 echo "Setting token for user '$user_name' in $f"
-                HOME=/tmp KUBECONFIG="$f" kubectl config set-credentials "$user_name" --token="$K8S_TOKEN" || true
+                HOME=/tmp command kubectl --kubeconfig="$f" config set-credentials "$user_name" --token="$K8S_TOKEN" || true
                 echo "Post-injection excerpt for $f:";
                 sed -n '1,120p' "$f" || true
                 echo "Verifying token (can-i get pods) for $f:";
-                HOME=/tmp KUBECONFIG="$f" kubectl auth can-i get pods --all-namespaces || echo "auth check failed for $f" >&2
+                HOME=/tmp command kubectl --kubeconfig="$f" auth can-i get pods --all-namespaces || echo "auth check failed for $f" >&2
               else
                 echo "Could not determine user name from $f" >&2
               fi

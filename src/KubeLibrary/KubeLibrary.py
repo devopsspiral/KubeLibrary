@@ -253,6 +253,12 @@ class KubeLibrary:
         """
         self.api_client = None
         self.cert_validation = cert_validation
+        if isinstance(api_url, str):
+            api_url = api_url.strip()
+        if isinstance(bearer_token, str):
+            bearer_token = bearer_token.strip()
+        if isinstance(ca_cert, str):
+            ca_cert = ca_cert.strip()
         if incluster:
             try:
                 config.load_incluster_config()
