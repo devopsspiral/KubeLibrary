@@ -47,6 +47,16 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            mkdir -p /tmp/.local/bin
+            mv kubectl /tmp/.local/bin/
+            echo 'export PATH=/tmp/.local/bin:$PATH' >> $BASH_ENV
+            export PATH=/tmp/.local/bin:$PATH
+            kubectl version --client
+      - run:
           name: Build Kubelibrary container image
           command: |
             docker build -t kubelibrary -f testcases/Dockerfile .
