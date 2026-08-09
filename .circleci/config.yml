@@ -119,13 +119,43 @@ jobs:
             docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG1" > "$KUBE_CONFIG1_FILE"
             docker run --rm --volumes-from kubeconfig alpine:3.4 sh -c "cat $KUBE_CONFIG2" > "$KUBE_CONFIG2_FILE"
 
+            cat > /tmp/sa.yaml <<'EOF'
+            apiVersion: v1
+            kind: ServiceAccount
+            metadata:
+              name: mysa
+              labels:
+                source: mysa
+            ---
+            apiVersion: rbac.authorization.k8s.io/v1
+            kind: ClusterRoleBinding
+            metadata:
+              name: mysa-admin-binding
+            subjects:
+            - kind: ServiceAccount
+              name: mysa
+              namespace: default
+            roleRef:
+              kind: ClusterRole
+              name: cluster-admin
+              apiGroup: rbac.authorization.k8s.io
+            ---
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: mysa-token
+              annotations:
+                kubernetes.io/service-account.name: mysa
+            type: kubernetes.io/service-account-token
+            EOF
+
             # Create the namespace and service account on cluster-1 explicitly using cluster-1 network
             docker run --rm \
               --network container:k3d-testk3d-1-serverlb \
               --volumes-from kubeconfig \
-              -v "$PWD":/repo \
+              -v /tmp/sa.yaml:/tmp/sa.yaml \
               --entrypoint sh \
-              bitnami/kubectl:latest -c "kubectl --kubeconfig=$KUBE_CONFIG1 create namespace test-ns-1 && kubectl --kubeconfig=$KUBE_CONFIG1 apply -f /repo/testcases/reload-config/sa.yaml"
+              bitnami/kubectl:latest -c "kubectl --kubeconfig=$KUBE_CONFIG1 create namespace test-ns-1 && kubectl --kubeconfig=$KUBE_CONFIG1 apply -f /tmp/sa.yaml"
 
             export K8S_TOKEN=$(docker run --rm \
               --network container:k3d-testk3d-1-serverlb \
