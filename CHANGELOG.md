@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## In progress
+
+## [0.8.11] - 2026-08-13
 ### Fixed
 - #150 Kubernetes python client responds with response_types_map instead of response_type
 
