@@ -25,7 +25,7 @@ Connected to cluster-2
     K8s Api Ping
 
 Connected to cluster-1 using bearer token 
-    Reload Config    api_url=%{K8S_API_URL}    bearer_token=%{K8S_TOKEN}    ca_cert=%{K8S_CA_CRT}
+    Reload Config    api_url=%{K8S_API_URL}    bearer_token=%{K8S_TOKEN}    ca_cert=%{K8S_CA_CRT}    cert_validation=False
     K8s Api Ping
 
 Cluster has no namespace

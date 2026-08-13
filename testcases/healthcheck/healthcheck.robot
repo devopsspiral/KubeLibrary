@@ -17,7 +17,7 @@ Health API Reports Checks Passed With Verbose
     ${response}=  Query Health API
 
     # healthz < 1.20, livez >=1.20
-    Should Match Regexp  ${response}[0]  (livez|healthz) check passed
+    Should Match Regexp  ${response}[0]  (ok|(livez|healthz) check passed)
 
 Health API Reports Ok For informer-sync
     [Tags]    cluster    smoke

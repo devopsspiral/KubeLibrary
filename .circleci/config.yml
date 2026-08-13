@@ -47,6 +47,16 @@ jobs:
       - setup_remote_docker
       - checkout
       - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            mkdir -p /tmp/.local/bin
+            mv kubectl /tmp/.local/bin/
+            echo 'export PATH=/tmp/.local/bin:$PATH' >> $BASH_ENV
+            export PATH=/tmp/.local/bin:$PATH
+            kubectl version --client
+      - run:
           name: Build Kubelibrary container image
           command: |
             docker build -t kubelibrary -f testcases/Dockerfile .
@@ -91,37 +101,7 @@ jobs:
             kubelibrary -i other /testcases/
       - k3d/k3d-run:
           step-name: Run Multi cluster examples
-          command: |
-            # Multi cluster tests
-            kubectl create namespace test-ns-1
-            kubectl apply -f /repo/testcases/reload-config/sa.yaml
-            MYSA_TOKEN_SECRET=mysa-token
-            export K8S_TOKEN=$(kubectl get secret $MYSA_TOKEN_SECRET --template={{.data.token}} | base64 -d)
-            kubectl get secret $MYSA_TOKEN_SECRET -o jsonpath="{.data.ca\.crt}" | base64 -d > ca.crt
-            export K8S_CA_CRT=/.kube/ca.crt
-            export KUBE_CONFIG1=/.kube/testk3d-1
-            export KUBE_CONFIG2=/.kube/testk3d-2
-            export CLUSTER1_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-1-server-0)
-            export CLUSTER2_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3d-testk3d-2-server-0)
-            export K8S_API_URL="https://$CLUSTER1_IP:6443"
-            docker cp kubeconfig:$KUBE_CONFIG1 ~/kubeconfig-testk3d-1.yaml 
-            docker cp kubeconfig:$KUBE_CONFIG2 ~/kubeconfig-testk3d-2.yaml 
-            sed -i "s#server: https://.*#server: https://$CLUSTER1_IP:6443#g" ~/kubeconfig-testk3d-1.yaml
-            sed -i "s#server: https://.*#server: https://$CLUSTER2_IP:6443#g" ~/kubeconfig-testk3d-2.yaml
-            docker cp ~/kubeconfig-testk3d-1.yaml kubeconfig:$KUBE_CONFIG1
-            docker cp ~/kubeconfig-testk3d-2.yaml kubeconfig:$KUBE_CONFIG2
-            docker cp ca.crt kubeconfig:$K8S_CA_CRT
-            docker create --rm -it \
-            --network k3d-testk3d-1 \
-            --volumes-from kubeconfig \
-            -e KUBE_CONFIG1=$KUBE_CONFIG1 \
-            -e KUBE_CONFIG2=$KUBE_CONFIG2 \
-            -e K8S_API_URL=$K8S_API_URL \
-            -e K8S_TOKEN=$K8S_TOKEN \
-            -e K8S_CA_CRT=$K8S_CA_CRT \
-            --name kubelibrary kubelibrary -i reload-config /testcases/
-            docker network connect k3d-testk3d-2 kubelibrary
-            docker start -a kubelibrary
+          command: bash .circleci/scripts/run-multi-cluster-examples.sh
       - k3d/k3d-run:
           step-name: Run Smoke examples
           command: |
